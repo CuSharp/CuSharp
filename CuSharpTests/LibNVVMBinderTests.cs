@@ -6,7 +6,7 @@ namespace CuSharpTests
     public class LibNVVMBinderTests
     {
         private NVVMProgram program = new ();
-        private string programText = ReadFile("kernel.ll");
+        private string programText = ReadFile("resources/kernel.ll");
 
         private static string ReadFile(string path)
         {
@@ -17,7 +17,7 @@ namespace CuSharpTests
         public void TestAddModuleToProgram()
         {
             NVVMProgram.NVVMResult result = program.AddModule(programText, "kernel");
-            Assert.Equal(result, NVVMProgram.NVVMResult.NVVM_SUCCESS);
+            Assert.Equal( NVVMProgram.NVVMResult.NVVM_SUCCESS, result);
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace CuSharpTests
             program.Compile(new string[0]);
             string result;
             program.GetCompiledResult(out result);
-            Assert.Equal(ReadFile("kernel.ptx"), result);
+            Assert.Equal(ReadFile("resources/kernel.ptx"), result);
         }
 
         [Fact]
