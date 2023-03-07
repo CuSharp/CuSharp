@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LibNVVMBinder", "LibNVVMBinder\LibNVVMBinder.csproj", "{DA634A4F-FC4F-4A0A-9BA3-0994513AFA6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharpTests", "CuSharpTests\CuSharpTests.csproj", "{7B4757EC-7C25-41A2-B281-4999FB2D6361}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DA634A4F-FC4F-4A0A-9BA3-0994513AFA6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA634A4F-FC4F-4A0A-9BA3-0994513AFA6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA634A4F-FC4F-4A0A-9BA3-0994513AFA6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA634A4F-FC4F-4A0A-9BA3-0994513AFA6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B4757EC-7C25-41A2-B281-4999FB2D6361}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B4757EC-7C25-41A2-B281-4999FB2D6361}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B4757EC-7C25-41A2-B281-4999FB2D6361}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B4757EC-7C25-41A2-B281-4999FB2D6361}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
