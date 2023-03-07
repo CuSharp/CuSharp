@@ -1,0 +1,15 @@
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/obj/Debug/net6.0/CuSharpTests.csproj.AssemblyReference.cache
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/obj/Debug/net6.0/CuSharpTests.GeneratedMSBuildEditorConfig.editorconfig
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/obj/Debug/net6.0/CuSharpTests.AssemblyInfoInputs.cache
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/obj/Debug/net6.0/CuSharpTests.AssemblyInfo.cs
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/obj/Debug/net6.0/CuSharpTests.csproj.CoreCompileInputs.cache
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/bin/Debug/net6.0/CoverletSourceRootsMapping
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/bin/Debug/net6.0/Microsoft.TestPlatform.PlatformAbstractions.dll
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/bin/Debug/net6.0/xunit.runner.visualstudio.dotnetcore.testadapter.dll
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/bin/Debug/net6.0/xunit.runner.reporters.netcoreapp10.dll
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/bin/Debug/net6.0/xunit.runner.utility.netcoreapp10.dll
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/bin/Debug/net6.0/CuSharpTests.dll
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/bin/Debug/net6.0/CuSharpTests.pdb
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/obj/Debug/net6.0/CuSharpTests.dll
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/obj/Debug/net6.0/refint/CuSharpTests.dll
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/obj/Debug/net6.0/CuSharpTests.pdb

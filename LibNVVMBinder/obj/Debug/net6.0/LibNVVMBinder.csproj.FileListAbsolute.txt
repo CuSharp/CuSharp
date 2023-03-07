@@ -1,0 +1,10 @@
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/bin/Debug/net6.0/LibNVVMBinder.dll
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/bin/Debug/net6.0/LibNVVMBinder.pdb
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/obj/Debug/net6.0/LibNVVMBinder.csproj.AssemblyReference.cache
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/obj/Debug/net6.0/LibNVVMBinder.GeneratedMSBuildEditorConfig.editorconfig
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/obj/Debug/net6.0/LibNVVMBinder.AssemblyInfoInputs.cache
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/obj/Debug/net6.0/LibNVVMBinder.AssemblyInfo.cs
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/obj/Debug/net6.0/LibNVVMBinder.csproj.CoreCompileInputs.cache
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/obj/Debug/net6.0/LibNVVMBinder.dll
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/obj/Debug/net6.0/refint/LibNVVMBinder.dll
+/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/obj/Debug/net6.0/LibNVVMBinder.pdb

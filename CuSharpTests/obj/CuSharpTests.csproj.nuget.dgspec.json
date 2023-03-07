@@ -1,0 +1,138 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/CuSharpTests.csproj": {}
+  },
+  "projects": {
+    "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/CuSharpTests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/CuSharpTests.csproj",
+        "projectName": "CuSharpTests",
+        "projectPath": "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/CuSharpTests.csproj",
+        "packagesPath": "/home/adrian/.nuget/packages/",
+        "outputPath": "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/CuSharpTests/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/adrian/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/LibNVVMBinder.csproj": {
+                "projectPath": "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/LibNVVMBinder.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.11.0, )"
+            },
+            "coverlet.collector": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.4.1, )"
+            },
+            "xunit.runner.visualstudio": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.4.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.202/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/LibNVVMBinder.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/LibNVVMBinder.csproj",
+        "projectName": "LibNVVMBinder",
+        "projectPath": "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/LibNVVMBinder.csproj",
+        "packagesPath": "/home/adrian/.nuget/packages/",
+        "outputPath": "/home/adrian/Dokumente/Studium/6. Semester/BA/CuSharp/LibNVVMBinder/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/adrian/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.202/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
