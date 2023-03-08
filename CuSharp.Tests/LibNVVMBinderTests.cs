@@ -1,7 +1,7 @@
 using LibNVVMBinder;
 using Xunit;
 
-namespace CuSharpTests
+namespace CuSharp.Tests
 {
     public class LibNVVMBinderTests
     {

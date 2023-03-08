@@ -1,17 +1,10 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=27ff54a4_002Dc24f_002D427b_002Db226_002De79c5d8ee86c/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="LibNVVMBinderTests #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::7B4757EC-7C25-41A2-B281-4999FB2D6361::net6.0::CuSharpTests.LibNVVMBinderTests&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
+	
+	
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d3a72e82_002D0b74_002D4a94_002D9bb9_002D8162af76ba77/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="LibNVVMBinderTests #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;Project Location="D:\Dokumente\Studium\6. Semester\BA\CuSharp\CuSharp.Tests" Presentation="&amp;lt;CuSharp.Tests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=704c6853_002D731d_002D46c3_002D9339_002D6b2b7653cc01/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="LibNVVMBinderTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::7B4757EC-7C25-41A2-B281-4999FB2D6361::net6.0::CuSharpTests.LibNVVMBinderTests&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d3a72e82_002D0b74_002D4a94_002D9bb9_002D8162af76ba77/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="LibNVVMBinderTests #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::7B4757EC-7C25-41A2-B281-4999FB2D6361::net6.0::CuSharpTests.LibNVVMBinderTests&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
-&lt;/SessionState&gt;</s:String>
+	
+	
+	
 	</wpf:ResourceDictionary>
