@@ -18,11 +18,11 @@
 
 using System.Diagnostics;
 using System.Reflection;
-using Dotnet4Gpu.Decompilation.Instructions;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler.Instructions;
+using CuSharp.Decompiler.Util;
 
 // TODO: try improve the design of this algorithm / implementation
-namespace Dotnet4Gpu.Decompilation
+namespace CuSharp.Decompiler
 {
     class BlockBuilder
     {
