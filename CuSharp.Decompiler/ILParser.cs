@@ -18,9 +18,9 @@
 
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation;
+namespace CuSharp.Decompiler;
 public static class ILParser
 {
     public static ILOpCode DecodeOpCode(this BinaryReader reader)
@@ -71,13 +71,13 @@ public static class ILParser
 
     public static int DecodeBranchTarget(this BinaryReader reader, ILOpCode opCode)
     {
-        return (opCode.GetBranchOperandSize() == 4 ? reader.ReadInt32() : reader.ReadSByte()) + (int) reader.BaseStream.Position;
+        return (opCode.GetBranchOperandSize() == 4 ? reader.ReadInt32() : reader.ReadSByte()) + (int)reader.BaseStream.Position;
     }
 
     public static int[] DecodeSwitchTargets(this BinaryReader reader)
     {
         int[] targets = new int[reader.ReadUInt32()];
-        int offset = (int)(reader.BaseStream.Position) + 4 * targets.Length;
+        int offset = (int)reader.BaseStream.Position + 4 * targets.Length;
         for (int i = 0; i < targets.Length; i++)
             targets[i] = reader.ReadInt32() + offset;
         return targets;

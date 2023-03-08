@@ -18,7 +18,7 @@
 
 using System.Diagnostics;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>If statement / conditional expression. <c>if (condition) trueExpr else falseExpr</c></summary>
     /// <remarks>
@@ -150,8 +150,8 @@ namespace Dotnet4Gpu.Decompilation.Instructions
                          || _falseInst.HasDirectFlag(InstructionFlags.EndPointUnreachable));
         }
 
-        public override StackType ResultType => _trueInst.HasDirectFlag(InstructionFlags.EndPointUnreachable) 
-            ? _falseInst.ResultType 
+        public override StackType ResultType => _trueInst.HasDirectFlag(InstructionFlags.EndPointUnreachable)
+            ? _falseInst.ResultType
             : _trueInst.ResultType;
 
         public override InstructionFlags DirectFlags => InstructionFlags.ControlFlow;

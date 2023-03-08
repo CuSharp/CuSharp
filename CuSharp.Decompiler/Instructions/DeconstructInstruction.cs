@@ -19,7 +19,7 @@
 using System.Diagnostics;
 using System.Reflection;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class DeconstructInstruction : ILInstruction
     {
@@ -49,27 +49,33 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         private MatchInstruction _pattern;
 
-        public MatchInstruction Pattern {
+        public MatchInstruction Pattern
+        {
             get => _pattern;
-            set {
+            set
+            {
                 ValidateChild(value);
                 SetChildInstruction(ref _pattern, value, Init.Count);
             }
         }
 
         private Block _conversions;
-        public Block Conversions {
+        public Block Conversions
+        {
             get => _conversions;
-            set {
+            set
+            {
                 ValidateChild(value);
                 SetChildInstruction(ref _conversions, value, Init.Count + 1);
             }
         }
 
         private Block _assignments;
-        public Block Assignments {
+        public Block Assignments
+        {
             get => _assignments;
-            set {
+            set
+            {
                 ValidateChild(value);
                 SetChildInstruction(ref _assignments, value, Init.Count + 2);
             }
@@ -128,7 +134,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         public override ILInstruction Clone()
         {
             var clone = new DeconstructInstruction();
-            clone.Init.AddRange(Enumerable.Select<StLoc, StLoc>(Init, inst => (StLoc)inst.Clone()));
+            clone.Init.AddRange(Init.Select(inst => (StLoc)inst.Clone()));
             clone.Pattern = (MatchInstruction)_pattern.Clone();
             clone.Conversions = (Block)_conversions.Clone();
             clone.Assignments = (Block)_assignments.Clone();

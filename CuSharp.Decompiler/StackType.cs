@@ -18,7 +18,9 @@
 
 #nullable enable
 
-namespace Dotnet4Gpu.Decompilation
+using CuSharp.Decompiler;
+
+namespace CuSharp.Decompiler
 {
     /// <summary>
     /// A type for the purpose of stack analysis.

@@ -20,12 +20,14 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Reflection;
 using System.Reflection.Metadata;
-using Dotnet4Gpu.Decompilation.Instructions;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Instructions;
+using CuSharp.Decompiler.Util;
+using Dotnet4Gpu.Decompilation;
 
 // TODO: proper nullable handling
 
-namespace Dotnet4Gpu.Decompilation
+namespace CuSharp.Decompiler
 {
     /// <summary>
     /// Reads IL bytecodes and converts them into ILAst instructions.

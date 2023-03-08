@@ -17,10 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Diagnostics;
-using Dotnet4Gpu.Decompilation.Instructions;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler.Instructions;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation;
+namespace CuSharp.Decompiler;
 
 class CollectStackVariablesVisitor : ILVisitor<ILInstruction>
 {

@@ -17,14 +17,15 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Diagnostics;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class NumericCompoundAssign : CompoundAssignmentInstruction
 {
     private readonly Type _type;
-    public override StackType ResultType => TypeUtils.GetStackType(_type);
+    public override StackType ResultType => _type.GetStackType();
 
     public override void AcceptVisitor(ILVisitor visitor)
     {
@@ -60,7 +61,8 @@ public sealed class NumericCompoundAssign : CompoundAssignmentInstruction
 
     public NumericCompoundAssign(BinaryNumericInstruction binary, ILInstruction target,
         CompoundTargetKind targetKind, ILInstruction value, Type type, CompoundEvalMode evalMode)
-        : base(OpCode.NumericCompoundAssign, evalMode, target, targetKind, value) {
+        : base(OpCode.NumericCompoundAssign, evalMode, target, targetKind, value)
+    {
         CheckForOverflow = binary.CheckForOverflow;
         Sign = binary.Sign;
         LeftInputType = binary.LeftInputType;
@@ -71,22 +73,25 @@ public sealed class NumericCompoundAssign : CompoundAssignmentInstruction
         _type = type;
         AddILRange(binary);
         Debug.Assert(evalMode == CompoundEvalMode.EvaluatesToNewValue ||
-                     (Operator == BinaryNumericOperator.Add || Operator == BinaryNumericOperator.Sub));
-        Debug.Assert(this.ResultType == (IsLifted ? StackType.O : UnderlyingResultType));
+                     Operator == BinaryNumericOperator.Add || Operator == BinaryNumericOperator.Sub);
+        Debug.Assert(ResultType == (IsLifted ? StackType.O : UnderlyingResultType));
     }
 
-    protected override InstructionFlags ComputeFlags() {
+    protected override InstructionFlags ComputeFlags()
+    {
         var flags = Target.Flags | Value.Flags | InstructionFlags.SideEffect;
-        if (CheckForOverflow || (Operator == BinaryNumericOperator.Div || Operator == BinaryNumericOperator.Rem))
+        if (CheckForOverflow || Operator == BinaryNumericOperator.Div || Operator == BinaryNumericOperator.Rem)
             flags |= InstructionFlags.MayThrow;
         return flags;
     }
 
-    public override InstructionFlags DirectFlags {
-        get {
+    public override InstructionFlags DirectFlags
+    {
+        get
+        {
             var flags = InstructionFlags.SideEffect;
             if (CheckForOverflow ||
-                (Operator == BinaryNumericOperator.Div || Operator == BinaryNumericOperator.Rem))
+                Operator == BinaryNumericOperator.Div || Operator == BinaryNumericOperator.Rem)
                 flags |= InstructionFlags.MayThrow;
             return flags;
         }

@@ -18,9 +18,10 @@
 
 using System.Diagnostics;
 using System.Reflection;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class UserDefinedCompoundAssign : CompoundAssignmentInstruction
 {
@@ -45,9 +46,9 @@ public sealed class UserDefinedCompoundAssign : CompoundAssignmentInstruction
         ILInstruction target, CompoundTargetKind targetKind, ILInstruction value)
         : base(OpCode.UserDefinedCompoundAssign, evalMode, target, targetKind, value)
     {
-        this.Method = method;
+        Method = method;
         //Debug.Assert(Method.IsOperator || IsStringConcat(method));
-        Debug.Assert(evalMode == CompoundEvalMode.EvaluatesToNewValue || (Method.Name == "op_Increment" || Method.Name == "op_Decrement"));
+        Debug.Assert(evalMode == CompoundEvalMode.EvaluatesToNewValue || Method.Name == "op_Increment" || Method.Name == "op_Decrement");
     }
 
     public static bool IsStringConcat(MethodInfo method)
@@ -55,5 +56,5 @@ public sealed class UserDefinedCompoundAssign : CompoundAssignmentInstruction
         return method.Name == "Concat" && method.IsStatic && method.DeclaringType == typeof(string);
     }
 
-    public override StackType ResultType => TypeUtils.GetStackType(Method.ReturnType);
+    public override StackType ResultType => Method.ReturnType.GetStackType();
 }

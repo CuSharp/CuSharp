@@ -18,7 +18,7 @@
 
 using System.Reflection;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>Loads runtime representation of metadata token</summary>
     public sealed class LdMemberToken : SimpleInstruction

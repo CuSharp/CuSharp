@@ -18,7 +18,9 @@
 
 #nullable enable
 
-namespace Dotnet4Gpu.Decompilation
+using CuSharp.Decompiler;
+
+namespace CuSharp.Decompiler
 {
     /// <summary>
     /// Holds information about the role of an instruction within its parent instruction.

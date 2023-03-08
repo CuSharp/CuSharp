@@ -17,7 +17,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation
+using CuSharp.Decompiler;
+
+namespace CuSharp.Decompiler
 {
     [Flags]
     public enum InstructionFlags

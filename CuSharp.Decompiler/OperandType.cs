@@ -18,7 +18,7 @@
 
 using System.Reflection.Metadata;
 
-namespace Dotnet4Gpu.Decompilation
+namespace CuSharp.Decompiler
 {
     public enum OperandType
     {

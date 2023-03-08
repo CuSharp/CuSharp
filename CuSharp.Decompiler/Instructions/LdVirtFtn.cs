@@ -18,7 +18,7 @@
 
 using System.Reflection;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>Load method pointer</summary>
     public sealed class LdVirtFtn : UnaryInstruction

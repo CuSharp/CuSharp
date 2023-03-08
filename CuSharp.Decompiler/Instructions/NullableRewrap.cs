@@ -18,7 +18,7 @@
 
 using System.Diagnostics;
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class NullableRewrap : UnaryInstruction
 {
@@ -49,11 +49,13 @@ public sealed class NullableRewrap : UnaryInstruction
         // Also, remove EndpointUnreachable flag, because the end-point is reachable through
         // the implicit nullable.unwrap branch.
         const InstructionFlags flagsToRemove = InstructionFlags.MayUnwrapNull | InstructionFlags.EndPointUnreachable;
-        return (Argument.Flags & ~flagsToRemove) | InstructionFlags.ControlFlow;
+        return Argument.Flags & ~flagsToRemove | InstructionFlags.ControlFlow;
     }
 
-    public override StackType ResultType {
-        get {
+    public override StackType ResultType
+    {
+        get
+        {
             if (Argument.ResultType == StackType.Void)
                 return StackType.Void;
             else

@@ -17,9 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Reflection;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>Creates an object instance and calls the constructor.</summary>
     public sealed class NewObj : CallInstruction

@@ -16,9 +16,10 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using CuSharp.Decompiler;
 using System.Linq.Expressions;
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class DynamicUnaryOperatorInstruction : DynamicInstruction
 {
@@ -79,8 +80,10 @@ public sealed class DynamicUnaryOperatorInstruction : DynamicInstruction
         Operand = operand;
     }
 
-    public override StackType ResultType {
-        get {
+    public override StackType ResultType
+    {
+        get
+        {
             switch (Operation)
             {
                 case ExpressionType.IsFalse:

@@ -20,7 +20,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class MatchInstruction : ILInstruction, IStoreInstruction
     {
@@ -111,14 +111,14 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             var clone = (MatchInstruction)ShallowClone();
             clone.TestedOperand = _testedOperand.Clone();
             clone.SubPatterns = new InstructionCollection<ILInstruction>(clone, 1);
-            clone.SubPatterns.AddRange(Enumerable.Select<ILInstruction, ILInstruction>(SubPatterns, arg => arg.Clone()));
+            clone.SubPatterns.AddRange(SubPatterns.Select(arg => arg.Clone()));
             return clone;
         }
         public override StackType ResultType => StackType.I4;
 
         protected override InstructionFlags ComputeFlags()
         {
-            return InstructionFlags.MayWriteLocals | _testedOperand.Flags | Enumerable.Aggregate<ILInstruction, InstructionFlags>(SubPatterns, InstructionFlags.None, (f, arg) => f | arg.Flags) | InstructionFlags.SideEffect | InstructionFlags.MayThrow | InstructionFlags.ControlFlow;
+            return InstructionFlags.MayWriteLocals | _testedOperand.Flags | SubPatterns.Aggregate(InstructionFlags.None, (f, arg) => f | arg.Flags) | InstructionFlags.SideEffect | InstructionFlags.MayThrow | InstructionFlags.ControlFlow;
         }
         public override InstructionFlags DirectFlags => InstructionFlags.MayWriteLocals | InstructionFlags.SideEffect | InstructionFlags.MayThrow | InstructionFlags.ControlFlow;
 
@@ -205,8 +205,10 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         public bool HasDesignator => Variable.LoadCount + Variable.AddressCount > SubPatterns.Count;
 
-        public int NumPositionalPatterns {
-            get {
+        public int NumPositionalPatterns
+        {
+            get
+            {
                 if (IsDeconstructCall)
                     return _method!.GetParameters().Length - (_method.IsStatic ? 1 : 0);
                 else if (IsDeconstructTuple)
@@ -256,7 +258,8 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         private static bool IsConstant(ILInstruction inst)
         {
-            return inst.OpCode switch {
+            return inst.OpCode switch
+            {
                 OpCode.LdcDecimal => true,
                 OpCode.LdcF4 => true,
                 OpCode.LdcF8 => true,
@@ -270,15 +273,15 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         internal Type GetDeconstructResultType(int index)
         {
-            if (this.IsDeconstructCall)
+            if (IsDeconstructCall)
             {
-                int firstOutParam = (_method!.IsStatic ? 1 : 0);
+                int firstOutParam = _method!.IsStatic ? 1 : 0;
                 var outParamType = _method.GetParameters()[firstOutParam + index].ParameterType;
                 if (!outParamType.IsByRef)
                     throw new InvalidOperationException("deconstruct out param must be by reference");
                 return outParamType.GetElementType();
             }
-            if (this.IsDeconstructTuple)
+            if (IsDeconstructTuple)
             {
                 throw new NotImplementedException();
                 //var elementTypes = TupleType.GetTupleElementTypes(this.variable.Type);
@@ -290,7 +293,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         void AdditionalInvariants()
         {
             Debug.Assert(_variable.Kind == VariableKind.PatternLocal);
-            if (this.IsDeconstructCall)
+            if (IsDeconstructCall)
             {
                 Debug.Assert(IsDeconstructMethod(_method));
             }
@@ -298,7 +301,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             {
                 Debug.Assert(_method == null);
             }
-            if (this.IsDeconstructTuple)
+            if (IsDeconstructTuple)
             {
                 //Debug.Assert(variable.Type.Kind == TypeKind.Tuple);
             }
@@ -338,7 +341,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
                 return false;
             if (method.ReturnType != typeof(void))
                 return false;
-            int firstOutParam = (method.IsStatic ? 1 : 0);
+            int firstOutParam = method.IsStatic ? 1 : 0;
             if (method.IsStatic)
             {
                 throw new NotImplementedException();

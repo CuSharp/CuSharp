@@ -18,7 +18,7 @@
 
 using System.Diagnostics;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>
     /// Unconditional branch. <c>goto target;</c>
@@ -61,13 +61,16 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         public int TargetILOffset => _targetBlock?.StartILOffset ?? _targetIlOffset;
 
-        public Block TargetBlock {
-            get {
+        public Block TargetBlock
+        {
+            get
+            {
                 // HACK: We treat TargetBlock as non-nullable publicly, because it's only null inside
                 // the ILReader, and becomes non-null once the BlockBuilder has run.
                 return _targetBlock!;
             }
-            set {
+            set
+            {
                 if (_targetBlock != null && IsConnected)
                     _targetBlock.IncomingEdgeCount--;
                 _targetBlock = value;
@@ -96,7 +99,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             if (phase > ILPhase.InILReader)
             {
                 Debug.Assert(_targetBlock?.Parent is BlockContainer);
-                Debug.Assert(this.IsDescendantOf(_targetBlock!.Parent!));
+                Debug.Assert(IsDescendantOf(_targetBlock!.Parent!));
                 Debug.Assert(_targetBlock!.Parent!.Children[_targetBlock.ChildIndex] == _targetBlock);
             }
         }

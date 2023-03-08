@@ -18,10 +18,11 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Diagnostics;
-using Dotnet4Gpu.Decompilation.Util;
-using Dotnet4Gpu.Decompilation.Instructions;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Instructions;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation
+namespace CuSharp.Decompiler
 {
     [DebuggerDisplay("{Name} : {Type}")]
     public class ILVariable

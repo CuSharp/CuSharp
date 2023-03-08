@@ -16,9 +16,10 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using CuSharp.Decompiler;
 using System.Diagnostics;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class StLoc : ILInstruction, IStoreInstruction
     {
@@ -129,7 +130,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         internal override void CheckInvariant(ILPhase phase)
         {
             base.CheckInvariant(phase);
-            Debug.Assert(phase <= ILPhase.InILReader || this.IsDescendantOf(_variable.Function!));
+            Debug.Assert(phase <= ILPhase.InILReader || IsDescendantOf(_variable.Function!));
             Debug.Assert(phase <= ILPhase.InILReader || _variable.Function!.Variables[_variable.IndexInFunction] == _variable);
             Debug.Assert(_value.ResultType == _variable.StackType);
         }

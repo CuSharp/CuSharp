@@ -19,9 +19,10 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public abstract class ILInstruction
     {
@@ -155,7 +156,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         {
             if (inst == null)
                 throw new ArgumentNullException(nameof(inst));
-            Debug.Assert(!this.IsDescendantOf(inst), "ILAst must form a tree");
+            Debug.Assert(!IsDescendantOf(inst), "ILAst must form a tree");
             // If a call to ReplaceWith() triggers the "ILAst must form a tree" assertion,
             // make sure to read the remarks on the ReplaceWith() method.
         }
@@ -176,14 +177,14 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             foreach (var child in Children)
             {
                 Debug.Assert(child.Parent == this);
-                Debug.Assert(this.GetChild(child.ChildIndex) == child);
+                Debug.Assert(GetChild(child.ChildIndex) == child);
                 // if child flags are invalid, parent flags must be too
                 // exception: nested ILFunctions (lambdas)
-                Debug.Assert(this is ILFunction || child._flags != InvalidFlags || this._flags == InvalidFlags);
-                Debug.Assert(child.IsConnected == this.IsConnected);
+                Debug.Assert(this is ILFunction || child._flags != InvalidFlags || _flags == InvalidFlags);
+                Debug.Assert(child.IsConnected == IsConnected);
                 child.CheckInvariant(phase);
             }
-            Debug.Assert((this.DirectFlags & ~this.Flags) == 0, "All DirectFlags must also appear in this.Flags");
+            Debug.Assert((DirectFlags & ~Flags) == 0, "All DirectFlags must also appear in this.Flags");
         }
 
         /// <summary>
@@ -260,8 +261,10 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         /// so it is possible for this property to return a stale value
         /// if the instruction contains "stale positions" (see remarks on Parent property).
         /// </remarks>
-        public InstructionFlags Flags {
-            get {
+        public InstructionFlags Flags
+        {
+            get
+            {
                 if (_flags == InvalidFlags)
                 {
                     _flags = ComputeFlags();
@@ -275,7 +278,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         /// </summary>
         public bool HasFlag(InstructionFlags flags)
         {
-            return (this.Flags & flags) != 0;
+            return (Flags & flags) != 0;
         }
 
         /// <summary>
@@ -395,7 +398,8 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
             public int Count => _inst.GetChildCount();
 
-            public ILInstruction this[int index] {
+            public ILInstruction this[int index]
+            {
                 get => _inst.GetChild(index);
                 set => _inst.SetChild(index, value);
             }
@@ -481,7 +485,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 #endif
             }
 
-            object System.Collections.IEnumerator.Current => this.Current;
+            object System.Collections.IEnumerator.Current => Current;
 
             void System.Collections.IEnumerator.Reset()
             {
@@ -530,8 +534,10 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         /// Note that it is valid to modify node's children as those were already previously visited.
         /// As a special case, it is also allowed to replace node itself with another node.
         /// </remarks>
-        public IEnumerable<ILInstruction> Descendants {
-            get {
+        public IEnumerable<ILInstruction> Descendants
+        {
+            get
+            {
                 // Copy of TreeTraversal.PostOrder() specialized for ChildrenEnumerator
                 // We could potentially eliminate the stack by using Parent/ChildIndex,
                 // but that makes it difficult to reason about the behavior in the cases
@@ -576,8 +582,10 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         /// <summary>
         /// Gets the ancestors of this node (including the node itself as first element).
         /// </summary>
-        public IEnumerable<ILInstruction> Ancestors {
-            get {
+        public IEnumerable<ILInstruction> Ancestors
+        {
+            get
+            {
                 for (ILInstruction? node = this; node != null; node = node.Parent)
                 {
                     yield return node;
@@ -685,12 +693,14 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         /// 
         /// Precondition: this node must not be orphaned.
         /// </remarks>
-        public SlotInfo? SlotInfo {
-            get {
+        public SlotInfo? SlotInfo
+        {
+            get
+            {
                 if (_parent == null)
                     return null;
-                Debug.Assert(_parent.GetChild(this.ChildIndex) == this);
-                return _parent.GetChildSlot(this.ChildIndex);
+                Debug.Assert(_parent.GetChild(ChildIndex) == this);
+                return _parent.GetChildSlot(ChildIndex);
             }
         }
 
@@ -733,7 +743,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         protected internal void InstructionCollectionAdded(ILInstruction newChild)
         {
             Debug.Assert(GetChild(newChild.ChildIndex) == newChild);
-            Debug.Assert(!this.IsDescendantOf(newChild), "ILAst must form a tree");
+            Debug.Assert(!IsDescendantOf(newChild), "ILAst must form a tree");
             // If a call to ReplaceWith() triggers the "ILAst must form a tree" assertion,
             // make sure to read the remarks on the ReplaceWith() method.
             newChild._parent = this;

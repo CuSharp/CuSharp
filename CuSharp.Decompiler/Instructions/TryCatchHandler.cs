@@ -18,7 +18,7 @@
 
 using System.Diagnostics;
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class TryCatchHandler : ILInstruction, IStoreInstruction
 {
@@ -159,8 +159,10 @@ public sealed class TryCatchHandler : ILInstruction, IStoreInstruction
         return _filter.Flags | _body.Flags | InstructionFlags.ControlFlow | InstructionFlags.MayWriteLocals;
     }
 
-    public override InstructionFlags DirectFlags {
-        get {
+    public override InstructionFlags DirectFlags
+    {
+        get
+        {
             // the body is not evaluated if the filter returns 0
             return InstructionFlags.ControlFlow | InstructionFlags.MayWriteLocals;
         }

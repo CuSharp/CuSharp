@@ -18,96 +18,98 @@
 // DEALINGS IN THE SOFTWARE.
 #nullable enable
 
+using CuSharp.Decompiler.Util;
 using System.Collections;
 
-namespace Dotnet4Gpu.Decompilation.Util
+namespace CuSharp.Decompiler.Util
 {
-	[Serializable]
-	public sealed class EmptyList<T> : IList<T>, IEnumerator<T>, IReadOnlyList<T>
-	{
-		public static readonly EmptyList<T> Instance = new();
+    [Serializable]
+    public sealed class EmptyList<T> : IList<T>, IEnumerator<T>, IReadOnlyList<T>
+    {
+        public static readonly EmptyList<T> Instance = new();
 
-		private EmptyList() { }
+        private EmptyList() { }
 
-		public T this[int index] {
-			get => throw new ArgumentOutOfRangeException(nameof(index));
+        public T this[int index]
+        {
+            get => throw new ArgumentOutOfRangeException(nameof(index));
             set => throw new ArgumentOutOfRangeException(nameof(index));
         }
 
-		public int Count => 0;
+        public int Count => 0;
 
         bool ICollection<T>.IsReadOnly => true;
 
         int IList<T>.IndexOf(T item)
-		{
-			return -1;
-		}
+        {
+            return -1;
+        }
 
-		void IList<T>.Insert(int index, T item)
-		{
-			throw new NotSupportedException();
-		}
+        void IList<T>.Insert(int index, T item)
+        {
+            throw new NotSupportedException();
+        }
 
-		void IList<T>.RemoveAt(int index)
-		{
-			throw new NotSupportedException();
-		}
+        void IList<T>.RemoveAt(int index)
+        {
+            throw new NotSupportedException();
+        }
 
-		void ICollection<T>.Add(T item)
-		{
-			throw new NotSupportedException();
-		}
+        void ICollection<T>.Add(T item)
+        {
+            throw new NotSupportedException();
+        }
 
-		void ICollection<T>.Clear()
-		{
-		}
+        void ICollection<T>.Clear()
+        {
+        }
 
-		bool ICollection<T>.Contains(T item)
-		{
-			return false;
-		}
+        bool ICollection<T>.Contains(T item)
+        {
+            return false;
+        }
 
-		void ICollection<T>.CopyTo(T[] array, int arrayIndex)
-		{
-		}
+        void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+        {
+        }
 
-		bool ICollection<T>.Remove(T item)
-		{
-			return false;
-		}
+        bool ICollection<T>.Remove(T item)
+        {
+            return false;
+        }
 
-		IEnumerator<T> IEnumerable<T>.GetEnumerator()
-		{
-			return this;
-		}
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return this;
+        }
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return this;
-		}
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return this;
+        }
 
-		T IEnumerator<T>.Current => throw new NotSupportedException();
+        T IEnumerator<T>.Current => throw new NotSupportedException();
 
         object IEnumerator.Current => throw new NotSupportedException();
 
         void IDisposable.Dispose()
-		{
-		}
+        {
+        }
 
-		bool IEnumerator.MoveNext()
-		{
-			return false;
-		}
+        bool IEnumerator.MoveNext()
+        {
+            return false;
+        }
 
-		void IEnumerator.Reset()
-		{
-		}
-	}
+        void IEnumerator.Reset()
+        {
+        }
+    }
 
-	public static class Empty<T>
-	{
-		public static readonly T[] Array = System.Array.Empty<T>();
-	}
+    public static class Empty<T>
+    {
+        public static readonly T[] Array = System.Array.Empty<T>();
+    }
 
-	public struct Unit { }
+    public struct Unit { }
 }

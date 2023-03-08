@@ -18,9 +18,10 @@
 
 using System.Diagnostics;
 using System.Reflection;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public abstract class CallInstruction : ILInstruction
     {
@@ -135,7 +136,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         internal override void CheckInvariant(ILPhase phase)
         {
             base.CheckInvariant(phase);
-            int firstArgument = (OpCode != OpCode.NewObj && !Method.IsStatic) ? 1 : 0;
+            int firstArgument = OpCode != OpCode.NewObj && !Method.IsStatic ? 1 : 0;
             var parameters = Method.GetParameters();
             Debug.Assert(parameters.Length + firstArgument == Arguments.Count);
             if (firstArgument == 1)
@@ -145,28 +146,28 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             }
             for (int i = 0; i < parameters.Length; ++i)
             {
-                if (Arguments[firstArgument + i].ResultType != TypeUtils.GetStackType(parameters[i].ParameterType))
+                if (Arguments[firstArgument + i].ResultType != parameters[i].ParameterType.GetStackType())
                     Debug.Fail($"Stack type mismatch in parameter {i} in call to {Method.Name}()");
             }
         }
     }
 
     //partial class Call : ILiftableInstruction
-	//{
-	//	/// <summary>
-	//	/// Calls can only be lifted when calling a lifted operator.
-	//	/// Note that the semantics of such a lifted call depend on the type of operator:
-	//	/// we follow C# semantics here.
-	//	/// </summary>
-	//	public bool IsLifted => Method is CSharp.Resolver.ILiftedOperator;
+    //{
+    //	/// <summary>
+    //	/// Calls can only be lifted when calling a lifted operator.
+    //	/// Note that the semantics of such a lifted call depend on the type of operator:
+    //	/// we follow C# semantics here.
+    //	/// </summary>
+    //	public bool IsLifted => Method is CSharp.Resolver.ILiftedOperator;
 
-	//	public StackType UnderlyingResultType {
-	//		get {
-	//			if (Method is CSharp.Resolver.ILiftedOperator liftedOp)
-	//				return liftedOp.NonLiftedReturnType.GetStackType();
-	//			else
-	//				return Method.ReturnType.GetStackType();
-	//		}
-	//	}
-	//}
+    //	public StackType UnderlyingResultType {
+    //		get {
+    //			if (Method is CSharp.Resolver.ILiftedOperator liftedOp)
+    //				return liftedOp.NonLiftedReturnType.GetStackType();
+    //			else
+    //				return Method.ReturnType.GetStackType();
+    //		}
+    //	}
+    //}
 }
