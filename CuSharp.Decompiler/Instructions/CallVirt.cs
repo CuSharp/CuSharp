@@ -18,7 +18,7 @@
 
 using System.Reflection;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>Virtual method call.</summary>
     public sealed class CallVirt : CallInstruction

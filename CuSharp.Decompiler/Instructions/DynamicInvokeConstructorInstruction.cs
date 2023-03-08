@@ -16,9 +16,10 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class DynamicInvokeConstructorInstruction : DynamicInstruction
 {
@@ -44,12 +45,12 @@ public sealed class DynamicInvokeConstructorInstruction : DynamicInstruction
     {
         var clone = (DynamicInvokeConstructorInstruction)ShallowClone();
         clone.Arguments = new InstructionCollection<ILInstruction>(clone, 0);
-        clone.Arguments.AddRange(Enumerable.Select<ILInstruction, ILInstruction>(Arguments, arg => arg.Clone()));
+        clone.Arguments.AddRange(Arguments.Select(arg => arg.Clone()));
         return clone;
     }
     protected override InstructionFlags ComputeFlags()
     {
-        return base.ComputeFlags() | InstructionFlags.MayThrow | InstructionFlags.SideEffect | Enumerable.Aggregate<ILInstruction, InstructionFlags>(Arguments, InstructionFlags.None, (f, arg) => f | arg.Flags);
+        return base.ComputeFlags() | InstructionFlags.MayThrow | InstructionFlags.SideEffect | Arguments.Aggregate(InstructionFlags.None, (f, arg) => f | arg.Flags);
     }
     public override InstructionFlags DirectFlags => base.DirectFlags | InstructionFlags.MayThrow | InstructionFlags.SideEffect;
 

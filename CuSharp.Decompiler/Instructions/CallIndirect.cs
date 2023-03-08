@@ -16,9 +16,10 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using CuSharp.Decompiler;
 using System.Reflection;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class CallIndirect : ILInstruction
     {
@@ -42,9 +43,11 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         public bool HasExplicitThis { get; }
         public TypeInfo FunctionPointerType { get; }
 
-        public ILInstruction FunctionPointer {
+        public ILInstruction FunctionPointer
+        {
             get => _functionPointer;
-            set {
+            set
+            {
                 ValidateChild(value);
                 SetChildInstruction(ref _functionPointer, value, 0);
             }
@@ -84,8 +87,8 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         protected override ILInstruction GetChild(int index)
         {
-            return index == 0 
-                ? _functionPointer 
+            return index == 0
+                ? _functionPointer
                 : Arguments[index - 1];
         }
 
@@ -99,8 +102,8 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         protected override SlotInfo GetChildSlot(int index)
         {
-            return index == 0 
-                ? FunctionPointerSlot 
+            return index == 0
+                ? FunctionPointerSlot
                 : ArgumentSlot;
         }
 

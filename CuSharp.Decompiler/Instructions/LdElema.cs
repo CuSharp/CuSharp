@@ -16,7 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>Load address of array element.</summary>
     public sealed class LdElema : ILInstruction

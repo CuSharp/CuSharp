@@ -18,7 +18,7 @@
 
 using System.Linq.Expressions;
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class DynamicCompoundAssign : CompoundAssignmentInstruction
 {
@@ -50,28 +50,28 @@ public sealed class DynamicCompoundAssign : CompoundAssignmentInstruction
     {
         if (!IsExpressionTypeSupported(op))
             throw new ArgumentOutOfRangeException(nameof(op));
-        this.Operation = op;
+        Operation = op;
     }
 
     internal static bool IsExpressionTypeSupported(ExpressionType type)
     {
-        return type 
-            is ExpressionType.AddAssign 
-            or ExpressionType.AddAssignChecked 
-            or ExpressionType.AndAssign 
-            or ExpressionType.DivideAssign 
-            or ExpressionType.ExclusiveOrAssign 
-            or ExpressionType.LeftShiftAssign 
-            or ExpressionType.ModuloAssign 
-            or ExpressionType.MultiplyAssign 
-            or ExpressionType.MultiplyAssignChecked 
-            or ExpressionType.OrAssign 
-            or ExpressionType.PostDecrementAssign 
-            or ExpressionType.PostIncrementAssign 
-            or ExpressionType.PreDecrementAssign 
-            or ExpressionType.PreIncrementAssign 
-            or ExpressionType.RightShiftAssign 
-            or ExpressionType.SubtractAssign 
+        return type
+            is ExpressionType.AddAssign
+            or ExpressionType.AddAssignChecked
+            or ExpressionType.AndAssign
+            or ExpressionType.DivideAssign
+            or ExpressionType.ExclusiveOrAssign
+            or ExpressionType.LeftShiftAssign
+            or ExpressionType.ModuloAssign
+            or ExpressionType.MultiplyAssign
+            or ExpressionType.MultiplyAssignChecked
+            or ExpressionType.OrAssign
+            or ExpressionType.PostDecrementAssign
+            or ExpressionType.PostIncrementAssign
+            or ExpressionType.PreDecrementAssign
+            or ExpressionType.PreIncrementAssign
+            or ExpressionType.RightShiftAssign
+            or ExpressionType.SubtractAssign
             or ExpressionType.SubtractAssignChecked;
     }
 

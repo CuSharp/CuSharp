@@ -17,7 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 #nullable enable
 
-namespace Dotnet4Gpu.Decompilation
+using CuSharp.Decompiler;
+
+namespace CuSharp.Decompiler
 {
     /// <summary>
     /// Represents some well-known types.

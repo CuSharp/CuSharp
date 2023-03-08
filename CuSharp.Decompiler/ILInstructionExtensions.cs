@@ -1,9 +1,10 @@
 ﻿#nullable enable
 
-using Dotnet4Gpu.Decompilation.Instructions;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Instructions;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation
+namespace CuSharp.Decompiler
 {
     internal static class ILInstructionExtensions
     {

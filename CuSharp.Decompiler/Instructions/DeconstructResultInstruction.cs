@@ -17,9 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Diagnostics;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class DeconstructResultInstruction : UnaryInstruction
     {
@@ -65,7 +66,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             var matchInst = FindMatch();
             DebugAssert(matchInst != null && (matchInst.IsDeconstructCall || matchInst.IsDeconstructTuple));
             DebugAssert(Argument.MatchLdLoc(matchInst.Variable));
-            var outParamType = matchInst.GetDeconstructResultType(this.Index);
+            var outParamType = matchInst.GetDeconstructResultType(Index);
             DebugAssert(outParamType.GetStackType() == ResultType);
         }
     }

@@ -17,71 +17,73 @@
 // DEALINGS IN THE SOFTWARE.
 #nullable enable
 
-namespace Dotnet4Gpu.Decompilation.Util
+using CuSharp.Decompiler.Util;
+
+namespace CuSharp.Decompiler.Util
 {
-	/// <summary>
-	/// Union-Find data structure.
-	/// </summary>
-	public class UnionFind<T> where T : notnull
-	{
+    /// <summary>
+    /// Union-Find data structure.
+    /// </summary>
+    public class UnionFind<T> where T : notnull
+    {
         private readonly Dictionary<T, Node> _mapping;
 
-		class Node
-		{
-			public int Rank;
-			public Node Parent;
-			public readonly T Value;
+        class Node
+        {
+            public int Rank;
+            public Node Parent;
+            public readonly T Value;
 
-			internal Node(T value)
-			{
-				Value = value;
-				Parent = this;
-			}
-		}
+            internal Node(T value)
+            {
+                Value = value;
+                Parent = this;
+            }
+        }
 
-		public UnionFind()
-		{
-			_mapping = new Dictionary<T, Node>();
-		}
+        public UnionFind()
+        {
+            _mapping = new Dictionary<T, Node>();
+        }
 
-		Node GetNode(T element)
-		{
-			if (!_mapping.TryGetValue(element, out Node? node))
-			{
-				node = new Node(element);
-				node.Parent = node;
-				_mapping.Add(element, node);
-			}
-			return node;
-		}
+        Node GetNode(T element)
+        {
+            if (!_mapping.TryGetValue(element, out Node? node))
+            {
+                node = new Node(element);
+                node.Parent = node;
+                _mapping.Add(element, node);
+            }
+            return node;
+        }
 
-		public T Find(T element)
-		{
-			return FindRoot(GetNode(element)).Value;
-		}
+        public T Find(T element)
+        {
+            return FindRoot(GetNode(element)).Value;
+        }
 
-		Node FindRoot(Node node)
-		{
-			if (node.Parent != node)
-				node.Parent = FindRoot(node.Parent);
-			return node.Parent;
-		}
+        Node FindRoot(Node node)
+        {
+            if (node.Parent != node)
+                node.Parent = FindRoot(node.Parent);
+            return node.Parent;
+        }
 
-		public void Merge(T a, T b)
-		{
-			var rootA = FindRoot(GetNode(a));
-			var rootB = FindRoot(GetNode(b));
-			if (rootA == rootB)
-				return;
-			if (rootA.Rank < rootB.Rank)
-				rootA.Parent = rootB;
-			else if (rootA.Rank > rootB.Rank)
-				rootB.Parent = rootA;
-			else
-			{
-				rootB.Parent = rootA;
-				rootA.Rank++;
-			}
-		}
-	}
+        public void Merge(T a, T b)
+        {
+            var rootA = FindRoot(GetNode(a));
+            var rootB = FindRoot(GetNode(b));
+            if (rootA == rootB)
+                return;
+            if (rootA.Rank < rootB.Rank)
+                rootA.Parent = rootB;
+            else if (rootA.Rank > rootB.Rank)
+                rootB.Parent = rootA;
+            else
+            {
+                rootB.Parent = rootA;
+                rootA.Rank++;
+            }
+        }
+    }
 }

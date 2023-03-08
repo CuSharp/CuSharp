@@ -18,9 +18,10 @@
 
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>
     /// A container of IL blocks.
@@ -56,9 +57,11 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         /// <summary>
         /// Gets the number of 'leave' instructions that target this BlockContainer.
         /// </summary>
-        public int LeaveCount {
+        public int LeaveCount
+        {
             get => _leaveCount;
-            internal set {
+            internal set
+            {
                 _leaveCount = value;
                 InvalidateFlags();
             }
@@ -69,14 +72,17 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         /// <summary>
         /// Gets the container's entry point. This is the first block in the Blocks collection.
         /// </summary>
-        public Block EntryPoint {
-            get {
+        public Block EntryPoint
+        {
+            get
+            {
                 // HACK: While it's possible to have BlockContainers without entry point,
                 // normally every container must have an entry point according to its invariant.
                 // Thus it's easier on the transforms if this property returns a non-nullable EntryPoint.
                 return _entryPoint!;
             }
-            private set {
+            private set
+            {
                 if (_entryPoint != null && IsConnected)
                     _entryPoint.IncomingEdgeCount--;
                 _entryPoint = value;
@@ -96,7 +102,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         {
             BlockContainer clone = new BlockContainer();
             clone.AddILRange(this);
-            clone.Blocks.AddRange(Enumerable.Select<Block, Block>(this.Blocks, block => (Block)block.Clone()));
+            clone.Blocks.AddRange(Blocks.Select(block => (Block)block.Clone()));
             // Adjust branch instructions to point to the new container
             foreach (var branch in clone.Descendants.OfType<Branch>())
             {
@@ -158,8 +164,8 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             Debug.Assert(Blocks.Count > 0 && EntryPoint == Blocks[0]);
             Debug.Assert(!IsConnected || EntryPoint.IncomingEdgeCount >= 1);
             Debug.Assert(Parent is ILFunction || !ILRangeIsEmpty);
-            Debug.Assert(Enumerable.All<Block>(Blocks, b => b.HasFlag(InstructionFlags.EndPointUnreachable)));
-            Debug.Assert(Enumerable.All<Block>(Blocks, b => b.Kind == BlockKind.ControlFlow)); // this also implies that the blocks don't use FinalInstruction
+            Debug.Assert(Blocks.All(b => b.HasFlag(InstructionFlags.EndPointUnreachable)));
+            Debug.Assert(Blocks.All(b => b.Kind == BlockKind.ControlFlow)); // this also implies that the blocks don't use FinalInstruction
             Debug.Assert(TopologicalSort(deleteUnreachableBlocks: true).Count == Blocks.Count, "Container should not have any unreachable blocks");
             Block? bodyStartBlock;
             switch (Kind)
@@ -217,7 +223,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         {
             // Inlining into the entry-point is allowed as long as we're not moving code into a loop.
             // This is used to inline into the switch expression.
-            return childIndex == 0 && this.EntryPoint.IncomingEdgeCount == 1;
+            return childIndex == 0 && EntryPoint.IncomingEdgeCount == 1;
         }
 
         /// <summary>

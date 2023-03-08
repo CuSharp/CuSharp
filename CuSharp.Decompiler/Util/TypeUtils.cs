@@ -16,7 +16,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation.Util
+using CuSharp.Decompiler;
+
+namespace CuSharp.Decompiler.Util
 {
     public static class TypeUtils
     {

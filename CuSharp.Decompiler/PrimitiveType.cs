@@ -17,9 +17,10 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using CuSharp.Decompiler;
 using System.Reflection.Metadata;
 
-namespace Dotnet4Gpu.Decompilation
+namespace CuSharp.Decompiler
 {
     public enum PrimitiveType : byte
     {

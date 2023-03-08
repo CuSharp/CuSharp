@@ -16,7 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class TryFault : TryInstruction
 {
@@ -37,9 +37,11 @@ public sealed class TryFault : TryInstruction
     }
 
     private ILInstruction _faultBlock = null!;
-    public ILInstruction FaultBlock {
+    public ILInstruction FaultBlock
+    {
         get => _faultBlock;
-        set {
+        set
+        {
             ValidateChild(value);
             SetChildInstruction(ref _faultBlock, value, 1);
         }
@@ -55,7 +57,7 @@ public sealed class TryFault : TryInstruction
     protected override InstructionFlags ComputeFlags()
     {
         // The endpoint of the try-fault is unreachable iff the try endpoint is unreachable
-        return TryBlock.Flags | (_faultBlock.Flags & ~InstructionFlags.EndPointUnreachable) | InstructionFlags.ControlFlow;
+        return TryBlock.Flags | _faultBlock.Flags & ~InstructionFlags.EndPointUnreachable | InstructionFlags.ControlFlow;
     }
 
     public override InstructionFlags DirectFlags => InstructionFlags.ControlFlow;

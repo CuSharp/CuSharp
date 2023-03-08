@@ -17,9 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Diagnostics;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class Comp : BinaryInstruction
     {
@@ -34,9 +35,11 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         private ComparisonKind _kind;
 
-        public ComparisonKind Kind {
+        public ComparisonKind Kind
+        {
             get => _kind;
-            set {
+            set
+            {
                 _kind = value;
                 MakeDirty();
             }
@@ -91,7 +94,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         public static Comp LogicNot(ILInstruction arg)
         {
-            return new Comp(ComparisonKind.Equality, Util.Sign.None, arg, new LdcI4(0));
+            return new Comp(ComparisonKind.Equality, Sign.None, arg, new LdcI4(0));
         }
     }
 }

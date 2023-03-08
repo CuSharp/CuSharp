@@ -17,31 +17,33 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation.Util
+using CuSharp.Decompiler.Util;
+
+namespace CuSharp.Decompiler.Util
 {
-	/// <summary>
-	/// A dictionary that allows multiple pairs with the same key.
-	/// </summary>
-	public class MultiDictionary<TKey, TValue> : ILookup<TKey, TValue> where TKey : notnull
-	{
-		private readonly Dictionary<TKey, List<TValue>> _dict;
+    /// <summary>
+    /// A dictionary that allows multiple pairs with the same key.
+    /// </summary>
+    public class MultiDictionary<TKey, TValue> : ILookup<TKey, TValue> where TKey : notnull
+    {
+        private readonly Dictionary<TKey, List<TValue>> _dict;
 
-		public MultiDictionary()
-		{
-			_dict = new Dictionary<TKey, List<TValue>>();
-		}
+        public MultiDictionary()
+        {
+            _dict = new Dictionary<TKey, List<TValue>>();
+        }
 
-		public void Add(TKey key, TValue value)
-		{
-			if (!_dict.TryGetValue(key, out List<TValue>? valueList))
-			{
-				valueList = new List<TValue>();
-				_dict.Add(key, valueList);
-			}
-			valueList.Add(value);
-		}
+        public void Add(TKey key, TValue value)
+        {
+            if (!_dict.TryGetValue(key, out List<TValue>? valueList))
+            {
+                valueList = new List<TValue>();
+                _dict.Add(key, valueList);
+            }
+            valueList.Add(value);
+        }
 
-		public IReadOnlyList<TValue> this[TKey key] => _dict.TryGetValue(key, out var list) ? list : EmptyList<TValue>.Instance;
+        public IReadOnlyList<TValue> this[TKey key] => _dict.TryGetValue(key, out var list) ? list : EmptyList<TValue>.Instance;
 
         /// <summary>
 		/// Returns the number of different keys.
@@ -51,41 +53,41 @@ namespace Dotnet4Gpu.Decompilation.Util
         IEnumerable<TValue> ILookup<TKey, TValue>.this[TKey key] => this[key];
 
         public bool Contains(TKey key)
-		{
-			return _dict.ContainsKey(key);
-		}
+        {
+            return _dict.ContainsKey(key);
+        }
 
-		public IEnumerator<IGrouping<TKey, TValue>> GetEnumerator()
-		{
-			foreach (var pair in _dict) yield return new Grouping(pair.Key, pair.Value);
-		}
+        public IEnumerator<IGrouping<TKey, TValue>> GetEnumerator()
+        {
+            foreach (var pair in _dict) yield return new Grouping(pair.Key, pair.Value);
+        }
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-		sealed class Grouping : IGrouping<TKey, TValue>
-		{
+        sealed class Grouping : IGrouping<TKey, TValue>
+        {
             private readonly List<TValue> _values;
 
             public TKey Key { get; }
-			
+
             public Grouping(TKey key, List<TValue> values)
-			{
-				Key = key;
-				_values = values;
-			}
+            {
+                Key = key;
+                _values = values;
+            }
 
             public IEnumerator<TValue> GetEnumerator()
-			{
-				return _values.GetEnumerator();
-			}
+            {
+                return _values.GetEnumerator();
+            }
 
-			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-			{
-				return _values.GetEnumerator();
-			}
-		}
-	}
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+            {
+                return _values.GetEnumerator();
+            }
+        }
+    }
 }

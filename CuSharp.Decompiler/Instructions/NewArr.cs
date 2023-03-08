@@ -16,7 +16,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+using CuSharp.Decompiler;
+
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>Creates an array instance.</summary>
     public sealed class NewArr : ILInstruction

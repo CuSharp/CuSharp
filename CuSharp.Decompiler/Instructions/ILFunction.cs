@@ -18,9 +18,10 @@
 
 using System.Diagnostics;
 using System.Reflection;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class ILFunction : ILInstruction
     {
@@ -61,7 +62,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             var clone = (ILFunction)ShallowClone();
             clone.Body = _body.Clone();
             clone.LocalFunctions = new InstructionCollection<ILFunction>(clone, 1);
-            clone.LocalFunctions.AddRange(Enumerable.Select<ILFunction, ILFunction>(LocalFunctions, arg => (ILFunction)arg.Clone()));
+            clone.LocalFunctions.AddRange(LocalFunctions.Select(arg => (ILFunction)arg.Clone()));
             clone.CloneVariables();
             return clone;
         }
@@ -179,7 +180,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
                     //Debug.Assert(DelegateType?.FullName == "System.Linq.Expressions.Expression" && DelegateType.TypeParameterCount == 1);
                     break;
                 case ILFunctionKind.LocalFunction:
-                    Debug.Assert(Parent is ILFunction && SlotInfo == ILFunction.LocalFunctionsSlot);
+                    Debug.Assert(Parent is ILFunction && SlotInfo == LocalFunctionsSlot);
                     Debug.Assert(DeclarationScope != null);
                     Debug.Assert(DelegateType == null);
                     Debug.Assert(Method != null);

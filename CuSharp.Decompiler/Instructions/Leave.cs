@@ -18,7 +18,7 @@
 
 using System.Diagnostics;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>
     /// Unconditional branch. <c>goto target;</c>
@@ -93,9 +93,11 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         public override InstructionFlags DirectFlags => InstructionFlags.MayBranch | InstructionFlags.EndPointUnreachable;
 
-        public BlockContainer TargetContainer {
+        public BlockContainer TargetContainer
+        {
             get => _targetContainer!;
-            set {
+            set
+            {
                 if (_targetContainer != null && IsConnected)
                     _targetContainer.LeaveCount--;
                 _targetContainer = value;

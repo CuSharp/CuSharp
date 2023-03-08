@@ -16,10 +16,11 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using CuSharp.Decompiler;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>
     /// A block consists of a list of IL instructions.
@@ -74,9 +75,11 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         /// Note that the FinalInstruction is included in Block.Children,
         /// but not in Block.Instructions!
         /// </remarks>
-        public ILInstruction FinalInstruction {
+        public ILInstruction FinalInstruction
+        {
             get => _finalInstruction;
-            set {
+            set
+            {
                 ValidateChild(value);
                 SetChildInstruction(ref _finalInstruction, value, Instructions.Count);
             }
@@ -162,13 +165,13 @@ namespace Dotnet4Gpu.Decompilation.Instructions
                     Debug.Assert(init2 is NewObj
                                  || init2 is DefaultValue
                                  //|| (init2 is CallInstruction c && c.Method.FullNameIs("System.Activator", "CreateInstance") && c.Method.TypeArguments.Count == 1)
-                                 || (init2 is Block named && named.Kind == BlockKind.CallWithNamedArgs));
+                                 || init2 is Block named && named.Kind == BlockKind.CallWithNamedArgs);
                     break;
                 case BlockKind.DeconstructionConversions:
-                    Debug.Assert(this.SlotInfo == DeconstructInstruction.ConversionsSlot);
+                    Debug.Assert(SlotInfo == DeconstructInstruction.ConversionsSlot);
                     break;
                 case BlockKind.DeconstructionAssignments:
-                    Debug.Assert(this.SlotInfo == DeconstructInstruction.AssignmentsSlot);
+                    Debug.Assert(SlotInfo == DeconstructInstruction.AssignmentsSlot);
                     break;
                 case BlockKind.InterpolatedString:
                     Debug.Assert(FinalInstruction is Call { Method: { Name: "ToStringAndClear" }, Arguments: { Count: 1 } });
@@ -196,8 +199,8 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         protected override ILInstruction GetChild(int index)
         {
-            return index == Instructions.Count 
-                ? _finalInstruction 
+            return index == Instructions.Count
+                ? _finalInstruction
                 : Instructions[index];
         }
 
@@ -211,8 +214,8 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         protected override SlotInfo GetChildSlot(int index)
         {
-            return index == Instructions.Count 
-                ? FinalInstructionSlot 
+            return index == Instructions.Count
+                ? FinalInstructionSlot
                 : InstructionSlot;
         }
 
@@ -233,18 +236,18 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         {
             call = null;
             value = null;
-            if (this.Kind != BlockKind.CallInlineAssign)
+            if (Kind != BlockKind.CallInlineAssign)
                 return false;
-            if (this.Instructions.Count != 1)
+            if (Instructions.Count != 1)
                 return false;
-            call = this.Instructions[0] as CallInstruction;
+            call = Instructions[0] as CallInstruction;
             if (call == null || call.Arguments.Count == 0)
                 return false;
             if (!call.Arguments.Last().MatchStLoc(out var tmp, out value))
                 return false;
             if (!(tmp.IsSingleDefinition && tmp.LoadCount == 1))
                 return false;
-            return this.FinalInstruction.MatchLdLoc(tmp);
+            return FinalInstruction.MatchLdLoc(tmp);
         }
     }
 }

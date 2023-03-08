@@ -17,9 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Diagnostics;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>
     /// Generalization of IL switch-case: like a VB switch over integers, this instruction
@@ -60,11 +60,13 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         public override StackType ResultType => StackType.Void;
 
-        public ILInstruction Value {
+        public ILInstruction Value
+        {
             get => _value;
-            set {
+            set
+            {
                 ValidateChild(value);
-                SetChildInstruction(ref this._value, value, 0);
+                SetChildInstruction(ref _value, value, 0);
             }
         }
 
@@ -89,8 +91,8 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         protected override ILInstruction GetChild(int index)
         {
-            return index == 0 
-                ? _value 
+            return index == 0
+                ? _value
                 : Sections[index - 1];
         }
 
@@ -112,7 +114,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             var clone = new SwitchInstruction(_value.Clone());
             clone.AddILRange(this);
             clone.Value = _value.Clone();
-            clone.Sections.AddRange(Enumerable.Select<SwitchSection, SwitchSection>(this.Sections, h => (SwitchSection)h.Clone()));
+            clone.Sections.AddRange(Sections.Select(h => (SwitchSection)h.Clone()));
             return clone;
         }
 
@@ -135,7 +137,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             }
             Debug.Assert(sets.SetEquals(LongSet.Universe), "switch does not handle all possible cases");
             Debug.Assert(!expectNullSection, "Lifted switch is missing 'case null'");
-            Debug.Assert(IsLifted ? (_value.ResultType == StackType.O) : (_value.ResultType == StackType.I4 || _value.ResultType == StackType.I8));
+            Debug.Assert(IsLifted ? _value.ResultType == StackType.O : _value.ResultType == StackType.I4 || _value.ResultType == StackType.I8);
         }
     }
 }

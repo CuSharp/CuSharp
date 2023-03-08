@@ -16,24 +16,28 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+using CuSharp.Decompiler;
+
+namespace CuSharp.Decompiler.Instructions
 {
     public abstract class TryInstruction : ILInstruction
-	{
-		public static readonly SlotInfo TryBlockSlot = new("TryBlock");
+    {
+        public static readonly SlotInfo TryBlockSlot = new("TryBlock");
 
-		protected TryInstruction(OpCode opCode, ILInstruction tryBlock) : base(opCode)
-		{
-			this.TryBlock = tryBlock;
-		}
+        protected TryInstruction(OpCode opCode, ILInstruction tryBlock) : base(opCode)
+        {
+            TryBlock = tryBlock;
+        }
 
         private ILInstruction _tryBlock = null!;
-		public ILInstruction TryBlock {
-			get => _tryBlock;
-            set {
-				ValidateChild(value);
-				SetChildInstruction(ref this._tryBlock, value, 0);
-			}
-		}
-	}
+        public ILInstruction TryBlock
+        {
+            get => _tryBlock;
+            set
+            {
+                ValidateChild(value);
+                SetChildInstruction(ref _tryBlock, value, 0);
+            }
+        }
+    }
 }

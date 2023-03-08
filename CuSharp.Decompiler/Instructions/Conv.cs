@@ -17,9 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Diagnostics;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class Conv : UnaryInstruction
     {
@@ -96,13 +97,13 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         public Conv(ILInstruction argument, StackType inputType, Sign inputSign, PrimitiveType targetType, bool checkForOverflow, bool isLifted = false)
             : base(OpCode.Conv, argument)
         {
-            bool needsSign = checkForOverflow || (!inputType.IsFloatType() && targetType.IsFloatType());
+            bool needsSign = checkForOverflow || !inputType.IsFloatType() && targetType.IsFloatType();
             Debug.Assert(!(needsSign && inputSign == Sign.None));
             InputSign = needsSign ? inputSign : Sign.None;
             InputType = inputType;
             TargetType = targetType;
             CheckForOverflow = checkForOverflow;
-            Kind = GetConversionKind(targetType, this.InputType, this.InputSign);
+            Kind = GetConversionKind(targetType, InputType, InputSign);
             // Debug.Assert(Kind != ConversionKind.Invalid); // invalid conversion can happen with invalid IL/missing references
             IsLifted = isLifted;
         }
@@ -244,7 +245,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
             }
         }
 
-        public override StackType ResultType => IsLifted ? StackType.O : ILTypeExtensions.GetStackType(TargetType);
+        public override StackType ResultType => IsLifted ? StackType.O : TargetType.GetStackType();
 
         protected override InstructionFlags ComputeFlags()
         {
@@ -256,7 +257,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
 
         public override ILInstruction UnwrapConv(ConversionKind kind)
         {
-            if (this.Kind == kind && !IsLifted)
+            if (Kind == kind && !IsLifted)
                 return Argument.UnwrapConv(kind);
             else
                 return this;

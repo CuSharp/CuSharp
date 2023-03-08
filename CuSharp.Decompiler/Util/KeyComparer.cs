@@ -17,47 +17,49 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation.Util
+using CuSharp.Decompiler.Util;
+
+namespace CuSharp.Decompiler.Util
 {
-	public static class KeyComparer
-	{
-		public static KeyComparer<TElement, TKey> Create<TElement, TKey>(Func<TElement, TKey> keySelector)
-		{
-			return new KeyComparer<TElement, TKey>(keySelector, Comparer<TKey>.Default, EqualityComparer<TKey>.Default);
-		}
+    public static class KeyComparer
+    {
+        public static KeyComparer<TElement, TKey> Create<TElement, TKey>(Func<TElement, TKey> keySelector)
+        {
+            return new KeyComparer<TElement, TKey>(keySelector, Comparer<TKey>.Default, EqualityComparer<TKey>.Default);
+        }
 
-		public static void SortBy<TElement, TKey>(this List<TElement> list, Func<TElement, TKey> keySelector)
-		{
-			list.Sort(Create(keySelector));
-		}
-	}
+        public static void SortBy<TElement, TKey>(this List<TElement> list, Func<TElement, TKey> keySelector)
+        {
+            list.Sort(Create(keySelector));
+        }
+    }
 
-	public class KeyComparer<TElement, TKey> : IComparer<TElement>, IEqualityComparer<TElement>
-	{
-		private readonly Func<TElement, TKey> _keySelector;
+    public class KeyComparer<TElement, TKey> : IComparer<TElement>, IEqualityComparer<TElement>
+    {
+        private readonly Func<TElement, TKey> _keySelector;
         private readonly IComparer<TKey> _keyComparer;
         private readonly IEqualityComparer<TKey> _keyEqualityComparer;
 
-		public KeyComparer(Func<TElement, TKey> keySelector, IComparer<TKey> keyComparer, IEqualityComparer<TKey> keyEqualityComparer)
-		{
+        public KeyComparer(Func<TElement, TKey> keySelector, IComparer<TKey> keyComparer, IEqualityComparer<TKey> keyEqualityComparer)
+        {
             _keySelector = keySelector ?? throw new ArgumentNullException(nameof(keySelector));
-			_keyComparer = keyComparer ?? throw new ArgumentNullException(nameof(keyComparer));
-			_keyEqualityComparer = keyEqualityComparer ?? throw new ArgumentNullException(nameof(keyEqualityComparer));
-		}
+            _keyComparer = keyComparer ?? throw new ArgumentNullException(nameof(keyComparer));
+            _keyEqualityComparer = keyEqualityComparer ?? throw new ArgumentNullException(nameof(keyEqualityComparer));
+        }
 
-		public int Compare(TElement? x, TElement? y)
-		{
-			return _keyComparer.Compare(_keySelector(x!), _keySelector(y!));
-		}
+        public int Compare(TElement? x, TElement? y)
+        {
+            return _keyComparer.Compare(_keySelector(x!), _keySelector(y!));
+        }
 
-		public bool Equals(TElement? x, TElement? y)
-		{
-			return _keyEqualityComparer.Equals(_keySelector(x!), _keySelector(y!));
-		}
+        public bool Equals(TElement? x, TElement? y)
+        {
+            return _keyEqualityComparer.Equals(_keySelector(x!), _keySelector(y!));
+        }
 
-		public int GetHashCode(TElement obj)
-		{
-			return _keyEqualityComparer.GetHashCode(_keySelector(obj));
-		}
-	}
+        public int GetHashCode(TElement obj)
+        {
+            return _keyEqualityComparer.GetHashCode(_keySelector(obj));
+        }
+    }
 }

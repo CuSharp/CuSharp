@@ -18,7 +18,7 @@
 
 using System.Diagnostics;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class NullableUnwrap : UnaryInstruction
     {
@@ -62,7 +62,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         internal override void CheckInvariant(ILPhase phase)
         {
             base.CheckInvariant(phase);
-            if (this.RefInput)
+            if (RefInput)
             {
                 Debug.Assert(Argument.ResultType == StackType.Ref, "nullable.unwrap expects reference to nullable type as input");
             }

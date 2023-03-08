@@ -16,7 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class TryFinally : TryInstruction
 {
@@ -37,9 +37,11 @@ public sealed class TryFinally : TryInstruction
     }
 
     private ILInstruction _finallyBlock = null!;
-    public ILInstruction FinallyBlock {
+    public ILInstruction FinallyBlock
+    {
         get => _finallyBlock;
-        set {
+        set
+        {
             ValidateChild(value);
             SetChildInstruction(ref _finallyBlock, value, 1);
         }

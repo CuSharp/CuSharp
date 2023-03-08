@@ -18,9 +18,9 @@
 
 using System.Diagnostics;
 using System.Reflection;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class LdFlda : ILInstruction
     {
@@ -67,7 +67,7 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         /// <summary>Returns the field operand.</summary>
         public FieldInfo Field => _field;
 
-        public override StackType ResultType => TypeUtils.IsIntegerType(_target.ResultType) ? StackType.I : StackType.Ref;
+        public override StackType ResultType => _target.ResultType.IsIntegerType() ? StackType.I : StackType.Ref;
 
         protected override InstructionFlags ComputeFlags()
         {

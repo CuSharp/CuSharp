@@ -16,9 +16,10 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using CuSharp.Decompiler;
 using System.Diagnostics;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     // Note: The comp instruction also supports three-valued logic via ComparisonLiftingKind.ThreeValuedLogic.
     // comp.i4.lifted[3VL](x == ldc.i4 0) is used to represent a lifted logic.not.

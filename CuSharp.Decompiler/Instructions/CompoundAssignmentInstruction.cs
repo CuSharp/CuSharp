@@ -18,7 +18,7 @@
 
 using System.Diagnostics;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public abstract class CompoundAssignmentInstruction : ILInstruction
     {

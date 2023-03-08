@@ -17,9 +17,9 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Diagnostics;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     public sealed class BinaryNumericInstruction : BinaryInstruction
     {
@@ -131,14 +131,16 @@ namespace Dotnet4Gpu.Decompilation.Instructions
         protected override InstructionFlags ComputeFlags()
         {
             var flags = base.ComputeFlags();
-            if (CheckForOverflow || (Operator == BinaryNumericOperator.Div || Operator == BinaryNumericOperator.Rem))
+            if (CheckForOverflow || Operator == BinaryNumericOperator.Div || Operator == BinaryNumericOperator.Rem)
                 flags |= InstructionFlags.MayThrow;
             return flags;
         }
 
-        public override InstructionFlags DirectFlags {
-            get {
-                if (CheckForOverflow || (Operator == BinaryNumericOperator.Div || Operator == BinaryNumericOperator.Rem))
+        public override InstructionFlags DirectFlags
+        {
+            get
+            {
+                if (CheckForOverflow || Operator == BinaryNumericOperator.Div || Operator == BinaryNumericOperator.Rem)
                     return base.DirectFlags | InstructionFlags.MayThrow;
                 return base.DirectFlags;
             }

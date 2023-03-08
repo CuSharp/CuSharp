@@ -1,17 +1,19 @@
 ﻿#nullable enable
-namespace Dotnet4Gpu.Decompilation.Util
-{
-	static class CollectionExtensions
-	{
-        public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> input)
-		{
-			foreach (T item in input) collection.Add(item);
-		}
+using CuSharp.Decompiler.Util;
 
-		/// <summary>
-		/// The merge step of merge sort.
-		/// </summary>
-		public static IEnumerable<T> Merge<T>(this IEnumerable<T> input1, IEnumerable<T> input2, Comparison<T> comparison)
+namespace CuSharp.Decompiler.Util
+{
+    static class CollectionExtensions
+    {
+        public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> input)
+        {
+            foreach (T item in input) collection.Add(item);
+        }
+
+        /// <summary>
+        /// The merge step of merge sort.
+        /// </summary>
+        public static IEnumerable<T> Merge<T>(this IEnumerable<T> input1, IEnumerable<T> input2, Comparison<T> comparison)
         {
             using var enumA = input1.GetEnumerator();
             using var enumB = input2.GetEnumerator();

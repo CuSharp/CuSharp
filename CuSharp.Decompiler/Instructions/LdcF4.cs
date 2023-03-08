@@ -16,7 +16,9 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+using CuSharp.Decompiler;
+
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>Loads a constant 32-bit floating-point number.</summary>
     public sealed class LdcF4 : SimpleInstruction

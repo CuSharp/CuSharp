@@ -18,7 +18,7 @@
 
 using System.Reflection;
 
-namespace Dotnet4Gpu.Decompilation.Instructions
+namespace CuSharp.Decompiler.Instructions
 {
     /// <summary>Load static field address</summary>
     public sealed class LdsFlda : SimpleInstruction

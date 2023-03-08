@@ -17,9 +17,10 @@
 // DEALINGS IN THE SOFTWARE.
 
 using System.Diagnostics;
-using Dotnet4Gpu.Decompilation.Util;
+using CuSharp.Decompiler;
+using CuSharp.Decompiler.Util;
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class StObj : ILInstruction, ISupportsVolatilePrefix, ISupportsUnalignedPrefix
 {
@@ -112,7 +113,7 @@ public sealed class StObj : ILInstruction, ISupportsVolatilePrefix, ISupportsUna
     public bool IsVolatile { get; set; }
     /// <summary>Returns the alignment specified by the 'unaligned' prefix; or 0 if there was no 'unaligned' prefix.</summary>
     public byte UnalignedPrefix { get; set; }
-    public override StackType ResultType => UnalignedPrefix == 0 ? TypeUtils.GetStackType(_type) : StackType.Void;
+    public override StackType ResultType => UnalignedPrefix == 0 ? _type.GetStackType() : StackType.Void;
 
     protected override InstructionFlags ComputeFlags()
     {
@@ -133,7 +134,7 @@ public sealed class StObj : ILInstruction, ISupportsVolatilePrefix, ISupportsUna
     {
         base.CheckInvariant(phase);
         DebugAssert(_target.ResultType == StackType.Ref || _target.ResultType == StackType.I);
-        DebugAssert(_value.ResultType == TypeUtils.GetStackType(_type));
+        DebugAssert(_value.ResultType == _type.GetStackType());
         CheckTargetSlot();
     }
 

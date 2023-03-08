@@ -16,7 +16,7 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
-namespace Dotnet4Gpu.Decompilation.Instructions;
+namespace CuSharp.Decompiler.Instructions;
 
 public sealed class TryCatch : TryInstruction
 {
@@ -64,8 +64,8 @@ public sealed class TryCatch : TryInstruction
 
     protected override ILInstruction GetChild(int index)
     {
-        return index == 0 
-            ? TryBlock 
+        return index == 0
+            ? TryBlock
             : Handlers[index - 1];
     }
 
@@ -79,8 +79,8 @@ public sealed class TryCatch : TryInstruction
 
     protected override SlotInfo GetChildSlot(int index)
     {
-        return index == 0 
-            ? TryBlockSlot 
+        return index == 0
+            ? TryBlockSlot
             : HandlerSlot;
     }
 }
