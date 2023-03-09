@@ -21,7 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LibNVVMBinder\LibNVVMBinder.csproj" />
+      <ProjectReference Include="..\CuSharp.NVVMBinder\CuSharp.NVVMBinder.csproj" />
+      <ProjectReference Include="..\CuSharp\CuSharp.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,6 +32,10 @@
       <None Update="resources\kernel.ptx">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="CuSharp.CudaCompiler" />
     </ItemGroup>
 
 </Project>
