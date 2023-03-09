@@ -23,7 +23,6 @@ using System.Reflection.Metadata;
 using CuSharp.Decompiler;
 using CuSharp.Decompiler.Instructions;
 using CuSharp.Decompiler.Util;
-using Dotnet4Gpu.Decompilation;
 
 // TODO: proper nullable handling
 

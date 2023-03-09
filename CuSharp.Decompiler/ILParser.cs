@@ -16,11 +16,15 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 // DEALINGS IN THE SOFTWARE.
 
+using System;
+using System.IO;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
+using CuSharp.Decompiler;
 using CuSharp.Decompiler.Util;
 
 namespace CuSharp.Decompiler;
+
 public static class ILParser
 {
     public static ILOpCode DecodeOpCode(this BinaryReader reader)
