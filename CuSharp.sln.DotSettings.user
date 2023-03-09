@@ -1,15 +1,13 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=bd66c194_002D151c_002D414c_002Db67e_002D2015065bc936/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="TestBlockDimensionsOverwrite" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
-  &lt;TestAncestor&gt;&#xD;
-    &lt;TestId&gt;xUnit::7B4757EC-7C25-41A2-B281-4999FB2D6361::net6.0::CuSharp.Tests.KernelToolsTests.TestBlockDimensionsOverwrite&lt;/TestId&gt;&#xD;
-    &lt;TestId&gt;xUnit::7B4757EC-7C25-41A2-B281-4999FB2D6361::net6.0::CuSharp.Tests.KernelToolsTests.TestSyncThreadsOverwriteDoesNotThrow&lt;/TestId&gt;&#xD;
-  &lt;/TestAncestor&gt;&#xD;
+  &lt;Project Location="D:\Dokumente\Studium\6. Semester\BA\CuSharp\CuSharp.Tests" Presentation="&amp;lt;CuSharp.Tests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
 	
 	
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=d3a72e82_002D0b74_002D4a94_002D9bb9_002D8162af76ba77/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="LibNVVMBinderTests #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;Project Location="D:\Dokumente\Studium\6. Semester\BA\CuSharp\CuSharp.Tests" Presentation="&amp;lt;CuSharp.Tests&amp;gt;" /&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
+	
 	
 	
 	
