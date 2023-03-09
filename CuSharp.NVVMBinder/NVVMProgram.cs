@@ -46,12 +46,12 @@ namespace LibNVVMBinder
             return NVVMNativeBindings.nvvmLazyAddModuleToProgram(program, buffer, new UIntPtr((uint) buffer.Length), name);
         }
 
-        public NVVMResult CreateProgram()
+        private NVVMResult CreateProgram()
         {
             return NVVMNativeBindings.nvvmCreateProgram(out program);
         }
 
-        public NVVMResult DestroyProgram()
+        private NVVMResult DestroyProgram()
         {
             return NVVMNativeBindings.nvvmDestroyProgram(program);
         }

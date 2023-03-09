@@ -12,14 +12,15 @@ namespace CuSharp
 
         public void ScanAll()
         {
-            var markedMethods = Assembly.GetExecutingAssembly()
+            var markedMethods = Assembly.GetCallingAssembly()
                 .GetTypes()
                 .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
                 .Where(m => Attribute.IsDefined(m, typeof(KernelAttribute)));
-            
+
             foreach (var m in markedMethods)
             {
-                MarkedMethods[m.Name] = m;
+                var key = $"{m.DeclaringType.Namespace}.{m.DeclaringType.Name}.{m.Name}";
+                MarkedMethods[key] = m;
             }
         }
 
@@ -31,6 +32,11 @@ namespace CuSharp
         public MethodInfo GetMethod(string name)
         {
             return MarkedMethods[name];
+        }
+
+        public IEnumerable<MethodInfo> GetAllMethods()
+        {
+            return MarkedMethods.Values;
         }
     }
 }

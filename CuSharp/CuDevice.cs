@@ -1,27 +1,23 @@
-﻿using System.Reflection;
+﻿using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using CuSharp.CudaCompiler;
 using ManagedCuda;
 
 namespace CuSharp
 {
-    public class DeviceContext
+    public class CuDevice
     {
-        private CudaContext cudaDeviceContext = new CudaContext();
+        private CudaContext cudaDeviceContext; 
         private static KernelDiscovery kernelMethodDiscovery = new KernelDiscovery();
-        public DeviceContext()
+        internal CuDevice(int deviceId = 0)
         {
-            
+            cudaDeviceContext = new CudaContext(deviceId);
         }
 
-        public static PTXKernel CompileKernel(string methodName)
+        public void Launch<T>(PTXKernel kernel, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize , params T[] parameters) where T : struct
         {
-            return new PTXKernel();
-        }
-
-
-        public void Launch<T>(PTXKernel kernel, params T[] parameters) where T : struct
-        {
-            var cudaKernel = cudaDeviceContext.LoadKernelPTX(kernel.Bytes, kernel.Name);
+            var cudaKernel = cudaDeviceContext.LoadKernelPTX(kernel.KernelBuffer, kernel.Name);
             cudaKernel.Run(parameters);
         }
         
