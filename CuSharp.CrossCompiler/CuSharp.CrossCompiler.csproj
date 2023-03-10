@@ -4,6 +4,11 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <RootNamespace>CuSharp.CudaCompiler</RootNamespace>
     </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CuSharp.NVVMBinder\CuSharp.NVVMBinder.csproj" />
+    </ItemGroup>
 
 </Project>

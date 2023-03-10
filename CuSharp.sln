@@ -4,9 +4,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.Tests", "CuSharp.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp", "CuSharp\CuSharp.csproj", "{7D954D2B-61C0-486D-A063-5F5FC805DD9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.CudaCompiler", "CuSharp.CudaCompiler\CuSharp.CudaCompiler.csproj", "{0893F509-F5AA-4953-86DD-834242C4A1F0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.MSILtoLLVMCompiler", "CuSharp.MSILtoLLVMCompiler\CuSharp.MSILtoLLVMCompiler.csproj", "{5A974110-49B5-4EE2-85FE-92970A683AC0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.CrossCompiler", "CuSharp.CrossCompiler\CuSharp.CrossCompiler.csproj", "{0893F509-F5AA-4953-86DD-834242C4A1F0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.NVVMBinder", "CuSharp.NVVMBinder\CuSharp.NVVMBinder.csproj", "{CA1FDE1F-228D-42D7-A170-721328201A9B}"
 EndProject
@@ -30,10 +28,6 @@ Global
 		{0893F509-F5AA-4953-86DD-834242C4A1F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0893F509-F5AA-4953-86DD-834242C4A1F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0893F509-F5AA-4953-86DD-834242C4A1F0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5A974110-49B5-4EE2-85FE-92970A683AC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5A974110-49B5-4EE2-85FE-92970A683AC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5A974110-49B5-4EE2-85FE-92970A683AC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5A974110-49B5-4EE2-85FE-92970A683AC0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CA1FDE1F-228D-42D7-A170-721328201A9B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CA1FDE1F-228D-42D7-A170-721328201A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA1FDE1F-228D-42D7-A170-721328201A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
