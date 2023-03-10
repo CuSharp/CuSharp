@@ -14,8 +14,16 @@ public class CompilationDispatcher
     {
         if (kernelCache.TryGetValue(kernelName, out PTXKernel ptxKernel)) return ptxKernel;
         
-        MSILKernel kernel = new MSILKernel(); /*CALL Disassembler to get MSILKernel*/
-        var msilToLlvmCrosscompiler = new Crosscompiler();
+        MSILKernel kernel = new MSILKernel(kernelName, methodInfo.GetMethodBody().GetILAsByteArray()); /*CALL Disassembler to get MSILKernel*/
+        var nvvmConfiguration = new CompilationConfiguration()
+        {
+            DataLayout = "",
+            IntrinsicFunctions = new Dictionary<string, (Type, string)>() {},
+            KernelName = kernelName,
+            Target = ""
+        };
+        
+        var msilToLlvmCrosscompiler = new KernelCrossCompiler(kernel, nvvmConfiguration);
         var llvmKernel = msilToLlvmCrosscompiler.Compile(kernel);
         return CompileLlvmToPTX(llvmKernel);
     }
