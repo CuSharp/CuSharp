@@ -4,26 +4,23 @@ using System.Reflection;
 using System.Text;
 using CuSharp.MSILtoLLVMCompiler;
 using LibNVVMBinder;
+using LLVMSharp;
 
 namespace CuSharp.CudaCompiler;
 public class CompilationDispatcher
 {
     private Dictionary<string, PTXKernel> kernelCache = new Dictionary<string, PTXKernel>();
+    
 
     public PTXKernel Compile(string kernelName, MethodInfo methodInfo)
     {
         if (kernelCache.TryGetValue(kernelName, out PTXKernel ptxKernel)) return ptxKernel;
         
-        MSILKernel kernel = new MSILKernel(kernelName, methodInfo.GetMethodBody().GetILAsByteArray()); /*CALL Disassembler to get MSILKernel*/
-        var nvvmConfiguration = new CompilationConfiguration()
-        {
-            DataLayout = "",
-            IntrinsicFunctions = new Dictionary<string, (Type, string)>() {},
-            KernelName = kernelName,
-            Target = ""
-        };
+        MSILKernel kernel = new MSILKernel(kernelName, methodInfo.GetMethodBody().GetILAsByteArray(), methodInfo.GetParameters()); /*CALL Disassembler to get MSILKernel*/
+        var nvvmConfiguration = CompilationConfiguration.NvvmConfiguration;
+        nvvmConfiguration.KernelName = kernelName;
         
-        var msilToLlvmCrosscompiler = new KernelCrossCompiler(kernel, nvvmConfiguration);
+        var msilToLlvmCrosscompiler = new KernelCrossCompiler(nvvmConfiguration);
         var llvmKernel = msilToLlvmCrosscompiler.Compile(kernel);
         return CompileLlvmToPTX(llvmKernel);
     }
@@ -36,7 +33,7 @@ public class CompilationDispatcher
         if (compilationResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
         {
             nvvmHandle.GetProgramLog(out string log);
-            /*throw with program log*/
+            throw new Exception(log);
         }
 
         nvvmHandle.GetCompiledResult(out string ptx);
