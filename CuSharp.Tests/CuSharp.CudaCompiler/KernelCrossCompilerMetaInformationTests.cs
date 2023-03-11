@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using CuSharp.CudaCompiler.Frontend;
-using CuSharp.MSILtoLLVMCompiler;
 using LibNVVMBinder;
 using Xunit;
 
