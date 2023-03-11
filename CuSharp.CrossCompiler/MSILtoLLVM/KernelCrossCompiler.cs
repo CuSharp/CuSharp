@@ -27,7 +27,7 @@ public class KernelCrossCompiler
     {
         GenerateDataLayoutAndTarget();
 
-        new MethodBodyCompiler(inputKernel.KernelBuffer, _module, _builder).CompileMethodBody();
+        new MethodBodyCompiler(inputKernel.KernelBuffer, _builder).CompileMethodBody();
         var function = GenerateFunction(inputKernel.ParameterInfos);
         LLVM.SetLinkage(function, LLVMLinkage.LLVMExternalLinkage);
         LLVMValueRef[] parameters = LLVM.GetParams(function);
