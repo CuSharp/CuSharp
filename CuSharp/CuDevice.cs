@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using CuSharp.CudaCompiler;
+using CuSharp.CudaCompiler.Backend;
 using ManagedCuda;
 
 namespace CuSharp;

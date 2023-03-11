@@ -2,7 +2,8 @@
 using System.IO;
 using System.Reflection;
 using System.Text;
-using CuSharp.MSILtoLLVMCompiler;
+using CuSharp.CudaCompiler.Backend;
+using CuSharp.CudaCompiler.Frontend;
 using LibNVVMBinder;
 using LLVMSharp;
 

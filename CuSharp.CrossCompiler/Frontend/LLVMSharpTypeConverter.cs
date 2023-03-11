@@ -1,6 +1,6 @@
 ﻿using LLVMSharp;
 
-namespace CuSharp.MSILtoLLVMCompiler;
+namespace CuSharp.CudaCompiler.Frontend;
 
 public static class LLVMSharpTypeConverter
 {

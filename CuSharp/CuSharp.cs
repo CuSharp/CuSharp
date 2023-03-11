@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using CuSharp.CudaCompiler;
+using CuSharp.CudaCompiler.Backend;
 using ManagedCuda;
 
 namespace CuSharp;

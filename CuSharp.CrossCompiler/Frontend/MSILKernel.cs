@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Reflection.Metadata;
 
-namespace CuSharp.MSILtoLLVMCompiler
+namespace CuSharp.CudaCompiler.Frontend
 {
     public class MSILKernel : Kernel<byte[]>
     {
@@ -15,7 +15,7 @@ namespace CuSharp.MSILtoLLVMCompiler
         }
         public string Name { get; }
         public byte[] KernelBuffer { get; }
-        
+
         public ParameterInfo[] ParameterInfos { get; set; }
     }
 }

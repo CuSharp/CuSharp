@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace CuSharp.MSILtoLLVMCompiler
+namespace CuSharp.CudaCompiler
 {
-    public interface Kernel<out T> 
+    public interface Kernel<out T>
     {
         public string Name { get; }
         public T KernelBuffer { get; }

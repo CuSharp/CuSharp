@@ -1,4 +1,6 @@
-﻿namespace CuSharp.MSILtoLLVMCompiler
+﻿using CuSharp.CudaCompiler;
+
+namespace CuSharp.CudaCompiler.Frontend
 {
     public class LLVMKernel : Kernel<string>
     {

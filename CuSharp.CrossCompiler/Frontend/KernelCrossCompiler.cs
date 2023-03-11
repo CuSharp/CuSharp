@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using LLVMSharp;
 
-namespace CuSharp.MSILtoLLVMCompiler;
+namespace CuSharp.CudaCompiler.Frontend;
 
 public class KernelCrossCompiler
 {
@@ -38,7 +38,7 @@ public class KernelCrossCompiler
             counter++;
         }
 
-        var entryBlock = LLVM.AppendBasicBlock(function,"entry");
+        var entryBlock = LLVM.AppendBasicBlock(function, "entry");
         LLVM.PositionBuilderAtEnd(_builder, entryBlock);
 
         LLVM.BuildRetVoid(_builder); //TODO move to body compiler
@@ -55,12 +55,12 @@ public class KernelCrossCompiler
             counter++;
         }
 
-        var unmanagedString = LLVM.PrintModuleToString(_module) ;
+        var unmanagedString = LLVM.PrintModuleToString(_module);
         var kernelString = Marshal.PtrToStringAnsi(unmanagedString);
         return new LLVMKernel(inputKernel.Name, kernelString);
     }
 
-    private LLVMValueRef  GenerateFunction(ParameterInfo[] parameterInfos)
+    private LLVMValueRef GenerateFunction(ParameterInfo[] parameterInfos)
     {
         var paramsListBuilder = new List<LLVMTypeRef>();
         foreach (var paramInfo in parameterInfos)
@@ -89,7 +89,7 @@ public class KernelCrossCompiler
             LLVM.SetDataLayout(_module, _config.DataLayout);
         }
         if (_config.Target != "")
-        { 
+        {
             LLVM.SetTarget(_module, _config.Target);
         }
     }

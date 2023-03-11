@@ -1,5 +1,5 @@
 ﻿using System;
-using CuSharp.MSILtoLLVMCompiler;
+using CuSharp.CudaCompiler.Frontend;
 using LLVMSharp;
 using Xunit;
 

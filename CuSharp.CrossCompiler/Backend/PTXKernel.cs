@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
-using CuSharp.MSILtoLLVMCompiler;
 
-namespace CuSharp.CudaCompiler;
+namespace CuSharp.CudaCompiler.Backend;
 public class PTXKernel : Kernel<byte[]>
 {
     public PTXKernel(string name, byte[] kernelBuffer)
     {
-        this.Name = name;
-        this.KernelBuffer = kernelBuffer;
+        Name = name;
+        KernelBuffer = kernelBuffer;
     }
     public string Name { get; }
     public byte[] KernelBuffer { get; }
