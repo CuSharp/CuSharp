@@ -11,9 +11,10 @@ public class CompilationConfiguration
     public string Target { get; set; } = "";
     public string KernelName { get; set; }
 
-    public Action<LLVMModuleRef, LLVMValueRef>[] DeclareAnnotations { get; set; }
-
-    public Func<LLVMModuleRef, LLVMValueRef>[] DeclareExternalFunctions { get; set; }
+    public Action<LLVMModuleRef, LLVMValueRef>[] DeclareAnnotations { get; set; } = 
+        Array.Empty<Action<LLVMModuleRef, LLVMValueRef>>();
+    public Func<LLVMModuleRef, LLVMValueRef>[] DeclareExternalFunctions { get; set; } = 
+        Array.Empty<Func<LLVMModuleRef, LLVMValueRef>>();
 
     //Default Configuration for NVVM Kernels
     public static CompilationConfiguration NvvmConfiguration = new CompilationConfiguration()

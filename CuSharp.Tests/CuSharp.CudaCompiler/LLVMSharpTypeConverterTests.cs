@@ -40,4 +40,53 @@ public class LLVMSharpTypeConverterTests
     {
         Assert.True(TestLLVMToNative(LLVMTypeRef.Int8Type(), typeof(byte)));
     }
+
+    [Fact]
+    public void TestShortToLLVMShort()
+    {
+        Assert.True(TestNativeToLLVM(LLVMTypeRef.Int16Type(), typeof(short)));
+    }
+
+    [Fact]
+    public void TestLLVMShortToShort()
+    {
+        Assert.True(TestLLVMToNative(LLVMTypeRef.Int16Type(), typeof(short)));
+    }
+
+    [Fact]
+    public void TestIntToLLVMInt()
+    {
+        Assert.True(TestNativeToLLVM(LLVMTypeRef.Int32Type(), typeof(int)));
+    }
+
+    [Fact]
+    public void TestLLVMIntToInt()
+    {
+        Assert.True(TestLLVMToNative(LLVMTypeRef.Int32Type(), typeof(int)));
+    }
+
+    [Fact]
+    public void TestFloatToLLVMFLoat()
+    {
+        Assert.True(TestNativeToLLVM(LLVMTypeRef.FloatType(), typeof(float)));
+    }
+
+    [Fact]
+    public void TestLLVMFloatToFloat()
+    {
+        Assert.True(TestLLVMToNative(LLVMTypeRef.FloatType(), typeof(float)));
+    }
+
+    [Fact]
+    public void TestDoubleToLLVMDouble()
+    {
+        Assert.True(TestNativeToLLVM(LLVMTypeRef.DoubleType(), typeof(double)));
+    }
+
+    [Fact]
+    public void TestLLVMDoubleToDouble()
+    {
+        Assert.True(TestLLVMToNative(LLVMTypeRef.DoubleType(), typeof(double)));
+    }
+    
 }

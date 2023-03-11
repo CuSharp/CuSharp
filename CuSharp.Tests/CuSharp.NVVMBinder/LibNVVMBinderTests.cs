@@ -70,7 +70,7 @@ namespace CuSharp.Tests
             program.Compile(new string[0]);
             string result;
             program.GetCompiledResult(out result);
-            Assert.Equal(ReadFile("resources/kernel.ptx"), result);
+            Assert.Equal(ReadFile("resources/kernel.ptx").Replace("\r", ""), result);
         }
 
         [Fact]

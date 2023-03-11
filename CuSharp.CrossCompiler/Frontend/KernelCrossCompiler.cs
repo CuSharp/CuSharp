@@ -68,7 +68,7 @@ public class KernelCrossCompiler
             LLVMTypeRef type;
             if (paramInfo.ParameterType.IsArray)
             {
-                type = LLVMTypeRef.PointerType(paramInfo.ParameterType.ToLLVMType(), 0);
+                type = LLVMTypeRef.PointerType(paramInfo.ParameterType.GetElementType().ToLLVMType(), 0);
             }
             else
             {
