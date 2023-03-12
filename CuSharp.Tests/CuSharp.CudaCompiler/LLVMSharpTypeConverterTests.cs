@@ -88,5 +88,17 @@ public class LLVMSharpTypeConverterTests
     {
         Assert.True(TestLLVMToNative(LLVMTypeRef.DoubleType(), typeof(double)));
     }
+
+    [Fact]
+    public void TestInvalidTypeThrows()
+    {
+        Assert.Throws<NotSupportedException>(() => typeof(Action).ToLLVMType());
+    }
+
+    [Fact]
+    public void TestInvalidLLVMTypeThrows()
+    {
+        Assert.Throws<NotSupportedException>(() => LLVMTypeRef.HalfType().ToNativeType());
+    }
     
 }

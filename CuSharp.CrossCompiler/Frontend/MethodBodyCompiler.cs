@@ -225,7 +225,9 @@ public class MethodBodyCompiler
                 case ILOpCode.Pop: throw new NotSupportedException();
                 case ILOpCode.Rem: throw new NotSupportedException();
                 case ILOpCode.Rem_un: throw new NotSupportedException();
-                case ILOpCode.Ret: continue; 
+                case ILOpCode.Ret: 
+                    LLVM.BuildRetVoid(_builder);
+                    break;
                 case ILOpCode.Shl: throw new NotSupportedException();
                 case ILOpCode.Shr: throw new NotSupportedException();
                 case ILOpCode.Shr_un: throw new NotSupportedException();

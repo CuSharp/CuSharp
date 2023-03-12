@@ -11,56 +11,59 @@ namespace CuSharp.CudaCompiler.Frontend;
 
 public class KernelCrossCompiler
 {
-    private CompilationConfiguration _config;
-    private LLVMModuleRef _module;
-    private LLVMBuilderRef _builder;
+    private readonly CompilationConfiguration _config;
+    private readonly LLVMModuleRef _module;
+    private readonly LLVMBuilderRef _builder;
     public KernelCrossCompiler(CompilationConfiguration configuration)
     {
         _config = configuration;
         _module = LLVM.ModuleCreateWithName(_config.KernelName + "MODULE");
         _builder = LLVM.CreateBuilder();
-
     }
-
 
     public LLVMKernel Compile(MSILKernel inputKernel)
     {
         GenerateDataLayoutAndTarget();
+        var function = GenerateFunctionAndPositionBuilderAtEntry(inputKernel.ParameterInfos);
+        
+        var externalFunctions = GenerateDeviceIntrinsicFunctions();
 
         new MethodBodyCompiler(inputKernel.KernelBuffer, _builder).CompileMethodBody();
-        var function = GenerateFunction(inputKernel.ParameterInfos);
-        LLVM.SetLinkage(function, LLVMLinkage.LLVMExternalLinkage);
-        LLVMValueRef[] parameters = LLVM.GetParams(function);
-        int counter = 0;
-        foreach (var param in parameters)
-        {
-            LLVM.SetValueName(param, "param" + counter);
-            counter++;
-        }
+        GenerateAnnotations(function);
+        
+        return new LLVMKernel(inputKernel.Name, GetModuleAsString());
+    }
 
-        var entryBlock = LLVM.AppendBasicBlock(function, "entry");
-        LLVM.PositionBuilderAtEnd(_builder, entryBlock);
+    
+    private string GetModuleAsString()
+    {
+        var unmanagedString = LLVM.PrintModuleToString(_module);
+        var kernelString = Marshal.PtrToStringAnsi(unmanagedString);
+        return kernelString;
+    }
 
-        LLVM.BuildRetVoid(_builder); //TODO move to body compiler
+    private void GenerateAnnotations(LLVMValueRef function)
+    {
         foreach (var annotationGenerator in _config.DeclareAnnotations)
         {
             annotationGenerator(_module, function);
         }
 
+    }
+
+    private LLVMValueRef[] GenerateDeviceIntrinsicFunctions()
+    {
         var externalFunctions = new LLVMValueRef[_config.DeclareExternalFunctions.Length];
-        counter = 0;
+        var counter = 0;
         foreach (var declarationGenerator in _config.DeclareExternalFunctions)
         {
             externalFunctions[counter] = declarationGenerator(_module);
             counter++;
         }
 
-        var unmanagedString = LLVM.PrintModuleToString(_module);
-        var kernelString = Marshal.PtrToStringAnsi(unmanagedString);
-        return new LLVMKernel(inputKernel.Name, kernelString);
+        return externalFunctions;
     }
-
-    private LLVMValueRef GenerateFunction(ParameterInfo[] parameterInfos)
+    private LLVMValueRef GenerateFunctionAndPositionBuilderAtEntry(ParameterInfo[] parameterInfos)
     {
         var paramsListBuilder = new List<LLVMTypeRef>();
         foreach (var paramInfo in parameterInfos)
@@ -78,10 +81,27 @@ public class KernelCrossCompiler
         }
 
         var paramType = paramsListBuilder.ToArray();
-        return LLVM.AddFunction(_module, _config.KernelName, LLVM.FunctionType(LLVM.VoidType(), paramType, false));
-
+        var function = LLVM.AddFunction(_module, _config.KernelName, LLVM.FunctionType(LLVM.VoidType(), paramType, false));
+        LLVM.SetLinkage(function, LLVMLinkage.LLVMExternalLinkage);
+        NameFunctionParameters(function, "param");
+        
+        var entryBlock = LLVM.AppendBasicBlock(function, "entry");
+        LLVM.PositionBuilderAtEnd(_builder, entryBlock);
+        
+        return function;
     }
 
+    private void NameFunctionParameters(LLVMValueRef function, string prefix)
+    {
+        var parameters = LLVM.GetParams(function);
+                
+        var counter = 0;
+        foreach (var param in parameters)
+        {
+            LLVM.SetValueName(param, $"{prefix}{counter}");
+            counter++;
+        }
+    }
     private void GenerateDataLayoutAndTarget()
     {
         if (_config.DataLayout != "")

@@ -17,7 +17,7 @@ public class CompilationDispatcher
     {
         if (kernelCache.TryGetValue(kernelName, out PTXKernel ptxKernel)) return ptxKernel;
         
-        MSILKernel kernel = new MSILKernel(kernelName, methodInfo.GetMethodBody().GetILAsByteArray(), methodInfo.GetParameters()); /*CALL Disassembler to get MSILKernel*/
+        var kernel = new MSILKernel(kernelName, methodInfo.GetMethodBody().GetILAsByteArray(), methodInfo.GetParameters()); /*CALL Disassembler to get MSILKernel*/
         var nvvmConfiguration = CompilationConfiguration.NvvmConfiguration;
         nvvmConfiguration.KernelName = kernelName;
         

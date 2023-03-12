@@ -7,8 +7,8 @@ namespace CuSharp.CudaCompiler.Frontend;
 
 public class CompilationConfiguration
 {
-    public string DataLayout { get; set; } = "";
-    public string Target { get; set; } = "";
+    public string DataLayout { get; private init; } = "";
+    public string Target { get; private init; } = "";
     public string KernelName { get; set; }
 
     public Action<LLVMModuleRef, LLVMValueRef>[] DeclareAnnotations { get; set; } = 
