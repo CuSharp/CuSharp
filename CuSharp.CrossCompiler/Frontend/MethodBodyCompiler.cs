@@ -6,14 +6,16 @@ namespace CuSharp.CudaCompiler.Frontend;
 public class MethodBodyCompiler
 {
     private readonly BinaryReader _reader;
-    private LLVMBuilderRef _builder;
-    private Stack<LLVMValueRef> _virtualRegisterStack = new();
-    private long _virtualRegisterCounter = 0;
+    private readonly LLVMBuilderRef _builder;
+    private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
+    private readonly List<LLVMValueRef> _localVariableList = new();
+    
+    private long _virtualRegisterCounter;
+
     public MethodBodyCompiler(byte[] kernelBuffer, LLVMBuilderRef builder)
     {
         _builder = builder;
-        var stream = new MemoryStream(kernelBuffer);
-        _reader = new BinaryReader(stream);
+        _reader = new BinaryReader(new MemoryStream(kernelBuffer));
     }
 
     public void CompileMethodBody()
@@ -24,12 +26,12 @@ public class MethodBodyCompiler
             {
                 throw new ArgumentOutOfRangeException("Unexpected end of method body.");
             }
-
+            
             var opCode = ReadOpCode();
 
             switch (opCode)
             {
-                case ILOpCode.Nop: // Ingore Nop
+                case ILOpCode.Nop:
                     continue;
 
                 case ILOpCode.Constrained: throw new NotSupportedException();
@@ -65,9 +67,7 @@ public class MethodBodyCompiler
                 case ILOpCode.Bne_un: throw new NotSupportedException();
                 case ILOpCode.Bne_un_s: throw new NotSupportedException();
                 case ILOpCode.Br: throw new NotSupportedException();
-                case ILOpCode.Br_s:
-                    CompileBr(_reader.ReadSByte()); // TODO: Parameter representation as int32 or sbyte?
-                    break;
+                case ILOpCode.Br_s: throw new NotSupportedException();
                 case ILOpCode.Break: throw new NotSupportedException();
                 case ILOpCode.Brfalse: throw new NotSupportedException();
                 case ILOpCode.Brfalse_s: throw new NotSupportedException();
@@ -132,10 +132,10 @@ public class MethodBodyCompiler
                 case ILOpCode.Ldarga: throw new NotSupportedException();
                 case ILOpCode.Ldarga_s: throw new NotSupportedException();
                 case ILOpCode.Ldc_i4:
-                    CompileLdcInt32(_reader.ReadInt32());
+                    CompileLdcInt(_reader.ReadInt32());
                     break;
                 case ILOpCode.Ldc_i8:
-                    CompileLdcInt64(_reader.ReadInt64());
+                    CompileLdcLong(_reader.ReadInt64());
                     break;
                 case ILOpCode.Ldc_r4:
                     CompileLdcFloat(_reader.ReadSingle());
@@ -144,37 +144,37 @@ public class MethodBodyCompiler
                     CompileLdcDouble(_reader.ReadDouble());
                     break;
                 case ILOpCode.Ldc_i4_m1:
-                    CompileLdcInt32(-1);
+                    CompileLdcInt(-1);
                     break;
                 case ILOpCode.Ldc_i4_0:
-                    CompileLdcInt32(0);
+                    CompileLdcInt(0);
                     break;
                 case ILOpCode.Ldc_i4_1:
-                    CompileLdcInt32(1);
+                    CompileLdcInt(1);
                     break;
                 case ILOpCode.Ldc_i4_2:
-                    CompileLdcInt32(2);
+                    CompileLdcInt(2);
                     break;
                 case ILOpCode.Ldc_i4_3:
-                    CompileLdcInt32(3);
+                    CompileLdcInt(3);
                     break;
                 case ILOpCode.Ldc_i4_4:
-                    CompileLdcInt32(4);
+                    CompileLdcInt(4);
                     break;
                 case ILOpCode.Ldc_i4_5:
-                    CompileLdcInt32(5);
+                    CompileLdcInt(5);
                     break;
                 case ILOpCode.Ldc_i4_6:
-                    CompileLdcInt32(6);
+                    CompileLdcInt(6);
                     break;
                 case ILOpCode.Ldc_i4_7:
-                    CompileLdcInt32(7);
+                    CompileLdcInt(7);
                     break;
                 case ILOpCode.Ldc_i4_8:
-                    CompileLdcInt32(8);
+                    CompileLdcInt(8);
                     break;
                 case ILOpCode.Ldc_i4_s:
-                    CompileLdcInt32(_reader.ReadSByte());
+                    CompileLdcInt(_reader.ReadSByte());
                     break;
                 case ILOpCode.Ldnull: throw new NotSupportedException();
                 case ILOpCode.Ldstr: throw new NotSupportedException();
@@ -245,7 +245,7 @@ public class MethodBodyCompiler
                     CompileStloc(_reader.ReadUInt16());
                     break;
                 case ILOpCode.Stloc_s:
-                    CompileStloc(_reader.ReadByte()); // uint8
+                    CompileStloc(_reader.ReadByte());
                     break;
                 case ILOpCode.Stloc_0:
                     CompileStloc(0);
@@ -318,67 +318,82 @@ public class MethodBodyCompiler
         }
     }
 
-    private void CompileBr(sbyte v)
-    {
-        throw new NotImplementedException();
-    }
-
     private void CompileMul()
     {
-        throw new NotImplementedException();
+        var param2 = _virtualRegisterStack.Pop();
+        var param1 = _virtualRegisterStack.Pop();
+        var result = LLVM.BuildMul(_builder, param1, param2, GetVirtualRegisterName());
+        _virtualRegisterStack.Push(result);
     }
 
     private void CompileAdd()
     {
-        var param1 = _virtualRegisterStack.Pop();
         var param2 = _virtualRegisterStack.Pop();
-        var result = LLVM.BuildAdd(_builder, param2, param1, $"reg{_virtualRegisterCounter++}");
+        var param1 = _virtualRegisterStack.Pop();
+        var result = LLVM.BuildAdd(_builder, param1, param2, GetVirtualRegisterName());
         _virtualRegisterStack.Push(result);
     }
 
     private void CompileSub()
     {
-        throw new NotImplementedException();
+        var param2 = _virtualRegisterStack.Pop();
+        var param1 = _virtualRegisterStack.Pop();
+        var result = LLVM.BuildSub(_builder, param1, param2, GetVirtualRegisterName());
+        _virtualRegisterStack.Push(result);
     }
 
-    private void CompileLdcInt32(int operand)
+    private void CompileLdcInt(int operand)
     {
-
         var reference = LLVM.ConstInt(LLVMTypeRef.Int32Type(), (ulong)operand, true);
         _virtualRegisterStack.Push(reference);
-        throw new NotImplementedException();
     }
 
-    private void CompileLdcInt64(long operand)
+    private void CompileLdcLong(long operand)
     {
-        throw new NotImplementedException();
+        var reference = LLVM.ConstInt(LLVMTypeRef.Int64Type(), (ulong)operand, true);
+        _virtualRegisterStack.Push(reference);
     }
 
     private void CompileLdcFloat(float operand)
     {
-        throw new NotImplementedException();
+        var reference = LLVM.ConstInt(LLVMTypeRef.FloatType(), (ulong)operand, true);
+        _virtualRegisterStack.Push(reference);
     }
 
     private void CompileLdcDouble(double operand)
     {
-        throw new NotImplementedException();
+        var reference = LLVM.ConstInt(LLVMTypeRef.DoubleType(), (ulong)operand, true);
+        _virtualRegisterStack.Push(reference);
     }
 
     private void CompileLdloc(int operand)
     {
-        throw new NotImplementedException();
+        var param = _localVariableList[operand];
+        _virtualRegisterStack.Push(param);
     }
 
     private void CompileStloc(int operand)
     {
-        throw new NotImplementedException();
+        var param = _virtualRegisterStack.Pop();
+
+        if (_localVariableList.Count > operand)
+        {
+            _localVariableList[operand] = param;
+        }
+        else
+        {
+            _localVariableList.Insert(operand, param);
+        }
     }
-
-
 
     private ILOpCode ReadOpCode()
     {
         var opCodeByte = _reader.ReadByte();
         return (ILOpCode)(opCodeByte == 0xFE ? 0xFE00 + _reader.ReadByte() : opCodeByte);
+    }
+
+    private string GetVirtualRegisterName()
+    {
+        return $"reg{_virtualRegisterCounter++}";
     }
 }
