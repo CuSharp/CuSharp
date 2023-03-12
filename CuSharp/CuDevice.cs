@@ -38,22 +38,5 @@ public partial class CuDevice
         cudaKernel.BlockDimensions = new dim3(BlockSize.Item1, BlockSize.Item2, BlockSize.Item3);
         return cudaKernel;
     }
-    /*public void Launch(PTXKernel kernel, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize , params Tensor<object>[] parameters) 
-    {
-        var cudaKernel = _cudaDeviceContext.LoadKernelPTX(kernel.KernelBuffer, kernel.Name);
-        
-        cudaKernel.GridDimensions = new dim3(GridSize.Item1, GridSize.Item2, GridSize.Item3);
-        cudaKernel.BlockDimensions = new dim3(BlockSize.Item1, BlockSize.Item2, BlockSize.Item3);
-        
-        cudaKernel.Run(parameters);
-    }
-    public static PTXKernel PreCompileKernel(string methodName)
-    {
-        if (!_discovery.IsMarked(methodName))
-        {
-            throw new Exception($"Method {methodName} is not marked with [Kernel]");
-        }
 
-        return _compiler.Compile(methodName, _discovery.GetMethod(methodName));
-    }*/
 }

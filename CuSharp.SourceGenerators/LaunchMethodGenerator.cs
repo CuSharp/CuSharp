@@ -10,8 +10,6 @@ public class LaunchMethodGenerator : ISourceGenerator
     public void Initialize(GeneratorInitializationContext context)
     { }
 
-
-    
     public void Execute(GeneratorExecutionContext context)
     {
         var methodStrings = new StringBuilder();
@@ -24,17 +22,16 @@ public class LaunchMethodGenerator : ISourceGenerator
         }
         
         var source = $@"
+using ManagedCuda;
+using ManagedCuda.VectorTypes;
+using System.Reflection;
 
-            using ManagedCuda;
-            using ManagedCuda.VectorTypes;
-            using System.Reflection;
-
-            namespace CuSharp;
-            public partial class CuDevice
-            {{
-                {methodStrings}
-            }}
-        ";
+namespace CuSharp;
+public partial class CuDevice
+{{
+    {methodStrings}
+}}
+";
         context.AddSource("CuDevice.g.cs", source);
     }
 
@@ -42,27 +39,27 @@ public class LaunchMethodGenerator : ISourceGenerator
     {
         
         return $@"
-            public Task LaunchAsync<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
-                {GenerateConstraintsString(amount)}
-            {{
-                return Task.Run(() => {{
+    public Task LaunchAsync<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
+        {GenerateConstraintsString(amount)}
+    {{
+        return Task.Run(() => {{
 
-                var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
-                cudaKernel.Run(new Object[] {{ {ArgumentPack(amount)} }});
-                }});
-            }}
-        ";
+        var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
+        cudaKernel.Run(new Object[] {{ {ArgumentPack(amount)} }});
+        }});
+    }}
+";
     }
     private string GenerateMethodString(int amount)
     {
         return $@"
-            public void Launch<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
-                {GenerateConstraintsString(amount)}
-            {{
-                var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
-                cudaKernel.Run(new Object[] {{ {ArgumentPack(amount)} }});
-            }}
-        ";
+    public void Launch<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
+        {GenerateConstraintsString(amount)}
+    {{
+        var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
+        cudaKernel.Run(new Object[] {{ {ArgumentPack(amount)} }});
+    }}
+";
     }
 
     private string ArgumentPack(int amount)
