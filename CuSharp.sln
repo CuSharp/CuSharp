@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.NVVMBinder", "CuSha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.Decompiler", "CuSharp.Decompiler\CuSharp.Decompiler.csproj", "{33CF4158-EFBE-4B78-ADC3-FC9EB4F76610}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.CodeGenerator", "CuSharp.CodeGenerator\CuSharp.CodeGenerator.csproj", "{CD26CFE5-D6A8-4236-92DD-0D16F7D90B7E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{33CF4158-EFBE-4B78-ADC3-FC9EB4F76610}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33CF4158-EFBE-4B78-ADC3-FC9EB4F76610}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33CF4158-EFBE-4B78-ADC3-FC9EB4F76610}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD26CFE5-D6A8-4236-92DD-0D16F7D90B7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD26CFE5-D6A8-4236-92DD-0D16F7D90B7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD26CFE5-D6A8-4236-92DD-0D16F7D90B7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD26CFE5-D6A8-4236-92DD-0D16F7D90B7E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
