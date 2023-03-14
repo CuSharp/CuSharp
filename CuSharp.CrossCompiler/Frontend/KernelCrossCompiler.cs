@@ -28,7 +28,7 @@ public class KernelCrossCompiler
         
         var externalFunctions = GenerateDeviceIntrinsicFunctions();
 
-        new MethodBodyCompiler(inputKernel.KernelBuffer, _builder).CompileMethodBody();
+        new MethodBodyCompiler(inputKernel.KernelBuffer, _builder, function).CompileMethodBody();
         GenerateAnnotations(function);
         
         return new LLVMKernel(inputKernel.Name, GetModuleAsString());

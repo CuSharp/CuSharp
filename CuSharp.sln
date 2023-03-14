@@ -1,16 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.Tests", "CuSharp.Tests\CuSharp.Tests.csproj", "{7B4757EC-7C25-41A2-B281-4999FB2D6361}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33414.496
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuSharp.Tests", "CuSharp.Tests\CuSharp.Tests.csproj", "{7B4757EC-7C25-41A2-B281-4999FB2D6361}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp", "CuSharp\CuSharp.csproj", "{7D954D2B-61C0-486D-A063-5F5FC805DD9A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuSharp", "CuSharp\CuSharp.csproj", "{7D954D2B-61C0-486D-A063-5F5FC805DD9A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.CrossCompiler", "CuSharp.CrossCompiler\CuSharp.CrossCompiler.csproj", "{0893F509-F5AA-4953-86DD-834242C4A1F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuSharp.CrossCompiler", "CuSharp.CrossCompiler\CuSharp.CrossCompiler.csproj", "{0893F509-F5AA-4953-86DD-834242C4A1F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.NVVMBinder", "CuSharp.NVVMBinder\CuSharp.NVVMBinder.csproj", "{CA1FDE1F-228D-42D7-A170-721328201A9B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuSharp.NVVMBinder", "CuSharp.NVVMBinder\CuSharp.NVVMBinder.csproj", "{CA1FDE1F-228D-42D7-A170-721328201A9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.Decompiler", "CuSharp.Decompiler\CuSharp.Decompiler.csproj", "{33CF4158-EFBE-4B78-ADC3-FC9EB4F76610}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.SourceGenerators", "CuSharp.SourceGenerators\CuSharp.SourceGenerators.csproj", "{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuSharp.SourceGenerators", "CuSharp.SourceGenerators\CuSharp.SourceGenerators.csproj", "{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,13 +35,12 @@ Global
 		{CA1FDE1F-228D-42D7-A170-721328201A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA1FDE1F-228D-42D7-A170-721328201A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA1FDE1F-228D-42D7-A170-721328201A9B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{33CF4158-EFBE-4B78-ADC3-FC9EB4F76610}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{33CF4158-EFBE-4B78-ADC3-FC9EB4F76610}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{33CF4158-EFBE-4B78-ADC3-FC9EB4F76610}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{33CF4158-EFBE-4B78-ADC3-FC9EB4F76610}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

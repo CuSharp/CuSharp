@@ -7,14 +7,16 @@ public class MethodBodyCompiler
 {
     private readonly BinaryReader _reader;
     private readonly LLVMBuilderRef _builder;
+    private readonly LLVMValueRef _function;
     private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
     private readonly List<LLVMValueRef> _localVariableList = new();
     
     private long _virtualRegisterCounter;
 
-    public MethodBodyCompiler(byte[] kernelBuffer, LLVMBuilderRef builder)
+    public MethodBodyCompiler(byte[] kernelBuffer, LLVMBuilderRef builder, LLVMValueRef function)
     {
         _builder = builder;
+        _function = function;
         _reader = new BinaryReader(new MemoryStream(kernelBuffer));
     }
 
@@ -123,12 +125,24 @@ public class MethodBodyCompiler
                 case ILOpCode.Endfinally: throw new NotSupportedException();
                 case ILOpCode.Initblk: throw new NotSupportedException();
                 case ILOpCode.Jmp: throw new NotSupportedException();
-                case ILOpCode.Ldarg: throw new NotSupportedException();
-                case ILOpCode.Ldarg_s: throw new NotSupportedException();
-                case ILOpCode.Ldarg_0: throw new NotSupportedException();
-                case ILOpCode.Ldarg_1: throw new NotSupportedException();
-                case ILOpCode.Ldarg_2: throw new NotSupportedException();
-                case ILOpCode.Ldarg_3: throw new NotSupportedException();
+                case ILOpCode.Ldarg:
+                    CompileLdarg(_reader.ReadUInt16());
+                    break;
+                case ILOpCode.Ldarg_s: 
+                    CompileLdarg(_reader.ReadByte());
+                    break;
+                case ILOpCode.Ldarg_0:
+                    CompileLdarg(0);
+                    break;
+                case ILOpCode.Ldarg_1:
+                    CompileLdarg(1);
+                    break;
+                case ILOpCode.Ldarg_2: 
+                    CompileLdarg(2);
+                    break;
+                case ILOpCode.Ldarg_3: 
+                    CompileLdarg(3);
+                    break;
                 case ILOpCode.Ldarga: throw new NotSupportedException();
                 case ILOpCode.Ldarga_s: throw new NotSupportedException();
                 case ILOpCode.Ldc_i4:
@@ -272,15 +286,17 @@ public class MethodBodyCompiler
                 case ILOpCode.Initobj: throw new NotSupportedException();
                 case ILOpCode.Isinst: throw new NotSupportedException();
                 case ILOpCode.Ldelem: throw new NotSupportedException();
-                case ILOpCode.Ldelem_i1: throw new NotSupportedException();
-                case ILOpCode.Ldelem_i2: throw new NotSupportedException();
-                case ILOpCode.Ldelem_i4: throw new NotSupportedException();
-                case ILOpCode.Ldelem_i8: throw new NotSupportedException();
-                case ILOpCode.Ldelem_u1: throw new NotSupportedException();
-                case ILOpCode.Ldelem_u2: throw new NotSupportedException();
-                case ILOpCode.Ldelem_u4: throw new NotSupportedException();
-                case ILOpCode.Ldelem_r4: throw new NotSupportedException();
-                case ILOpCode.Ldelem_r8: throw new NotSupportedException();
+                case ILOpCode.Ldelem_i1:
+                case ILOpCode.Ldelem_i2:
+                case ILOpCode.Ldelem_i4:
+                case ILOpCode.Ldelem_i8:
+                case ILOpCode.Ldelem_u1:
+                case ILOpCode.Ldelem_u2:
+                case ILOpCode.Ldelem_u4:
+                case ILOpCode.Ldelem_r4:
+                case ILOpCode.Ldelem_r8:
+                    CompileLdelem();
+                    break;
                 case ILOpCode.Ldelem_i: throw new NotSupportedException();
                 case ILOpCode.Ldelem_ref: throw new NotSupportedException();
                 case ILOpCode.Ldelema: throw new NotSupportedException();
@@ -301,12 +317,14 @@ public class MethodBodyCompiler
                 case ILOpCode.Rethrow: throw new NotSupportedException();
                 case ILOpCode.Sizeof: throw new NotSupportedException();
                 case ILOpCode.Stelem: throw new NotSupportedException();
-                case ILOpCode.Stelem_i1: throw new NotSupportedException();
-                case ILOpCode.Stelem_i2: throw new NotSupportedException();
-                case ILOpCode.Stelem_i4: throw new NotSupportedException();
-                case ILOpCode.Stelem_i8: throw new NotSupportedException();
-                case ILOpCode.Stelem_r4: throw new NotSupportedException();
-                case ILOpCode.Stelem_r8: throw new NotSupportedException();
+                case ILOpCode.Stelem_i1:
+                case ILOpCode.Stelem_i2:
+                case ILOpCode.Stelem_i4:
+                case ILOpCode.Stelem_i8:
+                case ILOpCode.Stelem_r4:
+                case ILOpCode.Stelem_r8:
+                    CompileStelem();
+                    break;
                 case ILOpCode.Stelem_i: throw new NotSupportedException();
                 case ILOpCode.Stelem_ref: throw new NotSupportedException();
                 case ILOpCode.Stobj: throw new NotSupportedException();
@@ -316,6 +334,35 @@ public class MethodBodyCompiler
                 default: throw new NotSupportedException();
             }
         }
+    }
+
+    private void CompileStelem()
+    {
+        var value = _virtualRegisterStack.Pop();
+        var index = _virtualRegisterStack.Pop();
+        var array = _virtualRegisterStack.Pop();
+
+        var elementPtr = LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
+        var newArray = LLVM.BuildStore(_builder, value, elementPtr);
+        _virtualRegisterStack.Push(newArray);
+
+    }
+
+    private void CompileLdelem()
+    {
+        var index = _virtualRegisterStack.Pop();
+        var array = _virtualRegisterStack.Pop();
+
+        var elementPtr = LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
+        var value = LLVM.BuildLoad(_builder, elementPtr, GetVirtualRegisterName());
+        _virtualRegisterStack.Push(value);
+    }
+
+    private void CompileLdarg(int operand)
+    {
+        var index = operand - 1;
+        var param = LLVM.GetParam(_function, (uint)index);
+        _virtualRegisterStack.Push(param);
     }
 
     private void CompileMul()
