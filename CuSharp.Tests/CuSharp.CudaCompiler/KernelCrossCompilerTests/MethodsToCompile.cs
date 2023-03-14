@@ -2,6 +2,12 @@
 {
     public class MethodsToCompile
     {
+        public void ScalarIntAdditionWithConst(int a, int b)
+        {
+            int c = 12345;
+            int d = a + b + c;
+        }
+
         public void ScalarIntAddition(int a, int b)
         {
             int c = a + b;

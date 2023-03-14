@@ -7,6 +7,11 @@
         private const string Int32ArrType = "i32*";
         private const string FloatArrType = "float*";
 
+        public string GetScalarIntAdditionWithConstTestResult(string kernelName) => GetExpectedLLVMRepresentation(
+            kernelName,
+            GetTwoParams(Int32Type), GetTwoParamTypes(Int32Type),
+            GetScalarAdditionWithConstMethodBody(Int32Type, 12345));
+
         public string GetScalarIntAdditionTestResult(string kernelName) => GetExpectedLLVMRepresentation(kernelName,
             GetTwoParams(Int32Type), GetTwoParamTypes(Int32Type), GetScalarAdditionMethodBody(Int32Type));
 
@@ -94,6 +99,13 @@
         #endregion
 
         #region Method Bodies
+
+        private string GetScalarAdditionWithConstMethodBody(string type, int constant)
+        {
+            return $"  %reg0 = add {type} %param0, %param1\n" +
+                   $"  %reg1 = add {type} %reg0, {constant}\n" +
+                   "  ret void";
+        }
 
         private string GetScalarAdditionMethodBody(string type)
         {

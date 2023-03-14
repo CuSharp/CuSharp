@@ -10,6 +10,23 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
         private readonly MethodInfoLoader _methodInfo = new();
 
         [Fact]
+        public void TestScalarIntAdditionWithConst()
+        {
+            const string kernelName = "ScalarIntAdditionWithConst";
+
+            var method = _methodInfo.GetScalarIntMethodInfo(_methods.ScalarIntAdditionWithConst);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+
+            var expected = _representationLoader.GetScalarIntAdditionWithConstTestResult(kernelName);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void TestScalarIntAddition()
         {
             const string kernelName = "ScalarIntAddition";
