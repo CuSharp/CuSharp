@@ -27,7 +27,6 @@ public partial class CuDevice
     {
         var cudaDeviceTensor = deviceTensor as CudaTensor<T>;
         return cudaDeviceTensor.DeviceVariable;
-        La
     }
 
     private CudaKernel compileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) GridSize, (uint,uint,uint) BlockSize)
