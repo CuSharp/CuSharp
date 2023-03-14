@@ -66,7 +66,7 @@ public partial class CuDevice
 
         private string ArgumentPack(int amount)
         {
-            return GenerateList(amount, "((CudaTensor<T{0}>param{0}).DeviceVariable", ',');
+            return GenerateList(amount, "((CudaTensor<T{0}>) param{0}).DeviceVariable", ',');
         }
 
         private string GenericParameterPack(int amount)
