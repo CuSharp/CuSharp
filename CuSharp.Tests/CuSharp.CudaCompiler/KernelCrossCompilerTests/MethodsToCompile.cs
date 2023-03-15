@@ -50,5 +50,22 @@
             int i = 0;
             c[i] = a[i] + b[i];
         }
+
+        public void ArrayIntAdditionWithKernelTools(int[] a, int[] b, int[] c)
+        {
+            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            c[i] = a[i] + b[i];
+        }
+
+        public void ArrayFloatAdditionWithKernelTools(float[] a, float[] b, float[] c)
+        {
+            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            c[i] = a[i] + b[i];
+        }
+
+        public void NotSupportedNestedCall(int a, int b)
+        {
+            ScalarIntAddition(a, b);
+        }
     }
 }

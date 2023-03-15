@@ -1,4 +1,5 @@
-﻿using System.Reflection.Metadata;
+﻿using System.Reflection;
+using System.Reflection.Metadata;
 using LLVMSharp;
 
 namespace CuSharp.CudaCompiler.Frontend;
@@ -13,6 +14,7 @@ public class MethodBodyCompiler
     private readonly List<LLVMValueRef> _localVariableList = new();
 
     private long _virtualRegisterCounter;
+    private string? _nameOfMethodToCall = null;
 
     public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto)
     {
@@ -87,7 +89,10 @@ public class MethodBodyCompiler
             case ILOpCode.Brfalse_s: throw new NotSupportedException();
             case ILOpCode.Brtrue: throw new NotSupportedException();
             case ILOpCode.Brtrue_s: throw new NotSupportedException();
-            case ILOpCode.Call: throw new NotSupportedException();
+            case ILOpCode.Call:
+                operand = _reader.ReadInt32();
+                CompileCall(opCode, (int)operand);
+                break;
             case ILOpCode.Callvirt: throw new NotSupportedException();
             case ILOpCode.Calli: throw new NotSupportedException();
             case ILOpCode.Ceq: throw new NotSupportedException();
@@ -323,7 +328,10 @@ public class MethodBodyCompiler
             case ILOpCode.Ldelem_i: throw new NotSupportedException();
             case ILOpCode.Ldelem_ref: throw new NotSupportedException();
             case ILOpCode.Ldelema: throw new NotSupportedException();
-            case ILOpCode.Ldfld: throw new NotSupportedException();
+            case ILOpCode.Ldfld:
+                operand = _reader.ReadInt32();
+                CompileLdfld((int)operand);
+                break;
             case ILOpCode.Ldflda: throw new NotSupportedException();
             case ILOpCode.Stfld: throw new NotSupportedException();
             case ILOpCode.Ldlen: throw new NotSupportedException();
@@ -358,6 +366,44 @@ public class MethodBodyCompiler
         }
 
         return (opCode, operand);
+    }
+
+    private void CompileLdfld(int operand)
+    {
+        if (operand < 0)
+        {
+            throw new BadImageFormatException($"Invalid metadata token");
+        }
+
+        if (_nameOfMethodToCall == null)
+        {
+            throw new ArgumentException("Name of method to call is unknown");
+        }
+
+        var field = _inputKernel.MemberInfoModule.ResolveField(operand);
+        var fullQualifiedFieldName = $"{_nameOfMethodToCall}.{field?.Name}";
+
+        var externalFunctionToCall = _functionsDto.ExternalFunctions.First(func => func.Item1 == fullQualifiedFieldName);
+        var call = LLVM.BuildCall(_builder, externalFunctionToCall.Item2, Array.Empty<LLVMValueRef>(), GetVirtualRegisterName());
+        _virtualRegisterStack.Push(call);
+        _nameOfMethodToCall = null;
+    }
+
+    private void CompileCall(ILOpCode opCode, int operand)
+    {
+        if (operand < 0)
+        {
+            throw new BadImageFormatException($"Invalid metadata token");
+        }
+
+        var method = _inputKernel.MemberInfoModule.ResolveMethod(operand);
+        _nameOfMethodToCall = $"{method?.DeclaringType?.FullName}.{method?.Name}";
+        var isExternalFunction = _functionsDto.ExternalFunctions.Any(func => func.Item1.StartsWith(_nameOfMethodToCall));
+
+        if (!isExternalFunction)
+        {
+            throw new NotSupportedException("Only calls to defined external functions are supported");
+        }
     }
 
     private void CompileStelem()

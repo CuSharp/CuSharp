@@ -36,6 +36,14 @@
         public string GetArrayFloatAdditionTestResult(string kernelName) => GetExpectedLLVMRepresentation(kernelName,
             GetThreeParams(FloatArrType), GetThreeParamTypes(FloatArrType), GetArrayAdditionMethodBody(FloatType, FloatArrType));
 
+        public string GetArrayIntAdditionWithKernelToolsTestResult(string kernelName) => GetExpectedLLVMRepresentation(
+            kernelName, GetThreeParams(Int32ArrType), GetThreeParamTypes(Int32ArrType),
+            GetArrayAdditionWithKernelToolsMethodBody(Int32Type, Int32ArrType));
+
+        public string GetArrayFloatAdditionWithKernelToolsTestResult(string kernelName) => GetExpectedLLVMRepresentation(
+            kernelName, GetThreeParams(FloatArrType), GetThreeParamTypes(FloatArrType),
+            GetArrayAdditionWithKernelToolsMethodBody(FloatType, FloatArrType));
+
         private string GetExpectedLLVMRepresentation(string kernelName, string parameters, string paramTypes, string methodBody)
         {
             return $"; ModuleID = '{kernelName}MODULE'\n"
@@ -153,6 +161,23 @@
                    $"  %reg5 = getelementptr {type}, {arrayType} %param2, i32 0\n" +
                    $"  store {type} %reg4, {arrayType} %reg5\n" +
                    "  ret void";
+        }
+
+        private string GetArrayAdditionWithKernelToolsMethodBody(string type, string arrayType)
+        {
+            return "  %reg0 = call i32 @llvm.nvvm.read.ptx.sreg.ctaid.x()\n" +
+                   "  %reg1 = call i32 @llvm.nvvm.read.ptx.sreg.ntid.x()\n" +
+                   "  %reg2 = mul i32 %reg0, %reg1\n" +
+                   "  %reg3 = call i32 @llvm.nvvm.read.ptx.sreg.tid.x()\n" +
+                   "  %reg4 = add i32 %reg2, %reg3\n" +
+                   $"  %reg5 = getelementptr {type}, {arrayType} %param0, i32 %reg4\n" +
+                   $"  %reg6 = load {type}, {arrayType} %reg5\n" +
+                   $"  %reg7 = getelementptr {type}, {arrayType} %param1, i32 %reg4\n" +
+                   $"  %reg8 = load {type}, {arrayType} %reg7\n" +
+                   $"  %reg9 = add {type} %reg6, %reg8\n" +
+                   $"  %reg10 = getelementptr {type}, {arrayType} %param2, i32 %reg4\n" +
+                   $"  store {type} %reg9, {arrayType} %reg10\n" +
+                   $"  ret void";
         }
 
         #endregion
