@@ -24,11 +24,13 @@ public class KernelCrossCompiler
     public LLVMKernel Compile(MSILKernel inputKernel)
     {
         GenerateDataLayoutAndTarget();
-        var function = GenerateFunctionAndPositionBuilderAtEntry(inputKernel.ParameterInfos);
         
+        var function = GenerateFunctionAndPositionBuilderAtEntry(inputKernel.ParameterInfos);
         var externalFunctions = GenerateDeviceIntrinsicFunctions();
 
-        new MethodBodyCompiler(inputKernel.KernelBuffer, _builder, function).CompileMethodBody();
+        var functionsDto = new FunctionsDto(function, externalFunctions);
+
+        new MethodBodyCompiler(inputKernel, _builder, functionsDto).CompileMethodBody();
         GenerateAnnotations(function);
         
         return new LLVMKernel(inputKernel.Name, GetModuleAsString());
@@ -51,9 +53,9 @@ public class KernelCrossCompiler
 
     }
 
-    private LLVMValueRef[] GenerateDeviceIntrinsicFunctions()
+    private (string, LLVMValueRef)[] GenerateDeviceIntrinsicFunctions()
     {
-        var externalFunctions = new LLVMValueRef[_config.DeclareExternalFunctions.Length];
+        var externalFunctions = new (string, LLVMValueRef)[_config.DeclareExternalFunctions.Length];
         var counter = 0;
         foreach (var declarationGenerator in _config.DeclareExternalFunctions)
         {

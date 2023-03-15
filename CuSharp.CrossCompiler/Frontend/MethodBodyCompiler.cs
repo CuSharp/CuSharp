@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Reflection.Metadata;
+﻿using System.Reflection.Metadata;
 using LLVMSharp;
 
 namespace CuSharp.CudaCompiler.Frontend;
@@ -7,18 +6,20 @@ namespace CuSharp.CudaCompiler.Frontend;
 public class MethodBodyCompiler
 {
     private readonly BinaryReader _reader;
+    private readonly MSILKernel _inputKernel;
     private readonly LLVMBuilderRef _builder;
-    private readonly LLVMValueRef _function;
+    private readonly FunctionsDto _functionsDto;
     private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
     private readonly List<LLVMValueRef> _localVariableList = new();
-    
+
     private long _virtualRegisterCounter;
 
-    public MethodBodyCompiler(byte[] kernelBuffer, LLVMBuilderRef builder, LLVMValueRef function)
+    public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto)
     {
+        _inputKernel = inputKernel;
         _builder = builder;
-        _function = function;
-        _reader = new BinaryReader(new MemoryStream(kernelBuffer));
+        _functionsDto = functionsDto;
+        _reader = new BinaryReader(new MemoryStream(inputKernel.KernelBuffer));
     }
     
     public IEnumerable<(ILOpCode, object?)> CompileMethodBody()
@@ -383,7 +384,7 @@ public class MethodBodyCompiler
     private void CompileLdarg(int operand)
     {
         var index = operand - 1;
-        var param = LLVM.GetParam(_function, (uint)index);
+        var param = LLVM.GetParam(_functionsDto.Function, (uint)index);
         _virtualRegisterStack.Push(param);
     }
 

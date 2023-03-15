@@ -18,7 +18,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
             var expected = _representationLoader.GetScalarIntAdditionWithConstTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;
@@ -35,7 +35,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
             
             var expected = _representationLoader.GetScalarIntAdditionTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;
@@ -52,7 +52,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
             var expected = _representationLoader.GetScalarIntSubtractionTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;
@@ -69,7 +69,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
             var expected = _representationLoader.GetScalarIntMultiplicationTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;
@@ -86,7 +86,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
             var expected = _representationLoader.GetScalarFloatAdditionTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;
@@ -103,7 +103,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
             var expected = _representationLoader.GetScalarFloatSubtractionTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;
@@ -120,7 +120,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
             var expected = _representationLoader.GetScalarFloatMultiplicationTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;
@@ -137,7 +137,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
             var expected = _representationLoader.GetArrayIntAdditionTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;
@@ -154,7 +154,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
             var expected = _representationLoader.GetArrayFloatAdditionTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;

@@ -30,6 +30,24 @@ public class KernelCrossCompilerMetaInformationTests
                                                  + "; Function Attrs: nounwind readnone\n"
                                                  + "declare i32 @llvm.nvvm.read.ptx.sreg.tid.x() #0\n"
                                                  + "\n"
+                                                 + "; Function Attrs: nounwind readnone\n"
+                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.ctaid.y() #0\n"
+                                                 + "\n"
+                                                 + "; Function Attrs: nounwind readnone\n"
+                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.ntid.y() #0\n"
+                                                 + "\n"
+                                                 + "; Function Attrs: nounwind readnone\n"
+                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.tid.y() #0\n"
+                                                 + "\n"
+                                                 + "; Function Attrs: nounwind readnone\n"
+                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.ctaid.z() #0\n"
+                                                 + "\n"
+                                                 + "; Function Attrs: nounwind readnone\n"
+                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.ntid.z() #0\n"
+                                                 + "\n"
+                                                 + "; Function Attrs: nounwind readnone\n"
+                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.tid.z() #0\n"
+                                                 + "\n"
                                                  + "; Function Attrs: convergent nounwind\n"
                                                  + "declare void @llvm.nvvm.barrier0() #1\n"
                                                  + "\n"
@@ -63,7 +81,7 @@ public class KernelCrossCompilerMetaInformationTests
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = "EmptyMethodKernel";
         var crossCompiler = new KernelCrossCompiler(config);
-        var llvmKernel = crossCompiler.Compile(new MSILKernel("EmptyMethodKernel", method.GetMethodBody().GetILAsByteArray(), new ParameterInfo[]{}));
+        var llvmKernel = crossCompiler.Compile(new MSILKernel("EmptyMethodKernel", method));
         Assert.Equal(_expectedLLVMRepresentation,llvmKernel.KernelBuffer);
     }
     
@@ -74,7 +92,7 @@ public class KernelCrossCompilerMetaInformationTests
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = "EmptyMethodKernel";
         var crossCompiler = new KernelCrossCompiler(config);
-        var llvmKernel = crossCompiler.Compile(new MSILKernel("EmptyMethodKernel", method.GetMethodBody().GetILAsByteArray(), new ParameterInfo[]{}));
+        var llvmKernel = crossCompiler.Compile(new MSILKernel("EmptyMethodKernel", method));
         var isCorrent = KernelIsCorrect(llvmKernel.KernelBuffer, config.KernelName);
         Assert.True(isCorrent);
     }
@@ -106,8 +124,7 @@ public class KernelCrossCompilerMetaInformationTests
             KernelName = "ArrayParameterMethod"
         };
         var compiler = new KernelCrossCompiler(config);
-        var llvmKernel = compiler.Compile(new MSILKernel("ArrayParameterMethod", method.GetMethodBody().GetILAsByteArray(),
-            method.GetParameters()));
+        var llvmKernel = compiler.Compile(new MSILKernel("ArrayParameterMethod", method));
         Assert.Equal(expectedArrayParameterMethodLLVM, llvmKernel.KernelBuffer);
     }
 
@@ -118,8 +135,7 @@ public class KernelCrossCompilerMetaInformationTests
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = "ArrayParameterMethod";
         var compiler = new KernelCrossCompiler(config);
-        var llvmKernel = compiler.Compile(new MSILKernel("ArrayParameterMethod",
-            method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+        var llvmKernel = compiler.Compile(new MSILKernel("ArrayParameterMethod", method));
         Assert.True(KernelIsCorrect(llvmKernel.KernelBuffer, llvmKernel.Name));
     }
     
@@ -149,8 +165,7 @@ public class KernelCrossCompilerMetaInformationTests
             KernelName = "MixedParameterMethod"
         };
         var compiler = new KernelCrossCompiler(config);
-        var llvmKernel = compiler.Compile(new MSILKernel("MixedParameterMethod", method.GetMethodBody().GetILAsByteArray(),
-            method.GetParameters()));
+        var llvmKernel = compiler.Compile(new MSILKernel("MixedParameterMethod", method));
         Assert.Equal(expectedMixedParameterMethodLLVM, llvmKernel.KernelBuffer);
     }
 
@@ -161,8 +176,7 @@ public class KernelCrossCompilerMetaInformationTests
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = "MixedParameterMethod";
         var compiler = new KernelCrossCompiler(config);
-        var llvmKernel = compiler.Compile(new MSILKernel("MixedParameterMethod",
-            method.GetMethodBody().GetILAsByteArray(), method.GetParameters()));
+        var llvmKernel = compiler.Compile(new MSILKernel("MixedParameterMethod", method));
         Assert.True(KernelIsCorrect(llvmKernel.KernelBuffer, llvmKernel.Name));
     }
 }

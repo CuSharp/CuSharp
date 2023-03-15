@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Metadata;
 using CuSharp.CudaCompiler.Frontend;
@@ -23,11 +24,13 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             };
 
             var method = _methodInfo.GetScalarIntMethodInfo(_methods.ScalarIntAdditionWithConst);
-            var kernelBuffer = method.GetMethodBody().GetILAsByteArray();
+            var kernel = new MSILKernel("MethodDecompilerTests", method);
             var builder = LLVM.CreateBuilder();
             var function = GetFunction(method.GetParameters());
-
-            var actual = new MethodBodyCompiler(kernelBuffer, builder, function).CompileMethodBody();
+            var externalFunctions = GetExternalFunctions();
+            var functionsDto = new FunctionsDto(function, externalFunctions);
+            
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
 
             Assert.Equal(expected, actual);
         }
@@ -42,12 +45,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             };
 
             var method = _methodInfo.GetScalarIntMethodInfo(_methods.ScalarIntAddition);
-            var kernelBuffer = method.GetMethodBody().GetILAsByteArray();
+            var kernel = new MSILKernel("MethodDecompilerTests", method);
             var builder = LLVM.CreateBuilder();
             var function = GetFunction(method.GetParameters());
+            var externalFunctions = GetExternalFunctions();
+            var functionsDto = new FunctionsDto(function, externalFunctions);
 
-            var actual = new MethodBodyCompiler(kernelBuffer, builder, function).CompileMethodBody();
-            
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
+
             Assert.Equal(expected, actual);
         }
 
@@ -61,11 +66,13 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             };
 
             var method = _methodInfo.GetScalarIntMethodInfo(_methods.ScalarIntSubtraction);
-            var kernelBuffer = method.GetMethodBody().GetILAsByteArray();
+            var kernel = new MSILKernel("MethodDecompilerTests", method);
             var builder = LLVM.CreateBuilder();
             var function = GetFunction(method.GetParameters());
+            var externalFunctions = GetExternalFunctions();
+            var functionsDto = new FunctionsDto(function, externalFunctions);
 
-            var actual = new MethodBodyCompiler(kernelBuffer, builder, function).CompileMethodBody();
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
 
             Assert.Equal(expected, actual);
         }
@@ -80,11 +87,13 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             };
 
             var method = _methodInfo.GetScalarIntMethodInfo(_methods.ScalarIntMultiplication);
-            var kernelBuffer = method.GetMethodBody().GetILAsByteArray();
+            var kernel = new MSILKernel("MethodDecompilerTests", method);
             var builder = LLVM.CreateBuilder();
             var function = GetFunction(method.GetParameters());
+            var externalFunctions = GetExternalFunctions();
+            var functionsDto = new FunctionsDto(function, externalFunctions);
 
-            var actual = new MethodBodyCompiler(kernelBuffer, builder, function).CompileMethodBody();
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
 
             Assert.Equal(expected, actual);
         }
@@ -99,11 +108,13 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             };
 
             var method = _methodInfo.GetScalarFloatMethodInfo(_methods.ScalarFloatAddition);
-            var kernelBuffer = method.GetMethodBody().GetILAsByteArray();
+            var kernel = new MSILKernel("MethodDecompilerTests", method);
             var builder = LLVM.CreateBuilder();
             var function = GetFunction(method.GetParameters());
+            var externalFunctions = GetExternalFunctions();
+            var functionsDto = new FunctionsDto(function, externalFunctions);
 
-            var actual = new MethodBodyCompiler(kernelBuffer, builder, function).CompileMethodBody();
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
 
             Assert.Equal(expected, actual);
         }
@@ -118,11 +129,13 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             };
 
             var method = _methodInfo.GetScalarFloatMethodInfo(_methods.ScalarFloatSubtraction);
-            var kernelBuffer = method.GetMethodBody().GetILAsByteArray();
+            var kernel = new MSILKernel("MethodDecompilerTests", method);
             var builder = LLVM.CreateBuilder();
             var function = GetFunction(method.GetParameters());
+            var externalFunctions = GetExternalFunctions();
+            var functionsDto = new FunctionsDto(function, externalFunctions);
 
-            var actual = new MethodBodyCompiler(kernelBuffer, builder, function).CompileMethodBody();
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
 
             Assert.Equal(expected, actual);
         }
@@ -137,11 +150,13 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             };
 
             var method = _methodInfo.GetScalarFloatMethodInfo(_methods.ScalarFloatMultiplication);
-            var kernelBuffer = method.GetMethodBody().GetILAsByteArray();
+            var kernel = new MSILKernel("MethodDecompilerTests", method);
             var builder = LLVM.CreateBuilder();
             var function = GetFunction(method.GetParameters());
+            var externalFunctions = GetExternalFunctions();
+            var functionsDto = new FunctionsDto(function, externalFunctions);
 
-            var actual = new MethodBodyCompiler(kernelBuffer, builder, function).CompileMethodBody();
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
 
             Assert.Equal(expected, actual);
         }
@@ -158,11 +173,13 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             };
 
             var method = _methodInfo.GetArrayIntMethodInfo(_methods.ArrayIntAddition);
-            var kernelBuffer = method.GetMethodBody().GetILAsByteArray();
+            var kernel = new MSILKernel("MethodDecompilerTests", method);
             var builder = LLVM.CreateBuilder();
             var function = GetFunction(method.GetParameters());
+            var externalFunctions = GetExternalFunctions();
+            var functionsDto = new FunctionsDto(function, externalFunctions);
 
-            var actual = new MethodBodyCompiler(kernelBuffer, builder, function).CompileMethodBody();
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
 
             Assert.Equal(expected, actual);
         }
@@ -179,15 +196,17 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             };
 
             var method = _methodInfo.GetArrayFloatMethodInfo(_methods.ArrayFloatAddition);
-            var kernelBuffer = method.GetMethodBody().GetILAsByteArray();
+            var kernel = new MSILKernel("MethodDecompilerTests", method);
             var builder = LLVM.CreateBuilder();
             var function = GetFunction(method.GetParameters());
+            var externalFunctions = GetExternalFunctions();
+            var functionsDto = new FunctionsDto(function, externalFunctions);
 
-            var actual = new MethodBodyCompiler(kernelBuffer, builder, function).CompileMethodBody();
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
 
             Assert.Equal(expected, actual);
         }
-
+        
         private LLVMValueRef GetFunction(ParameterInfo[] parameterInfos)
         {
             var kernelName = "KernelTestName";
@@ -202,6 +221,11 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             }
             var paramType = paramsListBuilder.ToArray();
             return LLVM.AddFunction(module, kernelName, LLVM.FunctionType(LLVM.VoidType(), paramType, false));
+        }
+
+        private (string, LLVMValueRef)[] GetExternalFunctions()
+        {
+            return null; // TODO: Implement
         }
     }
 }
