@@ -37,6 +37,29 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
         }
 
         [Fact]
+        public void TestScalarLongAdditionWithConst()
+        {
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Ldc_i8, 1234567890987), (ILOpCode.Stloc_0, null), (ILOpCode.Ldarg_1, null),
+                (ILOpCode.Ldarg_2, null), (ILOpCode.Add, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Add, null),
+                (ILOpCode.Stloc_1, null), (ILOpCode.Ret, null)
+            };
+
+            var kernelName = "TestScalarLongAdditionWithConst";
+            var method = _methodInfo.GetScalarLongMethodInfo(_methods.ScalarLongAdditionWithConst);
+            var kernel = new MSILKernel(kernelName, method);
+            var builder = LLVM.CreateBuilder();
+            var function = GetFunction(kernelName, method.GetParameters());
+            var externalFunctions = GetExternalFunctions(kernelName);
+            var functionsDto = new FunctionsDto(function, externalFunctions);
+
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void TestScalarIntAdditionOpCode()
         {
             var expected = new List<(ILOpCode, object?)>
@@ -91,6 +114,52 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
 
             var kernelName = "TestScalarIntMultiplicationOpCode";
             var method = _methodInfo.GetScalarIntMethodInfo(_methods.ScalarIntMultiplication);
+            var kernel = new MSILKernel(kernelName, method);
+            var builder = LLVM.CreateBuilder();
+            var function = GetFunction(kernelName, method.GetParameters());
+            var externalFunctions = GetExternalFunctions(kernelName);
+            var functionsDto = new FunctionsDto(function, externalFunctions);
+
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TestScalarFloatAdditionWithConst()
+        {
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Ldc_r4, 1234.321F), (ILOpCode.Stloc_0, null), (ILOpCode.Ldarg_1, null),
+                (ILOpCode.Ldarg_2, null), (ILOpCode.Add, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Add, null),
+                (ILOpCode.Stloc_1, null), (ILOpCode.Ret, null)
+            };
+
+            var kernelName = "TestScalarFloatAdditionWithConst";
+            var method = _methodInfo.GetScalarFloatMethodInfo(_methods.ScalarFloatAdditionWithConst);
+            var kernel = new MSILKernel(kernelName, method);
+            var builder = LLVM.CreateBuilder();
+            var function = GetFunction(kernelName, method.GetParameters());
+            var externalFunctions = GetExternalFunctions(kernelName);
+            var functionsDto = new FunctionsDto(function, externalFunctions);
+
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TestScalarDoubleAdditionWithConst()
+        {
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Ldc_r8, 123456.54321), (ILOpCode.Stloc_0, null), (ILOpCode.Ldarg_1, null),
+                (ILOpCode.Ldarg_2, null), (ILOpCode.Add, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Add, null),
+                (ILOpCode.Stloc_1, null), (ILOpCode.Ret, null)
+            };
+
+            var kernelName = "TestScalarDoubleAdditionWithConst";
+            var method = _methodInfo.GetScalarDoubleMethodInfo(_methods.ScalarDoubleAdditionWithConst);
             var kernel = new MSILKernel(kernelName, method);
             var builder = LLVM.CreateBuilder();
             var function = GetFunction(kernelName, method.GetParameters());

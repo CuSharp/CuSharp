@@ -10,7 +10,17 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             return fn.Method;
         }
 
+        public MethodInfo GetScalarLongMethodInfo(Action<long, long> fn)
+        {
+            return fn.Method;
+        }
+
         public MethodInfo GetScalarFloatMethodInfo(Action<float, float> fn)
+        {
+            return fn.Method;
+        }
+
+        public MethodInfo GetScalarDoubleMethodInfo(Action<double, double> fn)
         {
             return fn.Method;
         }

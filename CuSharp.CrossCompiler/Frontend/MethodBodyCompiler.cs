@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using System.Reflection.Metadata;
+﻿using System.Reflection.Metadata;
 using LLVMSharp;
 
 namespace CuSharp.CudaCompiler.Frontend;
@@ -438,7 +437,21 @@ public class MethodBodyCompiler
     {
         var param2 = _virtualRegisterStack.Pop();
         var param1 = _virtualRegisterStack.Pop();
-        var result = LLVM.BuildMul(_builder, param1, param2, GetVirtualRegisterName());
+        LLVMValueRef result;
+
+        if (AreParamsCompatibleAndInt(param1, param2))
+        {
+            result = LLVM.BuildMul(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else if (AreParamsCompatibleAndDecimal(param1, param2))
+        {
+            result = LLVM.BuildFMul(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
+        }
+
         _virtualRegisterStack.Push(result);
     }
 
@@ -446,7 +459,21 @@ public class MethodBodyCompiler
     {
         var param2 = _virtualRegisterStack.Pop();
         var param1 = _virtualRegisterStack.Pop();
-        var result = LLVM.BuildAdd(_builder, param1, param2, GetVirtualRegisterName());
+        LLVMValueRef result;
+
+        if (AreParamsCompatibleAndInt(param1, param2))
+        {
+            result = LLVM.BuildAdd(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else if (AreParamsCompatibleAndDecimal(param1, param2))
+        {
+            result = LLVM.BuildFAdd(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
+        }
+
         _virtualRegisterStack.Push(result);
     }
 
@@ -454,7 +481,21 @@ public class MethodBodyCompiler
     {
         var param2 = _virtualRegisterStack.Pop();
         var param1 = _virtualRegisterStack.Pop();
-        var result = LLVM.BuildSub(_builder, param1, param2, GetVirtualRegisterName());
+        LLVMValueRef result;
+
+        if (AreParamsCompatibleAndInt(param1, param2))
+        {
+            result = LLVM.BuildSub(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else if (AreParamsCompatibleAndDecimal(param1, param2))
+        {
+            result = LLVM.BuildFSub(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
+        }
+
         _virtualRegisterStack.Push(result);
     }
 
@@ -472,13 +513,13 @@ public class MethodBodyCompiler
 
     private void CompileLdcFloat(float operand)
     {
-        var reference = LLVM.ConstInt(LLVMTypeRef.FloatType(), (ulong)operand, true);
+        var reference = LLVM.ConstReal(LLVMTypeRef.FloatType(), operand);
         _virtualRegisterStack.Push(reference);
     }
 
     private void CompileLdcDouble(double operand)
     {
-        var reference = LLVM.ConstInt(LLVMTypeRef.DoubleType(), (ulong)operand, true);
+        var reference = LLVM.ConstReal(LLVMTypeRef.DoubleType(), operand);
         _virtualRegisterStack.Push(reference);
     }
 
@@ -511,5 +552,19 @@ public class MethodBodyCompiler
     private string GetVirtualRegisterName()
     {
         return $"reg{_virtualRegisterCounter++}";
+    }
+
+    private bool AreParamsCompatibleAndInt(LLVMValueRef param1, LLVMValueRef param2)
+    {
+        return param1.TypeOf().TypeKind == LLVMTypeKind.LLVMIntegerTypeKind &&
+               param2.TypeOf().TypeKind == LLVMTypeKind.LLVMIntegerTypeKind;
+    }
+
+    private bool AreParamsCompatibleAndDecimal(LLVMValueRef param1, LLVMValueRef param2)
+    {
+        return param1.TypeOf().TypeKind == LLVMTypeKind.LLVMFloatTypeKind &&
+               param2.TypeOf().TypeKind == LLVMTypeKind.LLVMFloatTypeKind ||
+               param1.TypeOf().TypeKind == LLVMTypeKind.LLVMDoubleTypeKind &&
+               param2.TypeOf().TypeKind == LLVMTypeKind.LLVMDoubleTypeKind;
     }
 }

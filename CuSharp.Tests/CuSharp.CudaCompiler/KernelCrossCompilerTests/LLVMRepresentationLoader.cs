@@ -3,14 +3,21 @@
     public class LLVMRepresentationLoader
     {
         private const string Int32Type = "i32";
+        private const string Int64Type = "i64";
         private const string FloatType = "float";
+        private const string DoubleType = "double";
         private const string Int32ArrType = "i32*";
         private const string FloatArrType = "float*";
 
         public string GetScalarIntAdditionWithConstTestResult(string kernelName) => GetExpectedLLVMRepresentation(
             kernelName,
             GetTwoParams(Int32Type), GetTwoParamTypes(Int32Type),
-            GetScalarAdditionWithConstMethodBody(Int32Type, 12345));
+            GetScalarAdditionWithConstMethodBody(Int32Type, "12345"));
+
+        public string GetScalarLongAdditionWithConstTestResult(string kernelName) => GetExpectedLLVMRepresentation(
+            kernelName,
+            GetTwoParams(Int64Type), GetTwoParamTypes(Int64Type),
+            GetScalarAdditionWithConstMethodBody(Int64Type, "1234567890987"));
 
         public string GetScalarIntAdditionTestResult(string kernelName) => GetExpectedLLVMRepresentation(kernelName,
             GetTwoParams(Int32Type), GetTwoParamTypes(Int32Type), GetScalarAdditionMethodBody(Int32Type));
@@ -20,6 +27,16 @@
 
         public string GetScalarIntMultiplicationTestResult(string kernelName) => GetExpectedLLVMRepresentation(kernelName,
             GetTwoParams(Int32Type), GetTwoParamTypes(Int32Type), GetScalarMultiplicationMethodBody(Int32Type));
+
+        public string GetScalarFloatAdditionWithConstTestResult(string kernelName) => GetExpectedLLVMRepresentation(
+            kernelName,
+            GetTwoParams(FloatType), GetTwoParamTypes(FloatType),
+            GetScalarAdditionWithConstMethodBody(FloatType, "0x40934948C0000000"));
+
+        public string GetScalarDoubleAdditionWithConstTestResult(string kernelName) => GetExpectedLLVMRepresentation(
+            kernelName,
+            GetTwoParams(DoubleType), GetTwoParamTypes(DoubleType),
+            GetScalarAdditionWithConstMethodBody(DoubleType, "0x40FE2408B0FCF80E"));
 
         public string GetScalarFloatAdditionTestResult(string kernelName) => GetExpectedLLVMRepresentation(kernelName,
             GetTwoParams(FloatType), GetTwoParamTypes(FloatType), GetScalarAdditionMethodBody(FloatType));
@@ -126,38 +143,43 @@
 
         #region Method Bodies
 
-        private string GetScalarAdditionWithConstMethodBody(string type, int constant)
+        private string GetScalarAdditionWithConstMethodBody(string type, string constant)
         {
-            return $"  %reg0 = add {type} %param0, %param1\n" +
-                   $"  %reg1 = add {type} %reg0, {constant}\n" +
+            var prefix = type is FloatType or DoubleType ? "f" : string.Empty;
+            return $"  %reg0 = {prefix}add {type} %param0, %param1\n" +
+                   $"  %reg1 = {prefix}add {type} %reg0, {constant}\n" +
                    "  ret void";
         }
 
         private string GetScalarAdditionMethodBody(string type)
         {
-            return $"  %reg0 = add {type} %param0, %param1\n" +
+            var prefix = type is FloatType or DoubleType ? "f" : string.Empty;
+            return $"  %reg0 = {prefix}add {type} %param0, %param1\n" +
                    "  ret void";
         }
 
         private string GetScalarSubtractionMethodBody(string type)
         {
-            return $"  %reg0 = sub {type} %param0, %param1\n" +
+            var prefix = type is FloatType or DoubleType ? "f" : string.Empty;
+            return $"  %reg0 = {prefix}sub {type} %param0, %param1\n" +
                    "  ret void";
         }
 
         private string GetScalarMultiplicationMethodBody(string type)
         {
-            return $"  %reg0 = mul {type} %param0, %param1\n" +
+            var prefix = type is FloatType or DoubleType ? "f" : string.Empty;
+            return $"  %reg0 = {prefix}mul {type} %param0, %param1\n" +
                    "  ret void";
         }
 
         private string GetArrayAdditionMethodBody(string type, string arrayType)
         {
+            var prefix = type is FloatType or DoubleType ? "f" : string.Empty;
             return $"  %reg0 = getelementptr {type}, {arrayType} %param0, i32 0\n" +
                    $"  %reg1 = load {type}, {arrayType} %reg0\n" +
                    $"  %reg2 = getelementptr {type}, {arrayType} %param1, i32 0\n" +
                    $"  %reg3 = load {type}, {arrayType} %reg2\n" +
-                   $"  %reg4 = add {type} %reg1, %reg3\n" +
+                   $"  %reg4 = {prefix}add {type} %reg1, %reg3\n" +
                    $"  %reg5 = getelementptr {type}, {arrayType} %param2, i32 0\n" +
                    $"  store {type} %reg4, {arrayType} %reg5\n" +
                    "  ret void";
@@ -165,6 +187,7 @@
 
         private string GetArrayAdditionWithKernelToolsMethodBody(string type, string arrayType)
         {
+            var prefix = type is FloatType or DoubleType ? "f" : string.Empty;
             return "  %reg0 = call i32 @llvm.nvvm.read.ptx.sreg.ctaid.x()\n" +
                    "  %reg1 = call i32 @llvm.nvvm.read.ptx.sreg.ntid.x()\n" +
                    "  %reg2 = mul i32 %reg0, %reg1\n" +
@@ -174,7 +197,7 @@
                    $"  %reg6 = load {type}, {arrayType} %reg5\n" +
                    $"  %reg7 = getelementptr {type}, {arrayType} %param1, i32 %reg4\n" +
                    $"  %reg8 = load {type}, {arrayType} %reg7\n" +
-                   $"  %reg9 = add {type} %reg6, %reg8\n" +
+                   $"  %reg9 = {prefix}add {type} %reg6, %reg8\n" +
                    $"  %reg10 = getelementptr {type}, {arrayType} %param2, i32 %reg4\n" +
                    $"  store {type} %reg9, {arrayType} %reg10\n" +
                    $"  ret void";
