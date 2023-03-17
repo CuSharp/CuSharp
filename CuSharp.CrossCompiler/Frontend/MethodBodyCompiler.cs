@@ -13,7 +13,7 @@ public class MethodBodyCompiler
     private readonly List<LLVMValueRef> _localVariableList = new();
 
     private long _virtualRegisterCounter;
-    private string? _nameOfMethodToCall = null;
+    private string? _nameOfMethodToCall;
 
     public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto)
     {
@@ -90,7 +90,7 @@ public class MethodBodyCompiler
             case ILOpCode.Brtrue_s: throw new NotSupportedException();
             case ILOpCode.Call:
                 operand = _reader.ReadInt32();
-                CompileCall(opCode, (int)operand);
+                CompileCall((int)operand);
                 break;
             case ILOpCode.Callvirt: throw new NotSupportedException();
             case ILOpCode.Calli: throw new NotSupportedException();
@@ -388,7 +388,7 @@ public class MethodBodyCompiler
         _nameOfMethodToCall = null;
     }
 
-    private void CompileCall(ILOpCode opCode, int operand)
+    private void CompileCall(int operand)
     {
         if (operand < 0)
         {
