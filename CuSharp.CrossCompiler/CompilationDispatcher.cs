@@ -10,12 +10,15 @@ using LLVMSharp;
 namespace CuSharp.CudaCompiler;
 public class CompilationDispatcher
 {
-    private Dictionary<string, PTXKernel> kernelCache = new Dictionary<string, PTXKernel>();
-    
+    private readonly Dictionary<int, PTXKernel> _kernelCache;
 
+    public CompilationDispatcher(Dictionary<int, PTXKernel>? kernelCache = null)
+    {
+        _kernelCache = kernelCache ?? new Dictionary<int, PTXKernel>();
+    }
     public PTXKernel Compile(string kernelName, MethodInfo methodInfo)
     {
-        if (kernelCache.TryGetValue(kernelName, out PTXKernel ptxKernel)) return ptxKernel;
+        if (_kernelCache.TryGetValue(methodInfo.GetHashCode(), out var ptxKernel)) return ptxKernel;
         
         var kernel = new MSILKernel(kernelName, methodInfo);
         var nvvmConfiguration = CompilationConfiguration.NvvmConfiguration;
@@ -23,10 +26,12 @@ public class CompilationDispatcher
         
         var msilToLlvmCrosscompiler = new KernelCrossCompiler(nvvmConfiguration);
         var llvmKernel = msilToLlvmCrosscompiler.Compile(kernel);
-        return CompileLlvmToPTX(llvmKernel);
+        ptxKernel = CompileLlvmToPtx(llvmKernel);
+        _kernelCache.Add(methodInfo.GetHashCode(), ptxKernel);
+        return ptxKernel;
     }
 
-    private PTXKernel CompileLlvmToPTX(LLVMKernel llvmKernel)
+    private static PTXKernel CompileLlvmToPtx(LLVMKernel llvmKernel)
     {
         var nvvmHandle = new NVVMProgram();
         nvvmHandle.AddModule(llvmKernel.KernelBuffer, llvmKernel.Name);
@@ -38,6 +43,7 @@ public class CompilationDispatcher
         }
 
         nvvmHandle.GetCompiledResult(out string ptx);
-        return new PTXKernel(llvmKernel.Name, Encoding.ASCII.GetBytes(ptx));
+        return new PTXKernel(llvmKernel.Name, Encoding.UTF8.GetBytes(ptx));
     }
+   
 }

@@ -11,6 +11,11 @@ public partial class CuDevice
     private static CompilationDispatcher _compiler = new CompilationDispatcher();
     private CudaContext _cudaDeviceContext; 
     private static KernelDiscovery _kernelMethodDiscovery = new KernelDiscovery();
+
+    public string ToString()
+    {
+        return _cudaDeviceContext.GetDeviceName();
+    }
     
     internal CuDevice(int deviceId = 0)
     {
@@ -29,9 +34,17 @@ public partial class CuDevice
         return cudaDeviceTensor.DeviceVariable;
     }
 
+    public void Launch<T0,T1,T2>(Action<T0[],T1[],T2[]> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, Tensor<T0> param0,Tensor<T1> param1,Tensor<T2> param2) 
+        where T0 : struct where T1 : struct where T2 : struct
+    {
+        var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
+        CudaEvent events = new CudaEvent();
+        cudaKernel.Run(((CudaTensor<T0>)param0).DeviceVariable.DevicePointer, ((CudaTensor<T1>)param1).DeviceVariable.DevicePointer, ((CudaTensor<T2>)param2).DeviceVariable.DevicePointer);
+    }
+    
     private CudaKernel compileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) GridSize, (uint,uint,uint) BlockSize)
     {
-        var kernelName = $"{methodInfo.DeclaringType.Namespace}.{methodInfo.DeclaringType.Name}.{methodInfo.Name}";
+        var kernelName = $"{methodInfo.Name}";
         var ptxKernel = _compiler.Compile(kernelName, methodInfo);
         var cudaKernel = _cudaDeviceContext.LoadKernelPTX(ptxKernel.KernelBuffer, kernelName);
         cudaKernel.GridDimensions = new dim3(GridSize.Item1, GridSize.Item2, GridSize.Item3);

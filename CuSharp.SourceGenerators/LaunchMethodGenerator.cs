@@ -40,7 +40,7 @@ public partial class CuDevice
         {
 
             return $@"
-    public Task LaunchAsync<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
+    public Task LaunchAsync<{GenericParameterPack(amount)}>(Action<{GenericParameterArrayPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
         {GenerateConstraintsString(amount)}
     {{
         return Task.Run(() => {{
@@ -55,7 +55,7 @@ public partial class CuDevice
         private string GenerateMethodString(int amount)
         {
             return $@"
-    public void Launch<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
+    public void Launch<{GenericParameterPack(amount)}>(Action<{GenericParameterArrayPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
         {GenerateConstraintsString(amount)}
     {{
         var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
@@ -72,6 +72,11 @@ public partial class CuDevice
         private string GenericParameterPack(int amount)
         {
             return GenerateList(amount, "T{0}", ',');
+        }
+        
+        private string GenericParameterArrayPack(int amount)
+        {
+            return GenerateList(amount, "T{0}[]", ',');
         }
 
         private string ParameterString(int amount)

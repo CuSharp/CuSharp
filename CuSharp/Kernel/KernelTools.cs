@@ -11,8 +11,6 @@ public static class KernelTools
 
     public static Func<(uint, uint, uint)> GetThreadIndexAction { get; set; } = () => throw new NotSupportedException(ErrorMessage);
 
-    public static Func<(uint, uint, uint)> GetGridDimensionsAction { get; set; } = () => throw new NotSupportedException(ErrorMessage); //TODO Remove
-
     public static Func<(uint, uint, uint)> GetBlockDimensionsAction { get; set; } = () => throw new NotSupportedException(ErrorMessage);
 
     public static Action SyncThreads => CallSyncThreadsAction;
@@ -20,6 +18,5 @@ public static class KernelTools
     public static (uint,uint,uint) BlockIndex => GetBlockIndexAction();
     public static (uint,uint,uint) ThreadIndex => GetThreadIndexAction();
     
-    public static (uint, uint, uint) GridDimensions => GetGridDimensionsAction();
     public static (uint, uint, uint) BlockDimensions => GetBlockDimensionsAction();
 }

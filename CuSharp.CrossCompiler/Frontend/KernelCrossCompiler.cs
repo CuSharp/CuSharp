@@ -17,6 +17,7 @@ public class KernelCrossCompiler
     public KernelCrossCompiler(CompilationConfiguration configuration)
     {
         _config = configuration;
+        
         _module = LLVM.ModuleCreateWithName(_config.KernelName + "MODULE");
         _builder = LLVM.CreateBuilder();
     }
@@ -32,7 +33,7 @@ public class KernelCrossCompiler
 
         new MethodBodyCompiler(inputKernel, _builder, functionsDto).CompileMethodBody();
         GenerateAnnotations(function);
-        
+
         return new LLVMKernel(inputKernel.Name, GetModuleAsString());
     }
 

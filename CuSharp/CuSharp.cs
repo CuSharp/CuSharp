@@ -31,6 +31,20 @@ public static class CuSharp
     {
         return new CuDevice();
     }
-    
+
+    private static CudaEvent startEvent;
+    public static void  StartTimer()
+    {
+        startEvent = new CudaEvent();
+        startEvent.Record();
+    }
+
+    public static float GetTimeMS()
+    {
+        var cuEvent = new CudaEvent();
+        cuEvent.Record();
+        cuEvent.Synchronize();
+        return CudaEvent.ElapsedTime(startEvent, cuEvent);
+    }
 
 }

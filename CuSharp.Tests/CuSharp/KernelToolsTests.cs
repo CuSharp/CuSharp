@@ -30,12 +30,6 @@ namespace CuSharp.Tests
         }
 
         [Fact]
-        public void TestGridDimensionsThrows()
-        {
-            Assert.Throws<NotSupportedException>(() => KernelTools.GridDimensions);
-        }
-
-        [Fact]
         public void TestSyncThreadsOverwriteDoesNotThrow()
         {
             KernelTools.CallSyncThreadsAction = () => Console.Write("Syncing now!");
@@ -54,13 +48,6 @@ namespace CuSharp.Tests
         {
             KernelTools.GetThreadIndexAction = () => (1337, 1337, 1337);
             Assert.True((1337,1337,1337) == KernelTools.ThreadIndex);
-        }
-
-        [Fact]
-        public void TestGridDimensionsOverwrite()
-        {
-            KernelTools.GetGridDimensionsAction = () => (117, 117, 117);
-            Assert.True((117,117,117) == KernelTools.GridDimensions);
         }
 
         [Fact]
