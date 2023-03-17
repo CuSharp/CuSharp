@@ -34,14 +34,6 @@ public partial class CuDevice
         return cudaDeviceTensor.DeviceVariable;
     }
 
-    /*public void Launch<T0,T1,T2>(Action<T0[],T1[],T2[]> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, Tensor<T0> param0,Tensor<T1> param1,Tensor<T2> param2) 
-        where T0 : struct where T1 : struct where T2 : struct
-    {
-        var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
-        CudaEvent events = new CudaEvent();
-        cudaKernel.Run(((CudaTensor<T0>)param0).DeviceVariable.DevicePointer, ((CudaTensor<T1>)param1).DeviceVariable.DevicePointer, ((CudaTensor<T2>)param2).DeviceVariable.DevicePointer);
-    }*/
-    
     private CudaKernel compileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) GridSize, (uint,uint,uint) BlockSize)
     {
         var kernelName = $"{methodInfo.Name}";
