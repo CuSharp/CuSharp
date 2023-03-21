@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using CuSharp.CudaCompiler;
-using CuSharp.CudaCompiler.Backend;
-using ManagedCuda;
+﻿using ManagedCuda;
 
 namespace CuSharp;
 public static class CuSharp
 {
 
+    static CuSharp()
+    {
+    }
     public static IEnumerator<(int, string)> GetDeviceList()
     {
         var count = CudaContext.GetDeviceCount();
@@ -21,7 +20,7 @@ public static class CuSharp
     {
         if (deviceId >= CudaContext.GetDeviceCount())
         {
-            /*throw*/
+            throw new ArgumentException("Device ID does not exist");
         }
         
         return new CuDevice(deviceId);

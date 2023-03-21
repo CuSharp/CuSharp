@@ -78,7 +78,7 @@ public class KernelCrossCompiler
             }
             else
             {
-                type = paramInfo.ParameterType.ToLLVMType();
+                type = LLVMTypeRef.PointerType(paramInfo.ParameterType.ToLLVMType(), 0);
             }
             paramsListBuilder.Add(type);
         }

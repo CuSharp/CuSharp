@@ -420,7 +420,7 @@ public class MethodBodyCompiler
     {
         var index = _virtualRegisterStack.Pop();
         var array = _virtualRegisterStack.Pop();
-
+        int x = 5;
         var elementPtr = LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
         var value = LLVM.BuildLoad(_builder, elementPtr, GetVirtualRegisterName());
         _virtualRegisterStack.Push(value);
@@ -428,8 +428,12 @@ public class MethodBodyCompiler
 
     private void CompileLdarg(int operand)
     {
-        var index = operand - 1;
+        var index = operand;  //Warning: needs -1 if not static but not supported!
         var param = LLVM.GetParam(_functionsDto.Function, (uint)index);
+        if (!_inputKernel.ParameterInfos[index].ParameterType.IsArray)
+        {
+            param = LLVM.BuildLoad(_builder, param, GetVirtualRegisterName());
+        }
         _virtualRegisterStack.Push(param);
     }
 

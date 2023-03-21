@@ -16,22 +16,38 @@ public partial class CuDevice
     {
         return _cudaDeviceContext.GetDeviceName();
     }
-    
+
     internal CuDevice(int deviceId = 0)
     {
         _cudaDeviceContext = new CudaContext(deviceId);
     }
 
-    public Tensor<T> Copy<T>(T[] hostTensor) where T : struct
+    public Tensor<T[]> Copy<T>(T[] hostTensor) where T : struct
     {
-        CudaDeviceVariable<T> deviceVariable = hostTensor;
-        return new CudaTensor<T>(deviceVariable);
+        return CudaTensor<T[]>.FromArray(hostTensor);
     }
 
-    public T[] Copy<T>(Tensor<T> deviceTensor) where T : struct
+    public Tensor<T> Copy<T>(T hostScalar) where T : struct
+    {
+        return CudaTensor<T>.FromScalar(hostScalar);
+    }
+    
+    public T[] Copy<T>(Tensor<T[]> deviceTensor) where T : struct
+    {
+        var cudaDeviceTensor = deviceTensor as CudaTensor<T[]>;
+        return  cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
+    }
+    
+    public T Copy<T>(Tensor<T> deviceTensor) where T : struct
     {
         var cudaDeviceTensor = deviceTensor as CudaTensor<T>;
-        return cudaDeviceTensor.DeviceVariable;
+        return cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
+    }
+
+    public void Launch<T0>(Func<T0> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, Tensor<T0> param0) 
+    {
+        var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
+        cudaKernel.Run(((CudaTensor<T0>)param0).DevicePointer );
     }
 
     private CudaKernel compileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) GridSize, (uint,uint,uint) BlockSize)

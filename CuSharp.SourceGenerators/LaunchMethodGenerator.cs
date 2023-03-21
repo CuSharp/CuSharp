@@ -18,8 +18,8 @@ namespace CuSharp.CodeGenerator
             {
                 methodStrings.Append(GenerateMethodString(i));
                 methodStrings.Append("\n");
-                methodStrings.Append(GenerateAsyncMethodString(i));
-                methodStrings.Append("\n");
+                /*methodStrings.Append(GenerateAsyncMethodString(i));
+                methodStrings.Append("\n");*/
             }
 
             var source = $@"
@@ -40,7 +40,7 @@ public partial class CuDevice
         {
 
             return $@"
-    public Task LaunchAsync<{GenericParameterPack(amount)}>(Action<{GenericParameterArrayPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
+    public Task LaunchAsync<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
         {GenerateConstraintsString(amount)}
     {{
         return Task.Run(() => {{
@@ -55,18 +55,17 @@ public partial class CuDevice
         private string GenerateMethodString(int amount)
         {
             return $@"
-    public void Launch<{GenericParameterPack(amount)}>(Action<{GenericParameterArrayPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
-        {GenerateConstraintsString(amount)}
+    public void Launch<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
     {{
         var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
-        cudaKernel.Run(new Object[] {{ {ArgumentPack(amount)} }});
+        cudaKernel.Run({ArgumentPack(amount)} );
     }}
-";
+            ";
         }
 
         private string ArgumentPack(int amount)
         {
-            return GenerateList(amount, "((CudaTensor<T{0}>)param{0}).DeviceVariable.DevicePointer", ',');
+            return GenerateList(amount, "((CudaTensor<T{0}>)param{0}).DevicePointer", ',');
         }
 
         private string GenericParameterPack(int amount)
@@ -74,11 +73,6 @@ public partial class CuDevice
             return GenerateList(amount, "T{0}", ',');
         }
         
-        private string GenericParameterArrayPack(int amount)
-        {
-            return GenerateList(amount, "T{0}[]", ',');
-        }
-
         private string ParameterString(int amount)
         {
             return GenerateList(amount, "Tensor<T{0}> param{0}", ',');

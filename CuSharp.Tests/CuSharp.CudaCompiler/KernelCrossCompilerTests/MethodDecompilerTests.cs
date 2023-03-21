@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Metadata;
 using CuSharp.CudaCompiler.Frontend;
@@ -289,6 +288,16 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
         [Fact]
         public void TestArrayIntAdditionWithKernelToolsOpCode()
         {
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Call, 167772209), (ILOpCode.Ldfld, 167772210),
+                (ILOpCode.Call, 167772218), (ILOpCode.Ldfld, 167772210), (ILOpCode.Mul, null),
+                (ILOpCode.Call, 167772214), (ILOpCode.Ldfld, 167772210), (ILOpCode.Add, null), (ILOpCode.Stloc_0, null),
+                (ILOpCode.Ldarg_3, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
+                (ILOpCode.Ldelem_i4, null), (ILOpCode.Ldarg_2, null), (ILOpCode.Ldloc_0, null),
+                (ILOpCode.Ldelem_i4, null), (ILOpCode.Add, null), (ILOpCode.Stelem_i4, null), (ILOpCode.Ret, null)
+            };
+
             var kernelName = "TestArrayIntAdditionWithKernelToolsOpCode";
             var method = _methodInfo.GetArrayIntMethodInfo(_methods.ArrayIntAdditionWithKernelTools);
             var kernel = new MSILKernel(kernelName, method);
@@ -297,18 +306,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var externalFunctions = GetExternalFunctions(kernelName);
             var functionsDto = new FunctionsDto(function, externalFunctions);
 
-            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
-
-            // Some values are machine-dependent and must therefore be loaded from the actual result
-            var expected = new List<(ILOpCode, object?)>
-            {
-                (ILOpCode.Nop, null), (ILOpCode.Call, actual[1].Item2), (ILOpCode.Ldfld, actual[2].Item2),
-                (ILOpCode.Call, actual[3].Item2), (ILOpCode.Ldfld, actual[4].Item2), (ILOpCode.Mul, null),
-                (ILOpCode.Call, actual[6].Item2), (ILOpCode.Ldfld, actual[7].Item2), (ILOpCode.Add, null), (ILOpCode.Stloc_0, null),
-                (ILOpCode.Ldarg_3, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
-                (ILOpCode.Ldelem_i4, null), (ILOpCode.Ldarg_2, null), (ILOpCode.Ldloc_0, null),
-                (ILOpCode.Ldelem_i4, null), (ILOpCode.Add, null), (ILOpCode.Stelem_i4, null), (ILOpCode.Ret, null)
-            };
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
 
             Assert.Equal(expected, actual);
         }
@@ -316,6 +314,16 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
         [Fact]
         public void TestArrayFloatAdditionWithKernelToolsOpCode()
         {
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Call, 167772209), (ILOpCode.Ldfld, 167772210),
+                (ILOpCode.Call, 167772218), (ILOpCode.Ldfld, 167772210), (ILOpCode.Mul, null),
+                (ILOpCode.Call, 167772214), (ILOpCode.Ldfld, 167772210), (ILOpCode.Add, null), (ILOpCode.Stloc_0, null),
+                (ILOpCode.Ldarg_3, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
+                (ILOpCode.Ldelem_r4, null), (ILOpCode.Ldarg_2, null), (ILOpCode.Ldloc_0, null),
+                (ILOpCode.Ldelem_r4, null), (ILOpCode.Add, null), (ILOpCode.Stelem_r4, null), (ILOpCode.Ret, null)
+            };
+
             var kernelName = "TestArrayFloatAdditionWithKernelToolsOpCode";
             var method = _methodInfo.GetArrayFloatMethodInfo(_methods.ArrayFloatAdditionWithKernelTools);
             var kernel = new MSILKernel(kernelName, method);
@@ -324,18 +332,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
             var externalFunctions = GetExternalFunctions(kernelName);
             var functionsDto = new FunctionsDto(function, externalFunctions);
 
-            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
-
-            // Some values are machine-dependent and must therefore be loaded from the actual result
-            var expected = new List<(ILOpCode, object?)>
-            {
-                (ILOpCode.Nop, null), (ILOpCode.Call, actual[1].Item2), (ILOpCode.Ldfld, actual[2].Item2),
-                (ILOpCode.Call, actual[3].Item2), (ILOpCode.Ldfld, actual[4].Item2), (ILOpCode.Mul, null),
-                (ILOpCode.Call, actual[6].Item2), (ILOpCode.Ldfld, actual[7].Item2), (ILOpCode.Add, null), (ILOpCode.Stloc_0, null),
-                (ILOpCode.Ldarg_3, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
-                (ILOpCode.Ldelem_r4, null), (ILOpCode.Ldarg_2, null), (ILOpCode.Ldloc_0, null),
-                (ILOpCode.Ldelem_r4, null), (ILOpCode.Add, null), (ILOpCode.Stelem_r4, null), (ILOpCode.Ret, null)
-            };
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
 
             Assert.Equal(expected, actual);
         }

@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuSharp.CrossCompiler", "Cu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuSharp.NVVMBinder", "CuSharp.NVVMBinder\CuSharp.NVVMBinder.csproj", "{CA1FDE1F-228D-42D7-A170-721328201A9B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuSharp.SourceGenerators", "CuSharp.SourceGenerators\CuSharp.SourceGenerators.csproj", "{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.SourceGenerators", "CuSharp.SourceGenerators\CuSharp.SourceGenerators.csproj", "{8ED9C3C3-1DE1-4403-8CF9-068FDC8594E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,10 +35,10 @@ Global
 		{CA1FDE1F-228D-42D7-A170-721328201A9B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA1FDE1F-228D-42D7-A170-721328201A9B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA1FDE1F-228D-42D7-A170-721328201A9B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DE80D97E-72C0-4E44-96C4-40B9E3D0F080}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ED9C3C3-1DE1-4403-8CF9-068FDC8594E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ED9C3C3-1DE1-4403-8CF9-068FDC8594E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ED9C3C3-1DE1-4403-8CF9-068FDC8594E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ED9C3C3-1DE1-4403-8CF9-068FDC8594E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
