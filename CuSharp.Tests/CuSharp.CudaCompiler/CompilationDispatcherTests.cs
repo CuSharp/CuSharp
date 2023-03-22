@@ -6,6 +6,7 @@ using Xunit;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler;
 
+[Collection("Sequential")]
 public class CompilationDispatcherTests
 {
     private readonly MethodInfoLoader _methodLoader = new();

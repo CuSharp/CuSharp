@@ -5,6 +5,7 @@ using Xunit;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler;
 
+[Collection("Sequential")]
 public class LLVMSharpTypeConverterTests
 {
     private bool TestNativeToLLVM(LLVMTypeRef llvmType, Type nativeType)

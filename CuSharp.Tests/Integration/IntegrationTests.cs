@@ -5,6 +5,7 @@ using Xunit.Abstractions;
 
 namespace CuSharp.Tests.Integration;
 
+[Collection("Sequential")]
 public class IntegrationTests
 {
     private readonly ITestOutputHelper _output;

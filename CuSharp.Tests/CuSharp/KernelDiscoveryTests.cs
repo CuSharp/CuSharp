@@ -3,6 +3,7 @@ using Xunit;
 
 namespace CuSharp.Tests.CuSharp
 {
+    [Collection("Sequential")]
     public class KernelDiscoveryTests
     {
         private readonly KernelDiscovery _discovery = new();

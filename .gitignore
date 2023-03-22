@@ -4,3 +4,5 @@
 **/obj/*
 **/.vs/*
 CuSharp.sln.DotSettings.user
+**/coverage.cobertura.xml
+**/coveragereport/

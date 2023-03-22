@@ -3,6 +3,7 @@ using Xunit;
 
 namespace CuSharp.Tests
 {
+    [Collection("Sequential")]
     public class LibNVVMBinderTests
     {
         private NVVMProgram program = new ();
