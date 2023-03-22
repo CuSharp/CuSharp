@@ -1,75 +1,84 @@
 ﻿using System.Linq;
 using Xunit;
 
-namespace CuSharp.Tests
+namespace CuSharp.Tests.CuSharp
 {
     public class KernelDiscoveryTests
     {
-        private KernelDiscovery discovery = new KernelDiscovery();
+        private readonly KernelDiscovery _discovery = new();
 
         public KernelDiscoveryTests()
         {
-            discovery.ScanAll();
+            _discovery.ScanAll();
         }
 
         [Fact]
         public void TestDiscoverAllAnnotated()
         {
-            var methods = discovery.GetAllMethods();
+            var methods = _discovery.GetAllMethods();
             Assert.Equal(4, methods.Count());
         }
         
         [Fact]
         public void TestDiscoverPublicInstanceMethod()
         {
-            Assert.True(discovery.IsMarked("CuSharp.Tests.KernelDiscoveryTests.PublicInstance"));
+            var classType = typeof(KernelDiscoveryTests);
+            Assert.True(_discovery.IsMarked($"{classType.FullName}.PublicInstance"));
         }
 
         [Fact]
         public void TestDiscoverPrivateInstanceMethod()
         {
-            Assert.True(discovery.IsMarked("CuSharp.Tests.KernelDiscoveryTests.PrivateInstance"));
+            var classType = typeof(KernelDiscoveryTests);
+            Assert.True(_discovery.IsMarked($"{classType.FullName}.PrivateInstance"));
         }
 
         [Fact]
         public void TestDiscoverPublicStaticMethod()
         {
-            Assert.True(discovery.IsMarked("CuSharp.Tests.KernelDiscoveryTests.PublicStatic"));
+            var classType = typeof(KernelDiscoveryTests);
+            Assert.True(_discovery.IsMarked($"{classType.FullName}.PublicStatic"));
         }
 
         [Fact]
         public void TestDiscoverPrivateStaticMethod()
         {
-            Assert.True(discovery.IsMarked("CuSharp.Tests.KernelDiscoveryTests.PrivateStatic"));
+            var classType = typeof(KernelDiscoveryTests);
+            Assert.True(_discovery.IsMarked($"{classType.FullName}.PrivateStatic"));
         }
 
         [Fact]
         public void TestDiscoverGetMethod()
         {
-            var method = discovery.GetMethod("CuSharp.Tests.KernelDiscoveryTests.PrivateStatic");
+            var classType = typeof(KernelDiscoveryTests);
+            var method = _discovery.GetMethod($"{classType.FullName}.PrivateStatic");
             Assert.NotNull(method);
         }
 
         [Fact]
         public void TestDiscoveryDoesNotFindWrongName()
         {
-            var isMethod = discovery.IsMarked("IAmNotAMethod");
+            var isMethod = _discovery.IsMarked("IAmNotAMethod");
             Assert.False(isMethod);
         }
         
         [Kernel]
+        // ReSharper disable once UnusedMember.Global : Test requires this method
         public void PublicInstance()
         { }
 
         [Kernel]
+        // ReSharper disable once UnusedMember.Local : Test requires this method
         private void PrivateInstance()
         { }
 
         [Kernel]
+        // ReSharper disable once UnusedMember.Global : Test requires this method
         public static void PublicStatic()
         { }
 
         [Kernel]
+        // ReSharper disable once UnusedMember.Local : Test requires this method
         private static void PrivateStatic()
         { }
     }

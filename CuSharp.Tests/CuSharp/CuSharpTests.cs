@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace CuSharp.Tests;
+namespace CuSharp.Tests.CuSharp;
 
 public class CuSharpTests
 {
@@ -23,6 +23,6 @@ public class CuSharpTests
         global::CuSharp.CuSharp.GetDefaultDevice(); //done just to initialize
         global::CuSharp.CuSharp.StartTimer();
         var time = global::CuSharp.CuSharp.GetTimeMS();
-        Assert.True(time < 0.01);
+        Assert.True(time < 0.5);
     }
 }

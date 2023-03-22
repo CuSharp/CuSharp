@@ -1,10 +1,20 @@
 ﻿using System;
 using System.Reflection;
 
-namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
+namespace CuSharp.Tests.TestHelper
 {
     public class MethodInfoLoader
     {
+        public MethodInfo GetMethodInfo(Action fn)
+        {
+            return fn.Method;
+        }
+
+        public MethodInfo GetMixedMethodInfo(Action<int[], int[], bool, int> fn)
+        {
+            return fn.Method;
+        }
+
         public MethodInfo GetScalarIntMethodInfo(Action<int, int> fn)
         {
             return fn.Method;
@@ -21,6 +31,16 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.KernelCrossCompilerTests
         }
 
         public MethodInfo GetScalarDoubleMethodInfo(Action<double, double> fn)
+        {
+            return fn.Method;
+        }
+
+        public MethodInfo GetArrayIntMethodInfo(Action<int[]> fn)
+        {
+            return fn.Method;
+        }
+
+        public MethodInfo GetArrayIntMethodInfo(Action<int[], int[]> fn)
         {
             return fn.Method;
         }

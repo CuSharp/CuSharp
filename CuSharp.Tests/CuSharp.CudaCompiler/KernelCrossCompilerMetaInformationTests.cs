@@ -1,182 +1,94 @@
-﻿using System;
-using System.Reflection;
-using CuSharp.CudaCompiler.Frontend;
-using LibNVVMBinder;
+﻿using CuSharp.CudaCompiler.Frontend;
+using CuSharp.Tests.TestHelper;
 using Xunit;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler;
 
 public class KernelCrossCompilerMetaInformationTests
 {
-    private void EmptyMethod()
-    {}
-
-    private string _expectedLLVMRepresentation = "; ModuleID = 'EmptyMethodKernelMODULE'\n"
-                                                 + "source_filename = \"EmptyMethodKernelMODULE\"\n"
-                                                 + "target datalayout = \"e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-i128:128:128-f32:32:32-f64:64:64-v16:16:16-v32:32:32-v64:64:64-v128:128:128-n16:32:64\"\n"
-                                                 + "target triple = \"nvptx64-nvidia-cuda\"\n"
-                                                 + "\n"
-                                                 + "define void @EmptyMethodKernel() {\n"
-                                                 + "entry:\n"
-                                                 + "  ret void\n"
-                                                 + "}\n"
-                                                 + "\n"
-                                                 + "; Function Attrs: nounwind readnone\n"
-                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.ctaid.x() #0\n"
-                                                 + "\n"
-                                                 + "; Function Attrs: nounwind readnone\n"
-                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.ntid.x() #0\n"
-                                                 + "\n"
-                                                 + "; Function Attrs: nounwind readnone\n"
-                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.tid.x() #0\n"
-                                                 + "\n"
-                                                 + "; Function Attrs: nounwind readnone\n"
-                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.ctaid.y() #0\n"
-                                                 + "\n"
-                                                 + "; Function Attrs: nounwind readnone\n"
-                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.ntid.y() #0\n"
-                                                 + "\n"
-                                                 + "; Function Attrs: nounwind readnone\n"
-                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.tid.y() #0\n"
-                                                 + "\n"
-                                                 + "; Function Attrs: nounwind readnone\n"
-                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.ctaid.z() #0\n"
-                                                 + "\n"
-                                                 + "; Function Attrs: nounwind readnone\n"
-                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.ntid.z() #0\n"
-                                                 + "\n"
-                                                 + "; Function Attrs: nounwind readnone\n"
-                                                 + "declare i32 @llvm.nvvm.read.ptx.sreg.tid.z() #0\n"
-                                                 + "\n"
-                                                 + "; Function Attrs: convergent nounwind\n"
-                                                 + "declare void @llvm.nvvm.barrier0() #1\n"
-                                                 + "\n"
-                                                 + "attributes #0 = { nounwind readnone }\n"
-                                                 + "attributes #1 = { convergent nounwind }\n"
-                                                 + "\n"
-                                                 + "!nvvm.annotations = !{!0}\n"
-                                                 + "!nvvmir.version = !{!1}\n"
-                                                 + "\n"
-                                                 + "!0 = !{void ()* @EmptyMethodKernel, !\"kernel\", i32 1}\n"
-                                                 + "!1 = !{i32 2, i32 0, i32 3, i32 1}\n";
-
-    private MethodInfo GetMethodInfo(Action fn)
-    {
-        return fn.Method;
-    }
-
-
-    private bool KernelIsCorrect(string llvmKernel, string kernelName)
-    {
-        var nvvm = new NVVMProgram();
-        nvvm.AddModule(llvmKernel, kernelName);
-        var result = nvvm.Verify(new string[] { });
-        return result == NVVMProgram.NVVMResult.NVVM_SUCCESS;
-    }
+    private readonly MethodInfoLoader _methodLoader = new();
+    private readonly LLVMRepresentationLoader _llvmLoader = new();
+    private readonly TestValidator _validator = new();
 
     [Fact]
     public void TestEmptyMethodCompiles()
     {
-        var method = GetMethodInfo(EmptyMethod);
+        const string kernelName = "EmptyMethodKernel";
+        var method = _methodLoader.GetMethodInfo(MethodsToCompile.EmptyMethod);
         var config = CompilationConfiguration.NvvmConfiguration;
-        config.KernelName = "EmptyMethodKernel";
+        config.KernelName = kernelName;
         var crossCompiler = new KernelCrossCompiler(config);
-        var llvmKernel = crossCompiler.Compile(new MSILKernel("EmptyMethodKernel", method));
-        Assert.Equal(_expectedLLVMRepresentation,llvmKernel.KernelBuffer);
+
+        var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+        Assert.Equal(_llvmLoader.GetEmptyMethodBodyRepresentation(kernelName),llvmKernel.KernelBuffer);
     }
     
     [Fact]
     public void TestEmptyMethodIsCorrectIR()
     {
-        var method = GetMethodInfo(EmptyMethod);
+        const string kernelName = "EmptyMethodKernel";
+        var method = _methodLoader.GetMethodInfo(MethodsToCompile.EmptyMethod);
         var config = CompilationConfiguration.NvvmConfiguration;
-        config.KernelName = "EmptyMethodKernel";
+        config.KernelName = kernelName;
         var crossCompiler = new KernelCrossCompiler(config);
-        var llvmKernel = crossCompiler.Compile(new MSILKernel("EmptyMethodKernel", method));
-        var isCorrent = KernelIsCorrect(llvmKernel.KernelBuffer, config.KernelName);
-        Assert.True(isCorrent);
+
+        var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+        var isCorrect = _validator.KernelIsCorrect(llvmKernel.KernelBuffer, config.KernelName);
+        Assert.True(isCorrect);
     }
 
-
-    private void ArrayParameterMethod(int[] A, int[] B)
-    {}
-
-    private string expectedArrayParameterMethodLLVM = "; ModuleID = 'ArrayParameterMethodMODULE'\n"
-                                                      + "source_filename = \"ArrayParameterMethodMODULE\"\n"
-                                                      + "\n"
-                                                      + "define void @ArrayParameterMethod(i32* %param0, i32* %param1) {\n"
-                                                      + "entry:\n"
-                                                      + "  ret void\n"
-                                                      + "}\n";
-
-    private MethodInfo GetArrayMethodInfo(Action<int[], int[]> fn)
-    {
-        return fn.Method;
-    }
-    
-    
     [Fact]
     public void TestArrayParameterMethod()
     {
-        var method = GetArrayMethodInfo(ArrayParameterMethod);
-        var config = new CompilationConfiguration()
-        {
-            KernelName = "ArrayParameterMethod"
-        };
+        const string kernelName = "ArrayParameterMethod";
+        var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyTwoIntArrayMethod);
+        var config = new CompilationConfiguration { KernelName = kernelName };
         var compiler = new KernelCrossCompiler(config);
-        var llvmKernel = compiler.Compile(new MSILKernel("ArrayParameterMethod", method));
-        Assert.Equal(expectedArrayParameterMethodLLVM, llvmKernel.KernelBuffer);
+
+        var llvmKernel = compiler.Compile(new MSILKernel(kernelName, method));
+
+        Assert.Equal(_llvmLoader.GetMinimalLLVMRepresentation(kernelName), llvmKernel.KernelBuffer);
     }
 
     [Fact]
     public void TestArrayParameterMethodIsCorrectIR()
     {
-        var method = GetArrayMethodInfo(ArrayParameterMethod);
+        const string kernelName = "ArrayParameterMethod";
+        var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyTwoIntArrayMethod);
         var config = CompilationConfiguration.NvvmConfiguration;
-        config.KernelName = "ArrayParameterMethod";
+        config.KernelName = kernelName;
         var compiler = new KernelCrossCompiler(config);
-        var llvmKernel = compiler.Compile(new MSILKernel("ArrayParameterMethod", method));
-        Assert.True(KernelIsCorrect(llvmKernel.KernelBuffer, llvmKernel.Name));
-    }
-    
-    private void MixedParameterMethod(int[] A, int[] B, bool b, int c)
-    {}
 
-    private string expectedMixedParameterMethodLLVM = "; ModuleID = 'MixedParameterMethodMODULE'\n"
-                                                      + "source_filename = \"MixedParameterMethodMODULE\"\n"
-                                                      + "\n"
-                                                      + "define void @MixedParameterMethod(i32* %param0, i32* %param1, i1 %param2, i32 %param3) {\n"
-                                                      + "entry:\n"
-                                                      + "  ret void\n"
-                                                      + "}\n";
+        var llvmKernel = compiler.Compile(new MSILKernel(kernelName, method));
 
-    private MethodInfo GetMixedMethodInfo(Action<int[], int[], bool, int> fn)
-    {
-        return fn.Method;
+        Assert.True(_validator.KernelIsCorrect(llvmKernel.KernelBuffer, llvmKernel.Name));
     }
-    
-    
+
     [Fact]
     public void TestMixedParameterMethod()
     {
-        var method = GetMixedMethodInfo(MixedParameterMethod);
-        var config = new CompilationConfiguration()
-        {
-            KernelName = "MixedParameterMethod"
-        };
+        const string kernelName = "MixedParameterMethod";
+        var method = _methodLoader.GetMixedMethodInfo(MethodsToCompile.EmptyMixedParameterMethod);
+        var config = new CompilationConfiguration { KernelName = kernelName };
         var compiler = new KernelCrossCompiler(config);
-        var llvmKernel = compiler.Compile(new MSILKernel("MixedParameterMethod", method));
-        Assert.Equal(expectedMixedParameterMethodLLVM, llvmKernel.KernelBuffer);
+
+        var llvmKernel = compiler.Compile(new MSILKernel(kernelName, method));
+
+        Assert.Equal(_llvmLoader.GetMinimalMixedParamLLVMRepresentation(kernelName), llvmKernel.KernelBuffer);
     }
 
     [Fact]
     public void TestMixedParameterMethodIsCorrectIR()
     {
-        var method = GetMixedMethodInfo(MixedParameterMethod);
+        var method = _methodLoader.GetMixedMethodInfo(MethodsToCompile.EmptyMixedParameterMethod);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = "MixedParameterMethod";
         var compiler = new KernelCrossCompiler(config);
+
         var llvmKernel = compiler.Compile(new MSILKernel("MixedParameterMethod", method));
-        Assert.True(KernelIsCorrect(llvmKernel.KernelBuffer, llvmKernel.Name));
+
+        Assert.True(_validator.KernelIsCorrect(llvmKernel.KernelBuffer, llvmKernel.Name));
     }
 }

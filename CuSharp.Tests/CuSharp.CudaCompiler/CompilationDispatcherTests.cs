@@ -1,30 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Collections.Generic;
 using CuSharp.CudaCompiler;
 using CuSharp.CudaCompiler.Backend;
+using CuSharp.Tests.TestHelper;
 using Xunit;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler;
 
 public class CompilationDispatcherTests
 {
-    void TestFn(int[] x)
-    {}
+    private readonly MethodInfoLoader _methodLoader = new();
 
-    private MethodInfo GetTestMethodInfo(Action<int[]> action)
-    {
-        return action.GetMethodInfo();
-    }
 
     [Fact]
-    public void TestFnIsCached()
+    public void TestMethodIsCached()
     {
         var cache = new Dictionary<int, PTXKernel>();
         var dispatcher = new CompilationDispatcher(cache);
-        dispatcher.Compile("TestFn", GetTestMethodInfo(TestFn));
-        Assert.Contains(GetTestMethodInfo(TestFn).GetHashCode(), cache.Keys);
+
+        dispatcher.Compile("TestFn", _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyIntArrayMethod));
+
+        Assert.Contains(_methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyIntArrayMethod).GetHashCode(), cache.Keys);
     }
 
     [Fact]
@@ -32,10 +27,10 @@ public class CompilationDispatcherTests
     {
         var cache = new Dictionary<int, PTXKernel>();
         var dispatcher = new CompilationDispatcher(cache);
-        dispatcher.Compile("TestFn", GetTestMethodInfo(TestFn));
-        dispatcher.Compile("TestFn", GetTestMethodInfo(TestFn));
+
+        dispatcher.Compile("TestFn", _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyIntArrayMethod));
+        dispatcher.Compile("TestFn", _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyIntArrayMethod));
+
         Assert.Single(cache);
     }
-
-    
 }
