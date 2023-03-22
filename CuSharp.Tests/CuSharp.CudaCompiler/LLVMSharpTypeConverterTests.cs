@@ -67,6 +67,18 @@ public class LLVMSharpTypeConverterTests
     }
 
     [Fact]
+    public void TestLongToLLVMLong()
+    {
+        Assert.True(TestNativeToLLVM(LLVMTypeRef.Int64Type(), typeof(long)));
+    }
+
+    [Fact]
+    public void TestLLVMLongToLong()
+    {
+        Assert.True(TestLLVMToNative(LLVMTypeRef.Int64Type(), typeof(long)));
+    }
+
+    [Fact]
     public void TestFloatToLLVMFLoat()
     {
         Assert.True(TestNativeToLLVM(LLVMTypeRef.FloatType(), typeof(float)));

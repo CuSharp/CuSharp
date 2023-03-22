@@ -1,13 +1,13 @@
 using LibNVVMBinder;
 using Xunit;
 
-namespace CuSharp.Tests
+namespace CuSharp.Tests.CuSharp.NVVMBinder
 {
     [Collection("Sequential")]
     public class LibNVVMBinderTests
     {
-        private NVVMProgram program = new ();
-        private string programText = ReadFile("resources/kernel.ll");
+        private readonly NVVMProgram _program = new ();
+        private readonly string _programText = ReadFile("resources/kernel.ll");
 
         private static string ReadFile(string path)
         {
@@ -17,80 +17,91 @@ namespace CuSharp.Tests
         [Fact]
         public void TestAddModuleToProgram()
         {
-            NVVMProgram.NVVMResult result = program.AddModule(programText, "kernel");
+            NVVMProgram.NVVMResult result = _program.AddModule(_programText, "kernel");
             Assert.Equal( NVVMProgram.NVVMResult.NVVM_SUCCESS, result);
         }
 
         [Fact]
         public void TestCompileWithoutModuleFails()
         {
-            NVVMProgram.NVVMResult result = program.Compile(new string[0]);
+            NVVMProgram.NVVMResult result = _program.Compile(new string[0]);
             Assert.Equal(NVVMProgram.NVVMResult.NVVM_ERROR_NO_MODULE_IN_PROGRAM, result );
         }
     
         [Fact]
         public void TestLazyAddModuleToProgram2()
         {
-            NVVMProgram.NVVMResult result = program.LazyAddModule(programText, "kernel");
+            NVVMProgram.NVVMResult result = _program.LazyAddModule(_programText, "kernel");
             Assert.Equal(NVVMProgram.NVVMResult.NVVM_SUCCESS, result);
         }
+
         [Fact]
         public void TestVerify()
         {
-            program.AddModule(programText,"kernel");
-            NVVMProgram.NVVMResult result = program.Verify(new string[0]);
+            _program.AddModule(_programText,"kernel");
+            NVVMProgram.NVVMResult result = _program.Verify(new string[0]);
             Assert.Equal(NVVMProgram.NVVMResult.NVVM_SUCCESS, result);
         }
+
         [Fact]
         public void TestVerifyFails()
         {
-            program.AddModule("asdf","kernel");
-            NVVMProgram.NVVMResult result = program.Verify(new string[0]);
+            _program.AddModule("asdf","kernel");
+            NVVMProgram.NVVMResult result = _program.Verify(new string[0]);
             Assert.Equal(NVVMProgram.NVVMResult.NVVM_ERROR_INVALID_IR, result);
-        }   
+        }
+
         [Fact]
         public void TestCompilationRuns()
         {
-            program.AddModule(programText,"kernel");
-            NVVMProgram.NVVMResult result = program.Compile(new string[0]);
+            _program.AddModule(_programText,"kernel");
+            NVVMProgram.NVVMResult result = _program.Compile(new string[0]);
             Assert.Equal(NVVMProgram.NVVMResult.NVVM_SUCCESS, result);
         }
 
         [Fact]
         public void TestCompilationFails()
         {
-            program.AddModule("asdf","kernel");
-            NVVMProgram.NVVMResult result = program.Compile(new string[0]);
+            _program.AddModule("asdf","kernel");
+            NVVMProgram.NVVMResult result = _program.Compile(new string[0]);
             Assert.Equal(NVVMProgram.NVVMResult.NVVM_ERROR_COMPILATION, result);
         }
 
         [Fact]
         public void TestCompilationOutput()
         {
-            program.AddModule(programText, "kernel");
-            program.Compile(new string[0]);
+            _program.AddModule(_programText, "kernel");
+            _program.Compile(new string[0]);
             string result;
-            program.GetCompiledResult(out result);
+            _program.GetCompiledResult(out result);
             Assert.Equal(ReadFile("resources/kernel.ptx").Replace("\r", ""), result);
         }
 
         [Fact]
         public void TestErrorLogsAfterFail()
         {
-            program.AddModule("asdf", "kernel");
-            program.Compile(new string[0]);
+            _program.AddModule("asdf", "kernel");
+            _program.Compile(new string[0]);
             string log;
-            program.GetProgramLog(out log);
+            _program.GetProgramLog(out log);
             Assert.NotEmpty(log);
         }
+
         [Fact]
         public void TestErrorLogsAfterSuccess()
         {
-            program.AddModule(programText, "kernel");
-            program.Compile(new string[0]);
+            _program.AddModule(_programText, "kernel");
+            _program.Compile(new string[0]);
             string log;
-            program.GetProgramLog(out log);
+            _program.GetProgramLog(out log);
             Assert.Empty(log);
+        }
+
+        [Fact]
+        public void TestDisposeDoesNotThrow()
+        {
+            var exception = Record.Exception(() => _program.Dispose());
+            Assert.Null(exception);
         }
     }
 }

@@ -58,8 +58,10 @@ public class IntegrationTests
         var devB = dev.Copy(b);
         dev.Launch(MethodsToCompile.ArrayIntScalarAdd, (1,1,1), ((uint) length,1,1), devA, devB);
         a = dev.Copy(devA);
+        var bCopied = dev.Copy(devB);
         _output.WriteLine($"Used gpu device: '{dev.ToString()}'");
         Assert.True(a.SequenceEqual(expected));
+        Assert.Equal(b, bCopied);
     }
 
 }
