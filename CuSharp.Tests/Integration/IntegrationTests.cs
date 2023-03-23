@@ -1,17 +1,18 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using ManagedCuda;
+﻿using System.Linq;
+using CuSharp.Tests.TestHelper;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace CuSharp.Tests.Integration;
 
+[Collection("Sequential")]
 public class IntegrationTests
 {
-    static void SimpleArrayAdd(int[] a, int[] b, int[] c)
+    private readonly ITestOutputHelper _output;
+
+    public IntegrationTests(ITestOutputHelper output)
     {
-        var idx = KernelTools.BlockDimensions.Item1 * KernelTools.BlockIndex.Item1 + KernelTools.ThreadIndex.Item1;
-        c[idx] = a[idx] + b[idx];
+        _output = output;
     }
 
     [Fact]
@@ -32,15 +33,11 @@ public class IntegrationTests
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
         var devC = dev.Copy(c);
-        dev.Launch(SimpleArrayAdd, (1,1,1), ((uint) length,1,1), devA, devB, devC);
+        dev.Launch(MethodsToCompile.ArrayIntAdditionWithKernelTools, (1,1,1), ((uint) length,1,1), devA, devB, devC);
         c = dev.Copy(devC);
-        Assert.True(c.SequenceEqual(expectedC));
-    }
 
-    static void ArrayScalarAdd(int[] a, int b)
-    {
-        var idx = KernelTools.BlockDimensions.Item1 * KernelTools.BlockIndex.Item1 + KernelTools.ThreadIndex.Item1;
-        a[idx] = a[idx] + b;
+        _output.WriteLine($"Used gpu device: '{dev.ToString()}'");
+        Assert.True(c.SequenceEqual(expectedC));
     }
 
     [Fact]
@@ -59,9 +56,12 @@ public class IntegrationTests
 
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
-        dev.Launch(ArrayScalarAdd, (1,1,1), ((uint) length,1,1), devA, devB);
+        dev.Launch(MethodsToCompile.ArrayIntScalarAdd, (1,1,1), ((uint) length,1,1), devA, devB);
         a = dev.Copy(devA);
+        var bCopied = dev.Copy(devB);
+        _output.WriteLine($"Used gpu device: '{dev.ToString()}'");
         Assert.True(a.SequenceEqual(expected));
+        Assert.Equal(b, bCopied);
     }
 
 }

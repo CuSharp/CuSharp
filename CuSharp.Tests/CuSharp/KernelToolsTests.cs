@@ -1,60 +1,50 @@
 ﻿using System;
 using Xunit;
 
-namespace CuSharp.Tests
+namespace CuSharp.Tests.CuSharp
 {
+    [Collection("Sequential")]
     public class KernelToolsTests
     {
         [Fact]
-        public void TestSyncThreadsThrows()
+        public void TestSyncThreads()
         {
             Assert.Throws<NotSupportedException>(() => KernelTools.SyncThreads());
+
+            var exception = Record.Exception(() =>
+            {
+                KernelTools.CallSyncThreadsAction = () => Console.Write("Syncing now!");
+                KernelTools.SyncThreads();
+            });
+            Assert.Null(exception);
+            
         }
 
         [Fact]
-        public void TestBlockIndexThrows()
+        public void TestBlockIndex()
         {
             Assert.Throws<NotSupportedException>(() => KernelTools.BlockIndex);
+
+            KernelTools.GetBlockIndexAction = () => (42, 42, 42);
+            Assert.True((42, 42, 42) == KernelTools.BlockIndex);
         }
 
         [Fact]
-        public void TestThreadIndexThrows()
+        public void TestThreadIndex()
         {
             Assert.Throws<NotSupportedException>(() => KernelTools.ThreadIndex);
+
+            KernelTools.GetThreadIndexAction = () => (1337, 1337, 1337);
+            Assert.True((1337, 1337, 1337) == KernelTools.ThreadIndex);
         }
 
         [Fact]
-        public void TestBlockDimensionsThrows()
+        public void TestBlockDimensions()
         {
             Assert.Throws<NotSupportedException>(() => KernelTools.BlockDimensions);
-        }
 
-        [Fact]
-        public void TestSyncThreadsOverwriteDoesNotThrow()
-        {
-            KernelTools.CallSyncThreadsAction = () => Console.Write("Syncing now!");
-            KernelTools.SyncThreads();
-        }
-
-        [Fact]
-        public void TestBlockIndexOverwrite()
-        {
-            KernelTools.GetBlockIndexAction = () => (42, 42, 42);
-            Assert.True((42,42,42) == KernelTools.BlockIndex);
-        }
-
-        [Fact]
-        public void TestThreadIndexOverwrite()
-        {
-            KernelTools.GetThreadIndexAction = () => (1337, 1337, 1337);
-            Assert.True((1337,1337,1337) == KernelTools.ThreadIndex);
-        }
-
-        [Fact]
-        public void TestBlockDimensionsOverwrite()
-        {
-            KernelTools.GetBlockDimensionsAction = () => (112, 112,112);
-            Assert.True((112,112,112) == KernelTools.BlockDimensions);
+            KernelTools.GetBlockDimensionsAction = () => (112, 112, 112);
+            Assert.True((112, 112, 112) == KernelTools.BlockDimensions);
         }
     }
 }

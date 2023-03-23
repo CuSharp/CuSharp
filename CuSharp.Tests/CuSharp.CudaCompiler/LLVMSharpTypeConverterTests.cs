@@ -5,6 +5,7 @@ using Xunit;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler;
 
+[Collection("Sequential")]
 public class LLVMSharpTypeConverterTests
 {
     private bool TestNativeToLLVM(LLVMTypeRef llvmType, Type nativeType)
@@ -63,6 +64,18 @@ public class LLVMSharpTypeConverterTests
     public void TestLLVMIntToInt()
     {
         Assert.True(TestLLVMToNative(LLVMTypeRef.Int32Type(), typeof(int)));
+    }
+
+    [Fact]
+    public void TestLongToLLVMLong()
+    {
+        Assert.True(TestNativeToLLVM(LLVMTypeRef.Int64Type(), typeof(long)));
+    }
+
+    [Fact]
+    public void TestLLVMLongToLong()
+    {
+        Assert.True(TestLLVMToNative(LLVMTypeRef.Int64Type(), typeof(long)));
     }
 
     [Fact]
