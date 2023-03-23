@@ -10,9 +10,14 @@ public class MethodBodyCompiler
     private readonly LLVMBuilderRef _builder;
     private readonly FunctionsDto _functionsDto;
     private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
-    private readonly List<LLVMValueRef> _localVariableList = new();
+    private readonly Dictionary<LLVMBasicBlockRef, List<LLVMValueRef>> _localVariableList = new(); //per block
+    private readonly Dictionary<long, LLVMBasicBlockRef> _blockList = new(); //contains all blocks except entry
+    private readonly Dictionary<LLVMBasicBlockRef, List<LLVMBasicBlockRef>> predecessors = new();
 
     private long _virtualRegisterCounter;
+    private long _blockCounter;
+    private LLVMBasicBlockRef _currentBlock; 
+    private long _instructionOffset;
     private string? _nameOfMethodToCall;
 
     public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto)
@@ -25,14 +30,29 @@ public class MethodBodyCompiler
     
     public IEnumerable<(ILOpCode, object?)> CompileMethodBody()
     {
+        _currentBlock = LLVM.GetEntryBasicBlock(_functionsDto.Function);
         IList<(ILOpCode, object?)> opCodes = new List<(ILOpCode, object?)>();
         while (_reader.BaseStream.Position < _reader.BaseStream.Length)
         {
+
             if (_reader.BaseStream.Position == _reader.BaseStream.Length)
             {
                 throw new ArgumentOutOfRangeException("Unexpected end of method body.");
             }
 
+            if (_blockList.ContainsKey(_instructionOffset ))
+            {
+
+                if (LLVM.GetLastInstruction(_currentBlock).GetInstructionOpcode() != LLVMOpcode.LLVMBr)
+                {
+                    LLVM.BuildBr(_builder, _blockList[_instructionOffset]); //Terminator instruction is needed!
+                    
+                    var predList = GetPredecessorList(_blockList[_instructionOffset]);
+                    predList.Add(_currentBlock);
+                }
+                LLVM.PositionBuilderAtEnd(_builder, _blockList[_instructionOffset]);
+                _currentBlock = _blockList[_instructionOffset];
+            }
             opCodes.Add(CompileNextOpCode());
         }
 
@@ -41,9 +61,10 @@ public class MethodBodyCompiler
 
     private (ILOpCode, object?) CompileNextOpCode()
     {
+        
+
         var opCode = ReadOpCode();
         object? operand = null;
-
         switch (opCode)
         {
             case ILOpCode.Nop:
@@ -81,23 +102,54 @@ public class MethodBodyCompiler
             case ILOpCode.Blt_un_s: throw new NotSupportedException();
             case ILOpCode.Bne_un: throw new NotSupportedException();
             case ILOpCode.Bne_un_s: throw new NotSupportedException();
-            case ILOpCode.Br: throw new NotSupportedException();
-            case ILOpCode.Br_s: throw new NotSupportedException();
+            case ILOpCode.Br:
+                operand = _reader.ReadInt32();
+                _instructionOffset += 4;
+                CompileBr((int) operand);
+                break;
+            case ILOpCode.Br_s:
+                operand = _reader.ReadSByte();
+                _instructionOffset++;
+                CompileBr((sbyte) operand);
+                break;
             case ILOpCode.Break: throw new NotSupportedException();
-            case ILOpCode.Brfalse: throw new NotSupportedException();
-            case ILOpCode.Brfalse_s: throw new NotSupportedException();
-            case ILOpCode.Brtrue: throw new NotSupportedException();
-            case ILOpCode.Brtrue_s: throw new NotSupportedException();
+            case ILOpCode.Brfalse:
+                operand = _reader.ReadInt32();
+                _instructionOffset += 4;
+                CompileBrFalse((int) operand);
+                break;
+            case ILOpCode.Brfalse_s:
+                operand = _reader.ReadSByte();
+                _instructionOffset++;
+                CompileBrFalse((sbyte) operand);
+                break;
+            case ILOpCode.Brtrue:
+                operand = _reader.ReadInt32();
+                _instructionOffset += 4;
+                CompileBrTrue((int) operand);
+                break;
+            case ILOpCode.Brtrue_s:
+                operand = _reader.ReadSByte();
+                _instructionOffset ++;
+                CompileBrTrue((sbyte) operand);
+                break;
             case ILOpCode.Call:
                 operand = _reader.ReadInt32();
-                CompileCall((int)operand);
+                _instructionOffset += 4;
+                CompileCall((int) operand);
                 break;
             case ILOpCode.Callvirt: throw new NotSupportedException();
             case ILOpCode.Calli: throw new NotSupportedException();
-            case ILOpCode.Ceq: throw new NotSupportedException();
-            case ILOpCode.Cgt: throw new NotSupportedException();
+            case ILOpCode.Ceq:
+                CompileCeq();
+                break;
+            case ILOpCode.Cgt:
+                CompileCgt();
+                break;
             case ILOpCode.Cgt_un: throw new NotSupportedException();
-            case ILOpCode.Clt: throw new NotSupportedException();
+            case ILOpCode.Clt:
+                CompileClt();
+                break;
             case ILOpCode.Clt_un: throw new NotSupportedException();
             case ILOpCode.Ckfinite: throw new NotSupportedException();
             case ILOpCode.Conv_i1: throw new NotSupportedException();
@@ -143,10 +195,12 @@ public class MethodBodyCompiler
             case ILOpCode.Jmp: throw new NotSupportedException();
             case ILOpCode.Ldarg:
                 operand = _reader.ReadUInt16();
+                _instructionOffset += 2;
                 CompileLdarg((ushort)operand);
                 break;
             case ILOpCode.Ldarg_s:
                 operand = _reader.ReadByte();
+                _instructionOffset++;
                 CompileLdarg((byte)operand);
                 break;
             case ILOpCode.Ldarg_0:
@@ -165,18 +219,22 @@ public class MethodBodyCompiler
             case ILOpCode.Ldarga_s: throw new NotSupportedException();
             case ILOpCode.Ldc_i4:
                 operand = _reader.ReadInt32();
+                _instructionOffset += 4;
                 CompileLdcInt((int)operand);
                 break;
             case ILOpCode.Ldc_i8:
                 operand = _reader.ReadInt64();
+                _instructionOffset += 8;
                 CompileLdcLong((long)operand);
                 break;
             case ILOpCode.Ldc_r4:
                 operand = _reader.ReadSingle();
+                _instructionOffset += 4;
                 CompileLdcFloat((float)operand);
                 break;
             case ILOpCode.Ldc_r8:
                 operand = _reader.ReadDouble();
+                _instructionOffset += 8;
                 CompileLdcDouble((double)operand);
                 break;
             case ILOpCode.Ldc_i4_m1:
@@ -211,6 +269,7 @@ public class MethodBodyCompiler
                 break;
             case ILOpCode.Ldc_i4_s:
                 operand = _reader.ReadSByte();
+                _instructionOffset++;
                 CompileLdcInt((sbyte)operand);
                 break;
             case ILOpCode.Ldnull: throw new NotSupportedException();
@@ -229,10 +288,12 @@ public class MethodBodyCompiler
             case ILOpCode.Ldind_ref: throw new NotSupportedException();
             case ILOpCode.Ldloc:
                 operand = _reader.ReadUInt16();
+                _instructionOffset += 2;
                 CompileLdloc((ushort)operand);
                 break;
             case ILOpCode.Ldloc_s:
                 operand = _reader.ReadByte();
+                _instructionOffset++;
                 CompileLdloc((byte)operand);
                 break;
             case ILOpCode.Ldloc_0:
@@ -270,8 +331,16 @@ public class MethodBodyCompiler
             case ILOpCode.Shl: throw new NotSupportedException();
             case ILOpCode.Shr: throw new NotSupportedException();
             case ILOpCode.Shr_un: throw new NotSupportedException();
-            case ILOpCode.Starg: throw new NotSupportedException();
-            case ILOpCode.Starg_s: throw new NotSupportedException();
+            case ILOpCode.Starg:
+                operand = _reader.ReadInt16();
+                _instructionOffset += 2;
+                CompileStarg((ushort) operand);
+                break;
+            case ILOpCode.Starg_s:
+                operand = _reader.ReadByte();
+                _instructionOffset++;
+                CompileStarg((byte) operand);
+                break;
             case ILOpCode.Stind_i1: throw new NotSupportedException();
             case ILOpCode.Stind_i2: throw new NotSupportedException();
             case ILOpCode.Stind_i4: throw new NotSupportedException();
@@ -282,10 +351,12 @@ public class MethodBodyCompiler
             case ILOpCode.Stind_ref: throw new NotSupportedException();
             case ILOpCode.Stloc:
                 operand = _reader.ReadUInt16();
+                _instructionOffset += 2;
                 CompileStloc((ushort)operand);
                 break;
             case ILOpCode.Stloc_s:
                 operand = _reader.ReadByte();
+                _instructionOffset++;
                 CompileStloc((byte)operand);
                 break;
             case ILOpCode.Stloc_0:
@@ -329,6 +400,7 @@ public class MethodBodyCompiler
             case ILOpCode.Ldelema: throw new NotSupportedException();
             case ILOpCode.Ldfld:
                 operand = _reader.ReadInt32();
+                _instructionOffset += 4;
                 CompileLdfld((int)operand);
                 break;
             case ILOpCode.Ldflda: throw new NotSupportedException();
@@ -365,6 +437,121 @@ public class MethodBodyCompiler
         }
 
         return (opCode, operand);
+    }
+
+    private void CompileClt()
+    {
+        var value2 = _virtualRegisterStack.Pop();
+        var value1 = _virtualRegisterStack.Pop();
+        LLVMValueRef result =
+            BuildComparison(LLVMIntPredicate.LLVMIntSLT, LLVMRealPredicate.LLVMRealOLT, value1, value2);
+        _virtualRegisterStack.Push(result); 
+    }
+
+    private void CompileCgt()
+    {
+        
+        var value2 = _virtualRegisterStack.Pop();
+        var value1 = _virtualRegisterStack.Pop();
+        LLVMValueRef result =
+            BuildComparison(LLVMIntPredicate.LLVMIntSGT, LLVMRealPredicate.LLVMRealOGT, value1, value2);
+        _virtualRegisterStack.Push(result); 
+    }
+
+    private void CompileCeq()
+    {
+        var value2 = _virtualRegisterStack.Pop();
+        var value1 = _virtualRegisterStack.Pop();
+        LLVMValueRef result = BuildComparison(LLVMIntPredicate.LLVMIntEQ, LLVMRealPredicate.LLVMRealOEQ, value1, value2);
+        _virtualRegisterStack.Push(result);  
+    }
+
+    private void CompileBr(int operand)
+    {
+        LLVMBasicBlockRef block;
+        if (operand != 1)
+        {
+            GetBlock(_instructionOffset);
+        }
+
+        var target = GetBlock(_instructionOffset + operand);
+        LLVM.BuildBr(_builder, target);
+
+        var predList = GetPredecessorList(target);
+        predList.Add(_currentBlock);
+    }
+
+    private void CompileBrTrue(int operand)
+    {
+        var predicate = _virtualRegisterStack.Pop();
+        var thenBlock = GetBlock(_instructionOffset + operand);
+        var elseBlock = GetBlock(_instructionOffset);
+        LLVM.BuildCondBr(_builder, predicate, thenBlock, elseBlock);
+        var elsePreds = GetPredecessorList(thenBlock);
+        var thenPreds = GetPredecessorList(elseBlock);
+        elsePreds.Add(_currentBlock);
+        thenPreds.Add(_currentBlock);
+    }
+
+    private void CompileBrFalse(int operand)
+    {
+        var predicate = _virtualRegisterStack.Pop();
+        var predicateNegated = LLVM.BuildNot(_builder, predicate, GetVirtualRegisterName());
+        var elseBlock = GetBlock(_instructionOffset + 1);
+        var thenBlock = GetBlock(_instructionOffset + operand);
+        LLVM.BuildCondBr(_builder, predicateNegated, thenBlock,
+            elseBlock);
+        
+        var elsePreds = GetPredecessorList(thenBlock);
+        var thenPreds = GetPredecessorList(elseBlock);
+        elsePreds.Add(_currentBlock);
+        thenPreds.Add(_currentBlock);
+    }
+
+    private List<LLVMBasicBlockRef> GetPredecessorList(LLVMBasicBlockRef target)
+    {
+        if (!predecessors.ContainsKey(target))
+        {
+            predecessors.Add(target, new());
+        }
+
+        return predecessors[target];
+    }
+    private LLVMBasicBlockRef GetBlock(long index)
+    {
+        if (_blockList.ContainsKey(index))
+        {
+            return _blockList[index];
+        }
+        
+        var block = LLVM.AppendBasicBlock(_functionsDto.Function, GetBlockName());
+        _blockList.Add(index, block);
+        return block;
+    }
+    private LLVMValueRef BuildComparison(LLVMIntPredicate intPredicate, LLVMRealPredicate realPredicate, LLVMValueRef value1, LLVMValueRef value2)
+    {
+        
+        LLVMValueRef result;
+        if (AreParamsCompatibleAndInt(value1, value2))
+        {
+            result = LLVM.BuildICmp(_builder, LLVMIntPredicate.LLVMIntSLT, value1, value2, GetVirtualRegisterName());
+        } else if (AreParamsCompatibleAndDecimal(value1, value2))
+
+        {
+            result = LLVM.BuildFCmp(_builder, LLVMRealPredicate.LLVMRealOLT, value1, value2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {value1} and {value2} are not supported or have not the same type");
+        }
+
+        return result;
+    }
+    private void CompileStarg(int index)
+    {
+        var value = _virtualRegisterStack.Pop();
+        var arg = LLVM.GetParam(_functionsDto.Function, (uint)index);
+        LLVM.BuildStore(_builder, value, arg);
     }
 
     private void CompileLdfld(int operand)
@@ -527,16 +714,38 @@ public class MethodBodyCompiler
         _virtualRegisterStack.Push(reference);
     }
 
+    private List<LLVMValueRef> GetLocals()
+    {
+        if (!_localVariableList.ContainsKey(_currentBlock))
+        {
+            _localVariableList.Add(_currentBlock, new());
+        }
+
+        return _localVariableList[_currentBlock];
+    }
     private void CompileLdloc(int operand)
     {
+        var _localVariableList = GetLocals();
+        if (_localVariableList.Count <= operand)
+        {
+            var phiResult = LLVM.BuildPhi(_builder, LLVMTypeRef.Int32Type(), GetVirtualRegisterName());
+            var predecessors = GetPredecessorList(_currentBlock);
+            foreach (var pred in predecessors)
+            {
+                var value = this._localVariableList[pred][operand];
+                LLVM.AddIncoming(phiResult, new []{value}, new []{pred}, 1);    
+            }
+            
+            _localVariableList.Insert(operand, phiResult);
+        }
         var param = _localVariableList[operand];
         _virtualRegisterStack.Push(param);
     }
 
     private void CompileStloc(int operand)
     {
+        var _localVariableList = GetLocals();
         var param = _virtualRegisterStack.Pop();
-
         if (_localVariableList.Count > operand)
         {
             _localVariableList[operand] = param;
@@ -547,15 +756,26 @@ public class MethodBodyCompiler
         }
     }
 
+
     private ILOpCode ReadOpCode()
     {
         var opCodeByte = _reader.ReadByte();
+        _instructionOffset++;
+        if (opCodeByte == 0xFE)
+        {
+            _instructionOffset++;
+        }
         return (ILOpCode)(opCodeByte == 0xFE ? 0xFE00 + _reader.ReadByte() : opCodeByte);
     }
 
     private string GetVirtualRegisterName()
     {
         return $"reg{_virtualRegisterCounter++}";
+    }
+
+    private string GetBlockName()
+    {
+        return $"block{_blockCounter++}";
     }
 
     private bool AreParamsCompatibleAndInt(LLVMValueRef param1, LLVMValueRef param2)

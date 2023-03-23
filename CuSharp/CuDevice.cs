@@ -44,11 +44,6 @@ public partial class CuDevice
         return cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
     }
 
-    public void Launch<T0>(Func<T0> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, Tensor<T0> param0) 
-    {
-        var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
-        cudaKernel.Run(((CudaTensor<T0>)param0).DevicePointer );
-    }
 
     private CudaKernel compileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) GridSize, (uint,uint,uint) BlockSize)
     {
