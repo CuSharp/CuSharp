@@ -434,7 +434,7 @@ public class MethodBodyCompiler
             //case ILOpCode.Throw: throw new NotSupportedException();
             //case ILOpCode.Unbox: throw new NotSupportedException();
             //case ILOpCode.Unbox_any: throw new NotSupportedException();
-            default: throw new NotSupportedException();
+            default: throw new NotSupportedException($"OpCode '{opCode}' is not supported");
         }
 
         return (opCode, operand);
@@ -574,7 +574,6 @@ public class MethodBodyCompiler
         }
 
         var target = GetBlock(_stream.Position + operand);
-        //BuildAdditionalPhis(); TODO REMOVE
         LLVM.BuildBr(_builder, target.BlockRef);
 
         target.Predecessors.Add(_currentBlock);
@@ -586,7 +585,6 @@ public class MethodBodyCompiler
         var predicate = _virtualRegisterStack.Pop();
         var thenBlock = GetBlock(_stream.Position + operand);
         var elseBlock = GetBlock(_stream.Position);
-        //BuildAdditionalPhis(); TODO REMOVE
         LLVM.BuildCondBr(_builder, predicate, thenBlock.BlockRef, elseBlock.BlockRef);
 
         thenBlock.Predecessors.Add(_currentBlock);
@@ -598,10 +596,16 @@ public class MethodBodyCompiler
     private void CompileBrFalse(int operand)
     {
         var predicate = _virtualRegisterStack.Pop();
+
+        if (predicate.TypeOf().ToNativeType() == typeof(int))
+        {
+            predicate = LLVM.BuildICmp(_builder, LLVMIntPredicate.LLVMIntEQ, predicate,
+                LLVM.ConstInt(LLVM.Int32Type(), 1, false), GetVirtualRegisterName());
+        }
+
         var predicateNegated = LLVM.BuildNot(_builder, predicate, GetVirtualRegisterName());
         var elseBlock = GetBlock(_stream.Position);
         var thenBlock = GetBlock(_stream.Position + operand);
-        //BuildAdditionalPhis(); TODO REMOVE
         LLVM.BuildCondBr(_builder, predicateNegated, thenBlock.BlockRef,
             elseBlock.BlockRef);
 
@@ -650,12 +654,12 @@ public class MethodBodyCompiler
         LLVMValueRef result;
         if (AreParamsCompatibleAndInt(value1, value2))
         {
-            result = LLVM.BuildICmp(_builder, LLVMIntPredicate.LLVMIntSLT, value1, value2, GetVirtualRegisterName());
+            result = LLVM.BuildICmp(_builder, intPredicate, value1, value2, GetVirtualRegisterName());
         }
         else if (AreParamsCompatibleAndDecimal(value1, value2))
 
         {
-            result = LLVM.BuildFCmp(_builder, LLVMRealPredicate.LLVMRealOLT, value1, value2, GetVirtualRegisterName());
+            result = LLVM.BuildFCmp(_builder, realPredicate, value1, value2, GetVirtualRegisterName());
         }
         else
         {
@@ -854,20 +858,23 @@ public class MethodBodyCompiler
 
         foreach (var phi in startNode.PhiInstructions) //Patch Phi Instructions
         {
+            int arbitraryCounter = 0;
             foreach (var pred in startNode.Predecessors)
             {
                 if (pred.LocalVariables.ContainsKey(phi.Key))
                 {
                     phi.Value.AddIncoming(new[] { pred.LocalVariables[phi.Key] }, new[] { pred.BlockRef }, 1);
                 }
-                else //add arbitrary value
+                else // Add arbitrary value (required because of NVVM)
                 {
-                    phi.Value.AddIncoming(new[] { LLVM.ConstInt(phi.Value.TypeOf(), 0, false) },
-                        new[] { pred.BlockRef }, 1);
+                    phi.Value.AddIncoming(new[] { LLVM.ConstInt(phi.Value.TypeOf(), 0, false) }, new[] { pred.BlockRef }, 1);
+                    arbitraryCounter++;
+                    startNode.PhiInstructions.Remove(phi.Key);
+                    startNode.LocalVariables.Remove(phi.Key);
                 }
             }
 
-            if (phi.Value.CountIncoming() == 0)
+            if (phi.Value.CountIncoming() == arbitraryCounter)
             {
                 LLVM.InstructionRemoveFromParent(phi.Value);
             }
