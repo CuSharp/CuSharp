@@ -13,7 +13,8 @@
         public static void ScalarIntAdditionWithConst(int a, int b)
         {
             int c = 12345;
-            int d = a + b + c;
+            int d = 0;
+            int e = a + b + c + d + -1 + 1 + 2 + 3 + 4 + 5 + 6 + 7 + 8;
         }
 
         public static void ScalarLongAdditionWithConst(long a, long b)
@@ -35,6 +36,16 @@
         public static void ScalarIntMultiplication(int a, int b)
         {
             int c = a * b;
+        }
+
+        public static void ScalarIntDivision(int a, int b)
+        {
+            int c = a / b;
+        }
+
+        public static void ScalarIntRemainder(int a, int b)
+        {
+            int c = a % b;
         }
 
         public static void ScalarFloatAdditionWithConst(float a, float b)
@@ -64,6 +75,16 @@
             float c = a * b;
         }
 
+        public static void ScalarFloatDivision(float a, float b)
+        {
+            float c = a / b;
+        }
+
+        public static void ScalarFloatRemainder(float a, float b)
+        {
+            float c = a % b;
+        }
+
         public static void ArrayIntAddition(int[] a, int[] b, int[] c)
         {
             int i = 0;
@@ -87,11 +108,51 @@
             int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
             c[i] = a[i] + b[i];
         }
-
+        
         public static void ArrayIntScalarAdd(int[] a, int b)
         {
             int i = (int)(KernelTools.BlockDimensions.Item1 * KernelTools.BlockIndex.Item1 + KernelTools.ThreadIndex.Item1);
             a[i] = a[i] + b;
+        }
+
+        public static void ArrayIntShortHandOperationsWithKernelTools(int[] a, int[] b)
+        {
+            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            a[i] += b[i];
+            a[i] -= b[i];
+            a[i] *= b[i];
+            a[i] /= b[i];
+            a[i] %= b[i];
+        }
+
+        public static void ArrayLongShortHandOperationsWithKernelTools(long[] a, long[] b)
+        {
+            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            a[i] += b[i];
+            a[i] -= b[i];
+            a[i] *= b[i];
+            a[i] /= b[i];
+            a[i] %= b[i];
+        }
+
+        public static void ArrayFloatShortHandOperationsWithKernelTools(float[] a, float[] b)
+        {
+            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            a[i] += b[i];
+            a[i] -= b[i];
+            a[i] *= b[i];
+            a[i] /= b[i];
+            a[i] %= b[i];
+        }
+
+        public static void ArrayDoubleShortHandOperationsWithKernelTools(double[] a, double[] b)
+        {
+            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            a[i] += b[i];
+            a[i] -= b[i];
+            a[i] *= b[i];
+            a[i] /= b[i];
+            a[i] %= b[i];
         }
 
         public static void NotSupportedNestedCall(int a, int b)

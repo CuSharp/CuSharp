@@ -50,7 +50,22 @@ namespace CuSharp.Tests.TestHelper
             return fn.Method;
         }
 
+        public MethodInfo GetArrayLongMethodInfo(Action<long[], long[]> fn)
+        {
+            return fn.Method;
+        }
+
+        public MethodInfo GetArrayFloatMethodInfo(Action<float[], float[]> fn)
+        {
+            return fn.Method;
+        }
+
         public MethodInfo GetArrayFloatMethodInfo(Action<float[], float[], float[]> fn)
+        {
+            return fn.Method;
+        }
+
+        public MethodInfo GetArrayDoubleMethodInfo(Action<double[], double[]> fn)
         {
             return fn.Method;
         }

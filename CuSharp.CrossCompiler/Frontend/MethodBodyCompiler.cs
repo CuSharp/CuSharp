@@ -231,9 +231,13 @@ public class MethodBodyCompiler
             case ILOpCode.Conv_ovf_i_un: throw new NotSupportedException();
             case ILOpCode.Conv_ovf_u_un: throw new NotSupportedException();
             case ILOpCode.Cpblk: throw new NotSupportedException();
-            case ILOpCode.Div: throw new NotSupportedException();
+            case ILOpCode.Div:
+                CompileDiv();
+                break;
             case ILOpCode.Div_un: throw new NotSupportedException();
-            case ILOpCode.Dup: throw new NotSupportedException();
+            case ILOpCode.Dup:
+                CompileDup();
+                break;
             case ILOpCode.Endfilter: throw new NotSupportedException();
             case ILOpCode.Endfinally: throw new NotSupportedException();
             case ILOpCode.Initblk: throw new NotSupportedException();
@@ -313,15 +317,17 @@ public class MethodBodyCompiler
             case ILOpCode.Ldnull: throw new NotSupportedException();
             case ILOpCode.Ldstr: throw new NotSupportedException();
             case ILOpCode.Ldftn: throw new NotSupportedException();
-            case ILOpCode.Ldind_i1: throw new NotSupportedException();
-            case ILOpCode.Ldind_i2: throw new NotSupportedException();
-            case ILOpCode.Ldind_i4: throw new NotSupportedException();
-            case ILOpCode.Ldind_i8: throw new NotSupportedException();
-            case ILOpCode.Ldind_u1: throw new NotSupportedException();
-            case ILOpCode.Ldind_u2: throw new NotSupportedException();
-            case ILOpCode.Ldind_u4: throw new NotSupportedException();
-            case ILOpCode.Ldind_r4: throw new NotSupportedException();
-            case ILOpCode.Ldind_r8: throw new NotSupportedException();
+            case ILOpCode.Ldind_i1:
+            case ILOpCode.Ldind_i2:
+            case ILOpCode.Ldind_i4:
+            case ILOpCode.Ldind_i8:
+            case ILOpCode.Ldind_u1:
+            case ILOpCode.Ldind_u2:
+            case ILOpCode.Ldind_u4:
+            case ILOpCode.Ldind_r4:
+            case ILOpCode.Ldind_r8:
+                CompileLdind();
+                break;
             case ILOpCode.Ldind_i: throw new NotSupportedException();
             case ILOpCode.Ldind_ref: throw new NotSupportedException();
             case ILOpCode.Ldloc:
@@ -359,7 +365,9 @@ public class MethodBodyCompiler
             case ILOpCode.Not: throw new NotSupportedException();
             case ILOpCode.Or: throw new NotSupportedException();
             case ILOpCode.Pop: throw new NotSupportedException();
-            case ILOpCode.Rem: throw new NotSupportedException();
+            case ILOpCode.Rem:
+                CompileRem();
+                break;
             case ILOpCode.Rem_un: throw new NotSupportedException();
             case ILOpCode.Ret:
                 LLVM.BuildRetVoid(_builder);
@@ -375,12 +383,14 @@ public class MethodBodyCompiler
                 operand = _reader.ReadByte();
                 CompileStarg((byte) operand);
                 break;
-            case ILOpCode.Stind_i1: throw new NotSupportedException();
-            case ILOpCode.Stind_i2: throw new NotSupportedException();
-            case ILOpCode.Stind_i4: throw new NotSupportedException();
-            case ILOpCode.Stind_i8: throw new NotSupportedException();
-            case ILOpCode.Stind_r4: throw new NotSupportedException();
-            case ILOpCode.Stind_r8: throw new NotSupportedException();
+            case ILOpCode.Stind_i1:
+            case ILOpCode.Stind_i2:
+            case ILOpCode.Stind_i4:
+            case ILOpCode.Stind_i8:
+            case ILOpCode.Stind_r4:
+            case ILOpCode.Stind_r8:
+                CompileStdind();
+                break;
             case ILOpCode.Stind_i: throw new NotSupportedException();
             case ILOpCode.Stind_ref: throw new NotSupportedException();
             case ILOpCode.Stloc:
@@ -429,7 +439,10 @@ public class MethodBodyCompiler
                 break;
             case ILOpCode.Ldelem_i: throw new NotSupportedException();
             case ILOpCode.Ldelem_ref: throw new NotSupportedException();
-            case ILOpCode.Ldelema: throw new NotSupportedException();
+            case ILOpCode.Ldelema:
+                operand = _reader.ReadInt32(); // No further usage of operand required
+                CompileLdelema();
+                break;
             case ILOpCode.Ldfld:
                 operand = _reader.ReadInt32();
                 CompileLdfld((int)operand);
@@ -468,6 +481,80 @@ public class MethodBodyCompiler
         }
 
         return (opCode, operand);
+    }
+
+    private void CompileDup()
+    {
+        var value = _virtualRegisterStack.Pop();
+        _virtualRegisterStack.Push(value);
+        _virtualRegisterStack.Push(value);
+    }
+
+    private void CompileStdind()
+    {
+        var value = _virtualRegisterStack.Pop();
+        var elementPtr = _virtualRegisterStack.Pop();
+        var storeValue = LLVM.BuildStore(_builder, value, elementPtr);
+        _virtualRegisterStack.Push(storeValue);
+    }
+
+    private void CompileLdelema()
+    {
+        var index = _virtualRegisterStack.Pop();
+        var array = _virtualRegisterStack.Pop();
+        var elementPtr = LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
+        _virtualRegisterStack.Push(elementPtr);
+    }
+
+    private void CompileLdind()
+    {
+        var elementPtr = _virtualRegisterStack.Pop();
+        var value = LLVM.BuildLoad(_builder, elementPtr, GetVirtualRegisterName());
+        _virtualRegisterStack.Push(value);
+    }
+
+    private void CompileRem()
+    {
+        var param2 = _virtualRegisterStack.Pop();
+        var param1 = _virtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (AreParamsCompatibleAndInt(param1, param2))
+        {
+            result = LLVM.BuildSRem(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else if (AreParamsCompatibleAndDecimal(param1, param2))
+        {
+            result = LLVM.BuildFRem(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
+        }
+
+        _virtualRegisterStack.Push(result);
+    }
+
+    private void CompileDiv()
+    {
+        var param2 = _virtualRegisterStack.Pop();
+        var param1 = _virtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (AreParamsCompatibleAndInt(param1, param2))
+        {
+            result = LLVM.BuildSDiv(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else if (AreParamsCompatibleAndDecimal(param1, param2))
+        {
+            result = LLVM.BuildFDiv(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
+        }
+
+        _virtualRegisterStack.Push(result);
     }
 
     private void CompileClt()

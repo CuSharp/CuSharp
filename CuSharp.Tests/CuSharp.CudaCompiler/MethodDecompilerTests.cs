@@ -20,9 +20,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
         {
             var expected = new List<(ILOpCode, object?)>
             {
-                (ILOpCode.Nop, null), (ILOpCode.Ldc_i4, 12345), (ILOpCode.Stloc_0, null), (ILOpCode.Ldarg_0, null),
-                (ILOpCode.Ldarg_1, null), (ILOpCode.Add, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Add, null),
-                (ILOpCode.Stloc_1, null), (ILOpCode.Ret, null)
+                (ILOpCode.Nop, null), (ILOpCode.Ldc_i4, 12345), (ILOpCode.Stloc_0, null), (ILOpCode.Ldc_i4_0, null),
+                (ILOpCode.Stloc_1, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Add, null), 
+                (ILOpCode.Ldloc_0, null), (ILOpCode.Add, null), (ILOpCode.Ldloc_1, null), (ILOpCode.Add, null),
+                (ILOpCode.Ldc_i4_m1, null), (ILOpCode.Add, null), (ILOpCode.Ldc_i4_1, null), (ILOpCode.Add, null),
+                (ILOpCode.Ldc_i4_2, null), (ILOpCode.Add, null), (ILOpCode.Ldc_i4_3, null), (ILOpCode.Add, null),
+                (ILOpCode.Ldc_i4_4, null), (ILOpCode.Add, null), (ILOpCode.Ldc_i4_5, null), (ILOpCode.Add, null),
+                (ILOpCode.Ldc_i4_6, null), (ILOpCode.Add, null), (ILOpCode.Ldc_i4_7, null), (ILOpCode.Add, null),
+                (ILOpCode.Ldc_i4_8, null), (ILOpCode.Add, null), (ILOpCode.Stloc_2, null), (ILOpCode.Ret, null)
             };
 
             // Arrange
@@ -132,6 +137,52 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void TestScalarIntDivisionOpCode()
+        {
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Div, null),
+                (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
+            };
+
+            // Arrange
+            const string kernelName = "TestScalarIntDivisionOpCode";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntDivision);
+            var kernel = new MSILKernel(kernelName, method);
+            var builder = LLVM.CreateBuilder();
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TestScalarIntRemainderOpCode()
+        {
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Rem, null),
+                (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
+            };
+
+            // Arrange
+            const string kernelName = "TestScalarIntRemainderOpCode";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntRemainder);
+            var kernel = new MSILKernel(kernelName, method);
+            var builder = LLVM.CreateBuilder();
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+        
         [Fact]
         public void TestScalarFloatAdditionWithConst()
         {
@@ -250,6 +301,52 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
         }
 
         [Fact]
+        public void TestFloatDivisionOpCode()
+        {
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Div, null),
+                (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
+            };
+
+            // Arrange
+            const string kernelName = "TestScalarFloatDivisionOpCode";
+            var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatDivision);
+            var kernel = new MSILKernel(kernelName, method);
+            var builder = LLVM.CreateBuilder();
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TestScalarFloatRemainderOpCode()
+        {
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Rem, null),
+                (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
+            };
+
+            // Arrange
+            const string kernelName = "TestScalarFloatRemainderOpCode";
+            var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatRemainder);
+            var kernel = new MSILKernel(kernelName, method);
+            var builder = LLVM.CreateBuilder();
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void TestArrayIntAdditionOpCode()
         {
             var expected = new List<(ILOpCode, object?)>
@@ -347,6 +444,46 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Ldarg_2, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_r4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_r4, null), (ILOpCode.Add, null), (ILOpCode.Stelem_r4, null), (ILOpCode.Ret, null)
+            };
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TestArrayShortHandOperationsWithKernelToolsOpCode()
+        {
+            // Arrange
+            const string kernelName = "TestArrayShortHandAdditionWithKernelToolsOpCode";
+            var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.ArrayIntShortHandOperationsWithKernelTools);
+            var kernel = new MSILKernel(kernelName, method);
+            var builder = LLVM.CreateBuilder();
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
+
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Call, actual[1].Item2), (ILOpCode.Ldfld, actual[2].Item2),
+                (ILOpCode.Call, actual[3].Item2), (ILOpCode.Ldfld, actual[4].Item2), (ILOpCode.Mul, null),
+                (ILOpCode.Call, actual[6].Item2), (ILOpCode.Ldfld, actual[7].Item2), (ILOpCode.Add, null),
+                (ILOpCode.Stloc_0, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null),
+                (ILOpCode.Ldelema, actual[12].Item2), (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelem_i4, null), (ILOpCode.Add, null),
+                (ILOpCode.Stind_i4, null),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[22].Item2),
+                (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
+                (ILOpCode.Ldelem_i4, null), (ILOpCode.Sub, null), (ILOpCode.Stind_i4, null),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[32].Item2),
+                (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
+                (ILOpCode.Ldelem_i4, null), (ILOpCode.Mul, null), (ILOpCode.Stind_i4, null),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[42].Item2),
+                (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
+                (ILOpCode.Ldelem_i4, null), (ILOpCode.Div, null), (ILOpCode.Stind_i4, null),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[52].Item2),
+                (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
+                (ILOpCode.Ldelem_i4, null), (ILOpCode.Rem, null), (ILOpCode.Stind_i4, null), (ILOpCode.Ret, null)
             };
 
             // Assert
