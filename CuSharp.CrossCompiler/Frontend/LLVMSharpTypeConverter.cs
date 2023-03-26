@@ -13,6 +13,7 @@ public static class LLVMSharpTypeConverter
         if (type == typeof(long)) return LLVMTypeRef.Int64Type();
         if (type == typeof(float)) return LLVMTypeRef.FloatType();
         if (type == typeof(double)) return LLVMTypeRef.DoubleType();
+        if (type == typeof(uint)) return LLVMTypeRef.Int32Type();
         throw new NotSupportedException("Parameter type unsupported");
     }
 

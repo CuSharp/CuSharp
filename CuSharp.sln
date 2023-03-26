@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuSharp.NVVMBinder", "CuSha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.SourceGenerators", "CuSharp.SourceGenerators\CuSharp.SourceGenerators.csproj", "{8ED9C3C3-1DE1-4403-8CF9-068FDC8594E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.PerformanceEvaluation", "CuSharp.PerformanceEvaluation\CuSharp.PerformanceEvaluation.csproj", "{FC3A0A11-B203-414D-8F1B-1746E6D6FB78}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{8ED9C3C3-1DE1-4403-8CF9-068FDC8594E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ED9C3C3-1DE1-4403-8CF9-068FDC8594E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ED9C3C3-1DE1-4403-8CF9-068FDC8594E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC3A0A11-B203-414D-8F1B-1746E6D6FB78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC3A0A11-B203-414D-8F1B-1746E6D6FB78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC3A0A11-B203-414D-8F1B-1746E6D6FB78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC3A0A11-B203-414D-8F1B-1746E6D6FB78}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

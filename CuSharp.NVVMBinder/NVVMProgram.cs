@@ -28,7 +28,7 @@ namespace LibNVVMBinder
 
         public NVVMResult Compile(string[] options)
         {
-            return NVVMNativeBindings.nvvmCompileProgram(program, options.Length, options);
+            return NVVMNativeBindings.nvvmCompileProgram(program, new UIntPtr( (uint) options.Length), options);
         }
 
         public NVVMResult Verify(string[] options)

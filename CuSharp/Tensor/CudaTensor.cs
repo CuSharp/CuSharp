@@ -19,4 +19,8 @@ public class CudaTensor<T> : Tensor<T>
     public object DeviceVariable { get; private set; }
 
     public CUdeviceptr DevicePointer { get; private set; }
+    public void Dispose()
+    {
+        (DeviceVariable as IDisposable).Dispose();
+    }
 }

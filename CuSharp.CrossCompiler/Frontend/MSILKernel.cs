@@ -9,6 +9,7 @@ namespace CuSharp.CudaCompiler.Frontend
             Name = name;
             KernelBuffer = methodInfo.GetMethodBody().GetILAsByteArray();
             ParameterInfos = methodInfo.GetParameters();
+            LocalVariables = methodInfo.GetMethodBody().LocalVariables;
             MemberInfoModule = methodInfo.Module;
         }
         public string Name { get; }
@@ -16,5 +17,6 @@ namespace CuSharp.CudaCompiler.Frontend
 
         public ParameterInfo[] ParameterInfos { get; set; }
         public Module MemberInfoModule { get; set; }
+        public IList<LocalVariableInfo> LocalVariables {get;}
     }
 }

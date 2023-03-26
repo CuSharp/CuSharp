@@ -26,11 +26,11 @@ namespace LibNVVMBinder
             }
             Environment.SetEnvironmentVariable("PATH", envPath + ";" + nvvmPath);
         }
-        [DllImport(DLL_NAME)]
-        public static extern NVVMProgram.NVVMResult nvvmCompileProgram(IntPtr program, int numOptions, string[] options);
+        [DllImport(DLL_NAME, CallingConvention = CallingConvention.Cdecl)]
+        public static extern NVVMProgram.NVVMResult nvvmCompileProgram(IntPtr program, UIntPtr numOptions, [In]string[] options);
         
         [DllImport(DLL_NAME)]
-        public static extern NVVMProgram.NVVMResult nvvmAddModuleToProgram(IntPtr program, string buffer, UIntPtr size, string name);
+        public static extern NVVMProgram.NVVMResult nvvmAddModuleToProgram(IntPtr program, [MarshalAs(UnmanagedType.LPStr)]string buffer, UIntPtr size, [MarshalAs(UnmanagedType.LPStr)]string name);
 
         [DllImport(DLL_NAME)]
         public static extern NVVMProgram.NVVMResult nvvmCreateProgram(out IntPtr program);

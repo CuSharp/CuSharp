@@ -64,4 +64,49 @@ public class IntegrationTests
         Assert.Equal(b, bCopied);
     }
 
+    [Fact]
+    public void TestMatrixMultiplication()
+    {
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        int matrixWidth = 100;
+        uint gridDim = (uint) (matrixWidth % 32 == 0 ? matrixWidth / 32 : matrixWidth / 32 + 1);
+        uint blockDim = (uint) (matrixWidth > 32 ? 32 : matrixWidth);
+        int[] a = new int [matrixWidth * matrixWidth];
+        int[] b = new int [matrixWidth * matrixWidth];
+        int[] c = new int [matrixWidth * matrixWidth];
+        for (int i = 0; i < matrixWidth * matrixWidth; i++)
+        {
+            a[i] = i;
+            b[i] = matrixWidth * matrixWidth - i;
+        }
+
+        int[] expectedC = new int[matrixWidth * matrixWidth];
+        for (int row = 0; row < gridDim * blockDim; row++)
+        {
+            for (int col = 0; col < gridDim * blockDim; col++)
+            {
+                if (row < matrixWidth && col < matrixWidth)
+                {
+                    int result = 0;
+                    for (int i = 0; i < matrixWidth; i++)
+                    {
+                        result = result + a[matrixWidth * row + i] * b[i * matrixWidth + col];
+                    }
+
+                    expectedC[row * matrixWidth + col] = result;
+                }
+            }
+        }
+        
+        var devA = dev.Copy(a);
+        var devB = dev.Copy(b);
+        var devC = dev.Copy(c);
+        var devWidth = dev.Copy(matrixWidth);
+        dev.Launch(MethodsToCompile.IntMatrixMultiplication, (gridDim,gridDim,1),  (blockDim , blockDim,1), devA, devB, devC, devWidth);
+        
+
+        c = dev.Copy(devC);
+
+        Assert.Equal(expectedC, c);
+    }
 }

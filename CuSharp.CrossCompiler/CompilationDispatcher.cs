@@ -35,6 +35,12 @@ public class CompilationDispatcher
     {
         var nvvmHandle = new NVVMProgram();
         nvvmHandle.AddModule(llvmKernel.KernelBuffer, llvmKernel.Name);
+        var verifyResult = nvvmHandle.Verify(new string[0]);
+        if (verifyResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
+        {
+            nvvmHandle.GetProgramLog(out string log);
+            throw new Exception(log);
+        }
         var compilationResult = nvvmHandle.Compile(new string[0]);
         if (compilationResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
         {
