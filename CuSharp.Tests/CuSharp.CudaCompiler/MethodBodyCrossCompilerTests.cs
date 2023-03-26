@@ -21,7 +21,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             var crossCompiler = new KernelCrossCompiler(config);
             var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
-            var expected = _llvmLoader.GetScalarIntAdditionWithConstTestResult(kernelName);
+            var expected = _llvmLoader.GetScalarIntAdditionWithEachConstTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;
 
             Assert.Equal(expected, actual);
@@ -90,6 +90,40 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
             var expected = _llvmLoader.GetScalarIntMultiplicationTestResult(kernelName);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
+        public void TestScalarIntDivision()
+        {
+            const string kernelName = "ScalarIntDivision";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntDivision);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = _llvmLoader.GetScalarIntDivisionTestResult(kernelName);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
+        public void TestScalarIntRemainder()
+        {
+            const string kernelName = "ScalarIntRemainder";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntRemainder);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = _llvmLoader.GetScalarIntRemainderTestResult(kernelName);
             var actual = llvmKernel.KernelBuffer;
 
             Assert.Equal(expected, actual);
@@ -182,6 +216,40 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
         }
 
         [Fact]
+        public void TestScalarFloatDivision()
+        {
+            const string kernelName = "ScalarFloatDivision";
+            var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatDivision);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = _llvmLoader.GetScalarFloatDivisionTestResult(kernelName);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
+        public void TestScalarFloatRemainder()
+        {
+            const string kernelName = "ScalarFloatRemainder";
+            var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatRemainder);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = _llvmLoader.GetScalarFloatRemainderTestResult(kernelName);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
         public void TestArrayIntAddition()
         {
             const string kernelName = "ArrayIntAddition";
@@ -243,6 +311,74 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
             var expected = _llvmLoader.GetArrayFloatAdditionWithKernelToolsTestResult(kernelName);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
+        public void TestArrayIntShortHandOperationsWithKernelTools()
+        {
+            const string kernelName = "ArrayIntShortHandOperationsWithKernelTools";
+            var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.ArrayIntShortHandOperationsWithKernelTools);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.Int32Type);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
+        public void TestArrayLongShortHandOperationsWithKernelTools()
+        {
+            const string kernelName = "ArrayLongShortHandOperationsWithKernelTools";
+            var method = _methodLoader.GetArrayLongMethodInfo(MethodsToCompile.ArrayLongShortHandOperationsWithKernelTools);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.Int64Type);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
+        public void TestArrayFloatShortHandOperationsWithKernelTools()
+        {
+            const string kernelName = "ArrayFloatShortHandOperationsWithKernelTools";
+            var method = _methodLoader.GetArrayFloatMethodInfo(MethodsToCompile.ArrayFloatShortHandOperationsWithKernelTools);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.FloatType);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
+        public void TestArrayDoubleShortHandOperationsWithKernelTools()
+        {
+            const string kernelName = "ArrayDoubleShortHandOperationsWithKernelTools";
+            var method = _methodLoader.GetArrayDoubleMethodInfo(MethodsToCompile.ArrayDoubleShortHandOperationsWithKernelTools);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.DoubleType);
             var actual = llvmKernel.KernelBuffer;
 
             Assert.Equal(expected, actual);
