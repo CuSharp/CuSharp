@@ -12,7 +12,7 @@ public class Program
     static void Main()
     {
 
-        Test(1000, 5000, 1000, false);
+        Test(10, 100, 10, false);
     }
 
     static void Test(int min, int max, int step, bool verify)
