@@ -20,6 +20,11 @@ namespace CuSharp.Tests.TestHelper
             return fn.Method;
         }
 
+        public MethodInfo GetScalarIntMethodInfo(Action<int, int, int> fn)
+        {
+            return fn.Method;
+        }
+
         public MethodInfo GetScalarLongMethodInfo(Action<long, long> fn)
         {
             return fn.Method;

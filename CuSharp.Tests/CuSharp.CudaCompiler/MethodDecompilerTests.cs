@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection.Metadata;
 using CuSharp.CudaCompiler.Frontend;
 using CuSharp.Tests.TestHelper;
-using LLVMSharp;
 using Xunit;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler
@@ -504,6 +503,60 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             Assert.Throws<NotSupportedException>(() =>
                 // Act
                 new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody());
+        }
+
+        [Fact]
+        public void TestLogicalAndOpCode()
+        {
+            // Arrange
+            const string kernelName = "TestLogicalAndOpCode";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.LogicalAnd);
+            var kernel = new MSILKernel(kernelName, method);
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
+
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Bne_un_s, actual[3].Item2),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Ldarg_2, null), (ILOpCode.Ceq, null), (ILOpCode.Br_s, actual[7].Item2),
+                (ILOpCode.Ldc_i4_0,  null), (ILOpCode.Stloc_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Brfalse_s, actual[11].Item2),
+                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldc_i4_1, null), (ILOpCode.Add, null),
+                (ILOpCode.Starg_s, actual[16].Item2), (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null),
+                (ILOpCode.Mul, null), (ILOpCode.Starg_s, actual[21].Item2), (ILOpCode.Ret, null)
+            };
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TestLogicalOrOpCode()
+        {
+            // Arrange
+            const string kernelName = "TestLogicalOrOpCode";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.LogicalOr);
+            var kernel = new MSILKernel(kernelName, method);
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
+
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Beq_s, actual[3].Item2),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Ldarg_2, null), (ILOpCode.Ceq, null), (ILOpCode.Br_s, actual[7].Item2),
+                (ILOpCode.Ldc_i4_1,  null), (ILOpCode.Stloc_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Brfalse_s, actual[11].Item2),
+                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldc_i4_1, null), (ILOpCode.Add, null),
+                (ILOpCode.Starg_s, actual[16].Item2), (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null),
+                (ILOpCode.Mul, null), (ILOpCode.Starg_s, actual[21].Item2), (ILOpCode.Ret, null)
+            };
+
+            // Assert
+            Assert.Equal(expected, actual);
         }
     }
 }

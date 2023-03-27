@@ -91,8 +91,14 @@ public class MethodBodyCompiler
             //case ILOpCode.Add_ovf_un: throw new NotSupportedException();
             //case ILOpCode.And: throw new NotSupportedException();
             //case ILOpCode.Arglist: throw new NotSupportedException();
-            //case ILOpCode.Beq: throw new NotSupportedException();
-            //case ILOpCode.Beq_s: throw new NotSupportedException();
+            case ILOpCode.Beq:
+                operand = _reader.ReadInt32();
+                CompileBeq((int)operand);
+                break;
+            case ILOpCode.Beq_s:
+                operand = _reader.ReadSByte();
+                CompileBeq((sbyte)operand);
+                break;
             //case ILOpCode.Bge: throw new NotSupportedException();
             //case ILOpCode.Bge_s: throw new NotSupportedException();
             //case ILOpCode.Bge_un: throw new NotSupportedException();
@@ -109,8 +115,14 @@ public class MethodBodyCompiler
             //case ILOpCode.Blt_s: throw new NotSupportedException();
             //case ILOpCode.Blt_un: throw new NotSupportedException();
             //case ILOpCode.Blt_un_s: throw new NotSupportedException();
-            //case ILOpCode.Bne_un: throw new NotSupportedException();
-            //case ILOpCode.Bne_un_s: throw new NotSupportedException();
+            case ILOpCode.Bne_un:
+                operand = _reader.ReadInt32();
+                CompileBneUn((int)operand);
+                break;
+            case ILOpCode.Bne_un_s:
+                operand = _reader.ReadSByte();
+                CompileBneUn((sbyte)operand);
+                break;
             case ILOpCode.Br:
                 operand = _reader.ReadInt32();
                 CompileBr((int)operand);
@@ -608,6 +620,38 @@ public class MethodBodyCompiler
         var thenBlock = GetBlock(_stream.Position + operand);
         LLVM.BuildCondBr(_builder, predicateNegated, thenBlock.BlockRef,
             elseBlock.BlockRef);
+
+        elseBlock.Predecessors.Add(_currentBlock);
+        thenBlock.Predecessors.Add(_currentBlock);
+        _currentBlock.Successors.Add(elseBlock);
+        _currentBlock.Successors.Add(thenBlock);
+    }
+
+    private void CompileBneUn(int operand)
+    {
+        var value2 = _virtualRegisterStack.Pop();
+        var value1 = _virtualRegisterStack.Pop();
+
+        var predicate = BuildComparison(LLVMIntPredicate.LLVMIntNE, LLVMRealPredicate.LLVMRealUNE, value1, value2);
+        var elseBlock = GetBlock(_stream.Position);
+        var thenBlock = GetBlock(_stream.Position + operand);
+        LLVM.BuildCondBr(_builder, predicate, thenBlock.BlockRef, elseBlock.BlockRef);
+
+        elseBlock.Predecessors.Add(_currentBlock);
+        thenBlock.Predecessors.Add(_currentBlock);
+        _currentBlock.Successors.Add(elseBlock);
+        _currentBlock.Successors.Add(thenBlock);
+    }
+
+    private void CompileBeq(int operand)
+    {
+        var value2 = _virtualRegisterStack.Pop();
+        var value1 = _virtualRegisterStack.Pop();
+
+        var predicate = BuildComparison(LLVMIntPredicate.LLVMIntEQ, LLVMRealPredicate.LLVMRealUEQ, value1, value2);
+        var elseBlock = GetBlock(_stream.Position);
+        var thenBlock = GetBlock(_stream.Position + operand);
+        LLVM.BuildCondBr(_builder, predicate, thenBlock.BlockRef, elseBlock.BlockRef);
 
         elseBlock.Predecessors.Add(_currentBlock);
         thenBlock.Predecessors.Add(_currentBlock);
