@@ -42,4 +42,29 @@ public static class Kernels
         }
 
     }
+
+    public static void MandelBrot(float[] light,  int maxIterations, int N, float h, float fromX, float fromY)
+    {
+        
+        var row = KernelTools.BlockDimensions.Item2 * KernelTools.BlockIndex.Item2 + KernelTools.ThreadIndex.Item2;
+        var col = KernelTools.BlockDimensions.Item1 * KernelTools.BlockIndex.Item1 + KernelTools.ThreadIndex.Item1;
+        float cx = fromX + row * h;
+        float cy = fromY + col * h;
+        int result = 0;
+        //start: count iterations
+        float x = 0.0f, y = 0.0f, xx = 0.0f, yy = 0.0f;
+        while (xx + yy <= 4.0f && result < maxIterations)
+        {
+            xx = x * x;
+            yy = y * y;
+            float xtmp = 2.0f * x * y + cx;
+            y = 2.0f * x * y + cy;
+            x = xtmp;
+            result++;
+        }
+        //end: count iterations
+
+        light[row * N + col] = result;
+
+    }
 }

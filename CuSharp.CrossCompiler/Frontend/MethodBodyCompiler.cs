@@ -869,15 +869,15 @@ public class MethodBodyCompiler
                 {
                     phi.Value.AddIncoming(new[] { LLVM.ConstInt(phi.Value.TypeOf(), 0, false) }, new[] { pred.BlockRef }, 1);
                     arbitraryCounter++;
-                    startNode.PhiInstructions.Remove(phi.Key);
-                    startNode.LocalVariables.Remove(phi.Key);
+                    //startNode.PhiInstructions.Remove(phi.Key);
+                    //startNode.LocalVariables.Remove(phi.Key);
                 }
             }
 
-            if (phi.Value.CountIncoming() == arbitraryCounter)
+            /*if (phi.Value.CountIncoming() == 0)
             {
                 LLVM.InstructionRemoveFromParent(phi.Value);
-            }
+            }*/
         }
 
         foreach (var successor in startNode.Successors)
