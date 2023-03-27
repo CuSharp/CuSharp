@@ -1,4 +1,6 @@
-﻿namespace CuSharp.Tests.TestHelper
+﻿using System.Runtime.CompilerServices;
+
+namespace CuSharp.Tests.TestHelper
 {
     public class MethodsToCompile
     {
@@ -178,9 +180,25 @@
                 }
             }
         }
-    
-        
-    }
-    
 
+        public static void LogicalAnd(int a, int b, int c)
+        {
+            if (a == b && b == c)
+            {
+                a += 1;
+            }
+
+            c = a * b;
+        }
+
+        public static void LogicalOr(int a, int b, int c)
+        {
+            if (a == b || b == c)
+            {
+                a += 1;
+            }
+
+            c = a * b;
+        }
+    }
 }

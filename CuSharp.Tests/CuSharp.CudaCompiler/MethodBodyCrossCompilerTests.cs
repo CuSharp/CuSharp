@@ -321,13 +321,15 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
         public void TestArrayIntShortHandOperationsWithKernelTools()
         {
             const string kernelName = "ArrayIntShortHandOperationsWithKernelTools";
-            var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.ArrayIntShortHandOperationsWithKernelTools);
+            var method =
+                _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.ArrayIntShortHandOperationsWithKernelTools);
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
             var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
-            var expected = _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.Int32Type);
+            var expected =
+                _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.Int32Type);
             var actual = llvmKernel.KernelBuffer;
 
             Assert.Equal(expected, actual);
@@ -338,13 +340,15 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
         public void TestArrayLongShortHandOperationsWithKernelTools()
         {
             const string kernelName = "ArrayLongShortHandOperationsWithKernelTools";
-            var method = _methodLoader.GetArrayLongMethodInfo(MethodsToCompile.ArrayLongShortHandOperationsWithKernelTools);
+            var method =
+                _methodLoader.GetArrayLongMethodInfo(MethodsToCompile.ArrayLongShortHandOperationsWithKernelTools);
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
             var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
-            var expected = _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.Int64Type);
+            var expected =
+                _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.Int64Type);
             var actual = llvmKernel.KernelBuffer;
 
             Assert.Equal(expected, actual);
@@ -355,13 +359,15 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
         public void TestArrayFloatShortHandOperationsWithKernelTools()
         {
             const string kernelName = "ArrayFloatShortHandOperationsWithKernelTools";
-            var method = _methodLoader.GetArrayFloatMethodInfo(MethodsToCompile.ArrayFloatShortHandOperationsWithKernelTools);
+            var method =
+                _methodLoader.GetArrayFloatMethodInfo(MethodsToCompile.ArrayFloatShortHandOperationsWithKernelTools);
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
             var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
-            var expected = _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.FloatType);
+            var expected =
+                _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.FloatType);
             var actual = llvmKernel.KernelBuffer;
 
             Assert.Equal(expected, actual);
@@ -372,13 +378,49 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
         public void TestArrayDoubleShortHandOperationsWithKernelTools()
         {
             const string kernelName = "ArrayDoubleShortHandOperationsWithKernelTools";
-            var method = _methodLoader.GetArrayDoubleMethodInfo(MethodsToCompile.ArrayDoubleShortHandOperationsWithKernelTools);
+            var method =
+                _methodLoader.GetArrayDoubleMethodInfo(MethodsToCompile.ArrayDoubleShortHandOperationsWithKernelTools);
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
             var crossCompiler = new KernelCrossCompiler(config);
             var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
-            var expected = _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.DoubleType);
+            var expected =
+                _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.DoubleType);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
+        public void TestLogicalAnd()
+        {
+            const string kernelName = "LogicalAnd";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.LogicalAnd);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = string.Empty; //_llvmLoader.GetLogicalAndToolsTestResult(kernelName, TypesAsString.IntType);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
+        public void TestLogicalOr()
+        {
+            const string kernelName = "LogicalOr";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.LogicalOr);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = string.Empty; //_llvmLoader.GetLogicalAndToolsTestResult(kernelName, TypesAsString.IntType);
             var actual = llvmKernel.KernelBuffer;
 
             Assert.Equal(expected, actual);
