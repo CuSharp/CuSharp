@@ -1,4 +1,6 @@
-﻿namespace CuSharp.PerformanceEvaluation;
+﻿using CuSharp.Kernel;
+
+namespace CuSharp.PerformanceEvaluation;
 
 public static class Kernels
 {

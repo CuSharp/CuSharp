@@ -1,6 +1,5 @@
-﻿using System;
+﻿namespace CuSharp.Kernel;
 
-namespace CuSharp;
 public static class KernelTools
 {
     private const string ErrorMessage = "Do not use from host or overwrite the Action to specify host semantics.";
