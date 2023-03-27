@@ -34,8 +34,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarIntAdditionWithConst";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntAdditionWithConst);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -58,8 +58,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarLongAdditionWithConst";
             var method = _methodLoader.GetScalarLongMethodInfo(MethodsToCompile.ScalarLongAdditionWithConst);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -81,8 +81,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarIntAdditionOpCode";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntAddition);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -104,8 +104,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarIntSubtractionOpCode";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntSubtraction);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -127,8 +127,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarIntMultiplicationOpCode";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntMultiplication);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -150,8 +150,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarIntDivisionOpCode";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntDivision);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -173,8 +173,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarIntRemainderOpCode";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntRemainder);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -197,8 +197,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarFloatAdditionWithConst";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatAdditionWithConst);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -221,8 +221,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarDoubleAdditionWithConst";
             var method = _methodLoader.GetScalarDoubleMethodInfo(MethodsToCompile.ScalarDoubleAdditionWithConst);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -244,8 +244,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarFloatAdditionOpCode";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatAddition);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -267,8 +267,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarFloatSubtractionOpCode";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatSubtraction);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -290,8 +290,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarFloatMultiplicationOpCode";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatMultiplication);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -313,8 +313,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarFloatDivisionOpCode";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatDivision);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -336,8 +336,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestScalarFloatRemainderOpCode";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatRemainder);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -361,8 +361,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestArrayIntAdditionOpCode";
             var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.ArrayIntAddition);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -386,8 +386,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestArrayFloatAdditionOpCode";
             var method = _methodLoader.GetArrayFloatMethodInfo(MethodsToCompile.ArrayFloatAddition);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -403,8 +403,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestArrayIntAdditionWithKernelToolsOpCode";
             var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.ArrayIntAdditionWithKernelTools);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
@@ -430,8 +430,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestArrayFloatAdditionWithKernelToolsOpCode";
             var method = _methodLoader.GetArrayFloatMethodInfo(MethodsToCompile.ArrayFloatAdditionWithKernelTools);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
@@ -457,8 +457,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestArrayShortHandAdditionWithKernelToolsOpCode";
             var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.ArrayIntShortHandOperationsWithKernelTools);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
@@ -497,8 +497,8 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             const string kernelName = "TestNotSupportedNestedCall";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.NotSupportedNestedCall);
             var kernel = new MSILKernel(kernelName, method);
-            var builder = LLVM.CreateBuilder();
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
 
             // Assert
             Assert.Throws<NotSupportedException>(() =>
