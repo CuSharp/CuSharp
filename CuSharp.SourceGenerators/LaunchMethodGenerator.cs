@@ -40,12 +40,12 @@ public partial class CuDevice
         {
 
             return $@"
-    public Task LaunchAsync<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
+    public Task LaunchAsync<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize, {ParameterString(amount)}) 
         {GenerateConstraintsString(amount)}
     {{
         return Task.Run(() => {{
 
-        var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
+        var cudaKernel = CompileAndGetKernel(method.GetMethodInfo(), gridSize, blockSize);
         cudaKernel.Run(new Object[] {{ {ArgumentPack(amount)} }});
         }});
     }}
@@ -55,9 +55,9 @@ public partial class CuDevice
         private string GenerateMethodString(int amount)
         {
             return $@"
-    public void Launch<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) GridSize, (uint, uint, uint) BlockSize, {ParameterString(amount)}) 
+    public void Launch<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize, {ParameterString(amount)}) 
     {{
-        var cudaKernel = compileAndGetKernel(method.GetMethodInfo(), GridSize, BlockSize);
+        var cudaKernel = CompileAndGetKernel(method.GetMethodInfo(), gridSize, blockSize);
         cudaKernel.Run({ArgumentPack(amount)} );
     }}
             ";
