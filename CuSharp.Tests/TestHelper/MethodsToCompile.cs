@@ -172,9 +172,9 @@ namespace CuSharp.Tests.TestHelper
             int result = 0;
             if (row < matrixWidth && col < matrixWidth)
             {
-                for (int i = 0; i < matrixWidth; i = i + 1)
+                for (int i = 0; i < matrixWidth; i++)
                 {
-                    result = result + a[matrixWidth * row + i] * b[i * matrixWidth + col];
+                    result += a[matrixWidth * row + i] * b[i * matrixWidth + col];
                 }
 
                 c[row * matrixWidth + col] = result;

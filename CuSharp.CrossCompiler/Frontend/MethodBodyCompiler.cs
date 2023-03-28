@@ -105,64 +105,64 @@ public class MethodBodyCompiler
                 CompileBge((int) operand);
                 break;
             case ILOpCode.Bge_s:
-                operand = _reader.ReadInt16();
-                CompileBge((short) operand);
+                operand = _reader.ReadSByte();
+                CompileBge((sbyte) operand);
                 break;
             case ILOpCode.Bge_un:
                 operand = _reader.ReadInt32();
                 CompileBgeUn((int) operand);
                 break;
             case ILOpCode.Bge_un_s:
-                operand = _reader.ReadInt16();
-                CompileBgeUn((short) operand);
+                operand = _reader.ReadSByte();
+                CompileBgeUn((sbyte) operand);
                 break;
             case ILOpCode.Bgt: 
                 operand = _reader.ReadInt32();
                 CompileBgt((int) operand);
                 break;
             case ILOpCode.Bgt_s: 
-                operand = _reader.ReadInt16();
-                CompileBgt((short) operand);
+                operand = _reader.ReadSByte();
+                CompileBgt((sbyte) operand);
                 break;
             case ILOpCode.Bgt_un:
                 operand = _reader.ReadInt32();
                 CompileBgtUn((int) operand);
                 break;
             case ILOpCode.Bgt_un_s:
-                operand = _reader.ReadInt16();
-                CompileBgtUn((short)operand);
+                operand = _reader.ReadSByte();
+                CompileBgtUn((sbyte)operand);
                 break;
             case ILOpCode.Ble:
                 operand = _reader.ReadInt32();
                 CompileBle((int) operand);
                 break;
             case ILOpCode.Ble_s: 
-                operand = _reader.ReadInt16();
-                CompileBle((short) operand);
+                operand = _reader.ReadSByte();
+                CompileBle((sbyte) operand);
                 break;
             case ILOpCode.Ble_un:
                 operand = _reader.ReadInt32();
                 CompileBleUn((int) operand);
                 break;
             case ILOpCode.Ble_un_s:
-                operand = _reader.ReadInt16();
-                CompileBleUn((short) operand);
+                operand = _reader.ReadSByte();
+                CompileBleUn((sbyte) operand);
                 break;
             case ILOpCode.Blt:
                 operand = _reader.ReadInt32();
                 CompileBlt((int) operand);
                 break;
             case ILOpCode.Blt_s:
-                operand = _reader.ReadInt16();
-                CompileBlt((short) operand);
+                operand = _reader.ReadSByte();
+                CompileBlt((sbyte) operand);
                 break;
             case ILOpCode.Blt_un:
                 operand = _reader.ReadInt32();
                 CompileBleUn((int) operand);
                 break;
             case ILOpCode.Blt_un_s:
-                operand = _reader.ReadInt16();
-                CompileBltUn((short) operand);
+                operand = _reader.ReadSByte();
+                CompileBltUn((sbyte) operand);
                 break;
             case ILOpCode.Bne_un:
                 operand = _reader.ReadInt32();
@@ -949,12 +949,12 @@ public class MethodBodyCompiler
         _currentBlock.Successors.Add(elseBlock);
     }
 
-    private LLVMValueRef BuildPredicateFromStack(LLVMIntPredicate intPredicate, LLVMRealPredicate readPredicate)
+    private LLVMValueRef BuildPredicateFromStack(LLVMIntPredicate intPredicate, LLVMRealPredicate realPredicate)
     {
         var value2 = _virtualRegisterStack.Pop();
         var value1 = _virtualRegisterStack.Pop();
 
-        return BuildComparison(LLVMIntPredicate.LLVMIntNE, LLVMRealPredicate.LLVMRealUNE, value1, value2);
+        return BuildComparison(intPredicate, realPredicate, value1, value2);
     }
     private void SaveCurrentStack()
     {
@@ -965,7 +965,7 @@ public class MethodBodyCompiler
     }
     private void BuildPhis()
     {
-        LLVM.PositionBuilder(_builder, _currentBlock.BlockRef, LLVM.GetFirstInstruction(_currentBlock.BlockRef)); //TODO : Check if necessary
+        //LLVM.PositionBuilder(_builder, _currentBlock.BlockRef, LLVM.GetFirstInstruction(_currentBlock.BlockRef)); //TODO : Check if necessary
 
         //Restore stack
         if (_currentBlock.Predecessors.Any()) //one predecessor must already exist to restore stack
@@ -991,7 +991,7 @@ public class MethodBodyCompiler
             }
         }
 
-        LLVM.PositionBuilderAtEnd(_builder, _currentBlock.BlockRef); //TOOD: Check if necessary
+        //LLVM.PositionBuilderAtEnd(_builder, _currentBlock.BlockRef); //TOOD: Check if necessary
     }
 
     private void PatchBlockGraph(BlockNode startNode)
