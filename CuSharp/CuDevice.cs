@@ -34,7 +34,16 @@ public partial class CuDevice
         var cudaDeviceTensor = deviceTensor as CudaTensor<T[]>;
         return  cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
     }
-    
+
+    /// <summary>
+    /// This copies a scalar value back. Potentially, race conditions can occur.
+    /// </summary>
+    public T Copy<T>(Tensor<T> deviceTensor) where T : struct
+    {
+        var cudaDeviceTensor = deviceTensor as CudaTensor<T>;
+        return cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
+    }
+
     private CudaKernel CompileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) gridSize, (uint,uint,uint) blockSize)
     {
         var kernelName = $"{methodInfo.Name}";
