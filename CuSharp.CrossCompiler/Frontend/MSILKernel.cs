@@ -6,6 +6,8 @@ namespace CuSharp.CudaCompiler.Frontend
     {
         public MSILKernel(string name, MethodInfo methodInfo)
         {
+            if (!methodInfo.IsStatic) throw new NotSupportedException("Method to compile is not static. Only static methods are supported");
+
             Name = name;
             KernelBuffer = methodInfo.GetMethodBody().GetILAsByteArray();
             ParameterInfos = methodInfo.GetParameters();

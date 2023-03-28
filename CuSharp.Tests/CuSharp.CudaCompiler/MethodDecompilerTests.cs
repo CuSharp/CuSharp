@@ -490,6 +490,19 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
         }
 
         [Fact]
+        public void TestNotSupportedNonStaticCall()
+        {
+            // Arrange
+            const string kernelName = "TestNotSupportedNonStaticCall";
+            var method = _methodLoader.GetMethodInfo(new MethodsToCompile().NonStaticEmptyMethod);
+            
+            // Assert
+            Assert.Throws<NotSupportedException>(() => 
+                // Act
+                new MSILKernel(kernelName, method));
+        }
+
+        [Fact]
         public void TestNotSupportedNestedCall()
         {
             // Arrange

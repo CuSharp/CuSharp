@@ -6,13 +6,10 @@ using ManagedCuda.VectorTypes;
 namespace CuSharp;
 public partial class CuDevice
 {
-    
-    private static KernelDiscovery _discovery = new KernelDiscovery();
-    private static CompilationDispatcher _compiler = new CompilationDispatcher();
-    private CudaContext _cudaDeviceContext; 
-    private static KernelDiscovery _kernelMethodDiscovery = new KernelDiscovery();
+    private static readonly CompilationDispatcher Compiler = new();
+    private readonly CudaContext _cudaDeviceContext;
 
-    public string ToString()
+    public override string ToString()
     {
         return _cudaDeviceContext.GetDeviceName();
     }
@@ -38,20 +35,13 @@ public partial class CuDevice
         return  cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
     }
     
-    public T Copy<T>(Tensor<T> deviceTensor) where T : struct
-    {
-        var cudaDeviceTensor = deviceTensor as CudaTensor<T>;
-        return cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
-    }
-
-
-    private CudaKernel compileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) GridSize, (uint,uint,uint) BlockSize)
+    private CudaKernel CompileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) gridSize, (uint,uint,uint) blockSize)
     {
         var kernelName = $"{methodInfo.Name}";
-        var ptxKernel = _compiler.Compile(kernelName, methodInfo);
+        var ptxKernel = Compiler.Compile(kernelName, methodInfo);
         var cudaKernel = _cudaDeviceContext.LoadKernelPTX(ptxKernel.KernelBuffer, kernelName);
-        cudaKernel.GridDimensions = new dim3(GridSize.Item1, GridSize.Item2, GridSize.Item3);
-        cudaKernel.BlockDimensions = new dim3(BlockSize.Item1, BlockSize.Item2, BlockSize.Item3);
+        cudaKernel.GridDimensions = new dim3(gridSize.Item1, gridSize.Item2, gridSize.Item3);
+        cudaKernel.BlockDimensions = new dim3(blockSize.Item1, blockSize.Item2, blockSize.Item3);
         return cudaKernel;
     }
 

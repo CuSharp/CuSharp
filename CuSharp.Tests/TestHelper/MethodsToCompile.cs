@@ -1,10 +1,13 @@
 ﻿using System.Runtime.CompilerServices;
+using CuSharp.Kernel;
 
 namespace CuSharp.Tests.TestHelper
 {
     public class MethodsToCompile
     {
-        public static void EmptyMethod() {}
+        public void NonStaticEmptyMethod() { }
+
+        public static void EmptyMethod() { }
 
         public static void EmptyMixedParameterMethod(int[] A, int[] B, bool b, int c) { }
 

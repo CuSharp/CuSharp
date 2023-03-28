@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+﻿using System.Reflection;
 
-namespace CuSharp;
+namespace CuSharp.Kernel;
+
 public class KernelDiscovery
 {
     private readonly Dictionary<string, MethodInfo> MarkedMethods = new ();
@@ -13,7 +10,7 @@ public class KernelDiscovery
     {
         var markedMethods = Assembly.GetCallingAssembly()
             .GetTypes()
-            .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+            .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
             .Where(m => Attribute.IsDefined(m, typeof(KernelAttribute)));
 
         foreach (var m in markedMethods)

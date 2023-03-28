@@ -1,4 +1,5 @@
 ﻿using System;
+using CuSharp.Kernel;
 using Xunit;
 
 namespace CuSharp.Tests.CuSharp

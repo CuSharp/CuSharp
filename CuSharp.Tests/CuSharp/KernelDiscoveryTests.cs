@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using CuSharp.Kernel;
 using Xunit;
 
 namespace CuSharp.Tests.CuSharp
@@ -17,21 +18,21 @@ namespace CuSharp.Tests.CuSharp
         public void TestDiscoverAllAnnotated()
         {
             var methods = _discovery.GetAllMethods();
-            Assert.Equal(4, methods.Count());
+            Assert.Equal(2, methods.Count());
         }
         
         [Fact]
-        public void TestDiscoverPublicInstanceMethod()
+        public void TestNotDiscoverPublicInstanceMethod()
         {
             var classType = typeof(KernelDiscoveryTests);
-            Assert.True(_discovery.IsMarked($"{classType.FullName}.PublicInstance"));
+            Assert.False(_discovery.IsMarked($"{classType.FullName}.PublicInstance"));
         }
 
         [Fact]
-        public void TestDiscoverPrivateInstanceMethod()
+        public void TestNotDiscoverPrivateInstanceMethod()
         {
             var classType = typeof(KernelDiscoveryTests);
-            Assert.True(_discovery.IsMarked($"{classType.FullName}.PrivateInstance"));
+            Assert.False(_discovery.IsMarked($"{classType.FullName}.PrivateInstance"));
         }
 
         [Fact]
@@ -65,11 +66,13 @@ namespace CuSharp.Tests.CuSharp
         
         [Kernel]
         // ReSharper disable once UnusedMember.Global : Test requires this method
+        // Non-static methods will not be discovered
         public void PublicInstance()
         { }
 
         [Kernel]
         // ReSharper disable once UnusedMember.Local : Test requires this method
+        // Non-static methods will not be discovered
         private void PrivateInstance()
         { }
 
