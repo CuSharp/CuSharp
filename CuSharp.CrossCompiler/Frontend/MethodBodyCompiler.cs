@@ -55,6 +55,7 @@ public class MethodBodyCompiler
                     _currentBlock.Successors.Add(_blockList[_stream.Position]);
                 }
 
+                SaveCurrentStack();
 
                 LLVM.PositionBuilderAtEnd(_builder, _blockList[_stream.Position].BlockRef);
                 _currentBlock = _blockList[_stream.Position];
@@ -609,11 +610,11 @@ public class MethodBodyCompiler
     {
         var predicate = _virtualRegisterStack.Pop();
 
-        if (predicate.TypeOf().ToNativeType() == typeof(int))
+        /*if (predicate.TypeOf().ToNativeType() == typeof(int)) //TODO: remove after testing
         {
             predicate = LLVM.BuildICmp(_builder, LLVMIntPredicate.LLVMIntEQ, predicate,
                 LLVM.ConstInt(LLVM.Int32Type(), 1, false), GetVirtualRegisterName());
-        }
+        }*/
 
         var predicateNegated = LLVM.BuildNot(_builder, predicate, GetVirtualRegisterName());
         var elseBlock = GetBlock(_stream.Position);
@@ -878,9 +879,30 @@ public class MethodBodyCompiler
 
     #region Private Helpers
 
+    private void SaveCurrentStack()
+    {
+        while (_virtualRegisterStack.Any())
+        {
+            _currentBlock.SavedStack.Push(_virtualRegisterStack.Pop());
+        }
+    }
     private void BuildPhis()
     {
-        LLVM.PositionBuilder(_builder, _currentBlock.BlockRef, LLVM.GetFirstInstruction(_currentBlock.BlockRef));
+        LLVM.PositionBuilder(_builder, _currentBlock.BlockRef, LLVM.GetFirstInstruction(_currentBlock.BlockRef)); //TODO : Check if necessary
+
+        //Restore stack
+        if (_currentBlock.Predecessors.Any()) //one predecessor must already exist to restore stack
+        {
+            var savedStackList = _currentBlock.Predecessors.First().SavedStack.ToArray();
+            for (int i = _currentBlock.Predecessors.First().SavedStack.Count() -1; i > -1; i--) //predecessors must all contain same size of saved stack
+            {
+                var phi = LLVM.BuildPhi(_builder, savedStackList[i].TypeOf(), GetVirtualRegisterName());
+                _virtualRegisterStack.Push(phi);
+                _currentBlock.RestoredStack.Push(phi);
+            }
+        }
+        
+        //Restore local variables 
         for (int i = 0; i < _inputKernel.LocalVariables.Count; i++)
         {
             if (!_currentBlock.LocalVariables.ContainsKey(i))
@@ -892,7 +914,7 @@ public class MethodBodyCompiler
             }
         }
 
-        LLVM.PositionBuilderAtEnd(_builder, _currentBlock.BlockRef);
+        LLVM.PositionBuilderAtEnd(_builder, _currentBlock.BlockRef); //TOOD: Check if necessary
     }
 
     private void PatchBlockGraph(BlockNode startNode)
@@ -900,9 +922,17 @@ public class MethodBodyCompiler
         if (startNode.Visited) return;
         startNode.Visited = true;
 
+        foreach (var phi in startNode.RestoredStack)
+        {
+            foreach (var pred in startNode.Predecessors)
+            {
+                phi.AddIncoming(new[]{pred.SavedStack.Pop()},new []{pred.BlockRef},1);
+            }
+        }
+        
         foreach (var phi in startNode.PhiInstructions) //Patch Phi Instructions
         {
-            int arbitraryCounter = 0;
+            //int arbitraryCounter = 0;
             foreach (var pred in startNode.Predecessors)
             {
                 if (pred.LocalVariables.ContainsKey(phi.Key))
@@ -911,16 +941,17 @@ public class MethodBodyCompiler
                 }
                 else // Add arbitrary value (required because of NVVM)
                 {
-                    phi.Value.AddIncoming(new[] { LLVM.ConstInt(phi.Value.TypeOf(), 0, false) }, new[] { pred.BlockRef }, 1);
-                    arbitraryCounter++;
-                    //startNode.PhiInstructions.Remove(phi.Key);
-                    //startNode.LocalVariables.Remove(phi.Key);
+                    phi.Value.AddIncoming(new[] { LLVM.ConstInt(phi.Value.TypeOf(), 1, false) }, new[] { pred.BlockRef }, 1);
+                    //arbitraryCounter++;
                 }
             }
+            
 
             /*if (phi.Value.CountIncoming() == 0)
             {
-                LLVM.InstructionRemoveFromParent(phi.Value);
+                    //startNode.PhiInstructions.Remove(phi.Key);
+                    //startNode.LocalVariables.Remove(phi.Key);
+                    LLVM.InstructionRemoveFromParent(phi.Value);
             }*/
         }
 

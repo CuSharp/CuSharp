@@ -10,4 +10,7 @@ public class BlockNode
     public List<BlockNode> Successors { get; set; } = new();
     public Dictionary<int, LLVMValueRef> PhiInstructions { get; set; } = new(); //Per Local-Index
     public bool Visited { get; set; } = false;
+    
+    public Stack<LLVMValueRef> SavedStack { get; set; } = new();
+    public Stack<LLVMValueRef> RestoredStack { get; set; } = new();
 }
