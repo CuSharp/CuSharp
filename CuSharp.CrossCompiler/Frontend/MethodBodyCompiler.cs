@@ -100,22 +100,70 @@ public class MethodBodyCompiler
                 operand = _reader.ReadSByte();
                 CompileBeq((sbyte)operand);
                 break;
-            //case ILOpCode.Bge: throw new NotSupportedException();
-            //case ILOpCode.Bge_s: throw new NotSupportedException();
-            //case ILOpCode.Bge_un: throw new NotSupportedException();
-            //case ILOpCode.Bge_un_s: throw new NotSupportedException();
-            //case ILOpCode.Bgt: throw new NotSupportedException();
-            //case ILOpCode.Bgt_s: throw new NotSupportedException();
-            //case ILOpCode.Bgt_un: throw new NotSupportedException();
-            //case ILOpCode.Bgt_un_s: throw new NotSupportedException();
-            //case ILOpCode.Ble: throw new NotSupportedException();
-            //case ILOpCode.Ble_s: throw new NotSupportedException();
-            //case ILOpCode.Ble_un: throw new NotSupportedException();
-            //case ILOpCode.Ble_un_s: throw new NotSupportedException();
-            //case ILOpCode.Blt: throw new NotSupportedException();
-            //case ILOpCode.Blt_s: throw new NotSupportedException();
-            //case ILOpCode.Blt_un: throw new NotSupportedException();
-            //case ILOpCode.Blt_un_s: throw new NotSupportedException();
+            case ILOpCode.Bge: 
+                operand = _reader.ReadInt32();
+                CompileBge((int) operand);
+                break;
+            case ILOpCode.Bge_s:
+                operand = _reader.ReadInt16();
+                CompileBge((short) operand);
+                break;
+            case ILOpCode.Bge_un:
+                operand = _reader.ReadInt32();
+                CompileBgeUn((int) operand);
+                break;
+            case ILOpCode.Bge_un_s:
+                operand = _reader.ReadInt16();
+                CompileBgeUn((short) operand);
+                break;
+            case ILOpCode.Bgt: 
+                operand = _reader.ReadInt32();
+                CompileBgt((int) operand);
+                break;
+            case ILOpCode.Bgt_s: 
+                operand = _reader.ReadInt16();
+                CompileBgt((short) operand);
+                break;
+            case ILOpCode.Bgt_un:
+                operand = _reader.ReadInt32();
+                CompileBgtUn((int) operand);
+                break;
+            case ILOpCode.Bgt_un_s:
+                operand = _reader.ReadInt16();
+                CompileBgtUn((short)operand);
+                break;
+            case ILOpCode.Ble:
+                operand = _reader.ReadInt32();
+                CompileBle((int) operand);
+                break;
+            case ILOpCode.Ble_s: 
+                operand = _reader.ReadInt16();
+                CompileBle((short) operand);
+                break;
+            case ILOpCode.Ble_un:
+                operand = _reader.ReadInt32();
+                CompileBleUn((int) operand);
+                break;
+            case ILOpCode.Ble_un_s:
+                operand = _reader.ReadInt16();
+                CompileBleUn((short) operand);
+                break;
+            case ILOpCode.Blt:
+                operand = _reader.ReadInt32();
+                CompileBlt((int) operand);
+                break;
+            case ILOpCode.Blt_s:
+                operand = _reader.ReadInt16();
+                CompileBlt((short) operand);
+                break;
+            case ILOpCode.Blt_un:
+                operand = _reader.ReadInt32();
+                CompileBleUn((int) operand);
+                break;
+            case ILOpCode.Blt_un_s:
+                operand = _reader.ReadInt16();
+                CompileBltUn((short) operand);
+                break;
             case ILOpCode.Bne_un:
                 operand = _reader.ReadInt32();
                 CompileBneUn((int)operand);
@@ -596,69 +644,78 @@ public class MethodBodyCompiler
     private void CompileBrTrue(int operand)
     {
         var predicate = _virtualRegisterStack.Pop();
-        var thenBlock = GetBlock(_stream.Position + operand);
-        var elseBlock = GetBlock(_stream.Position);
-        LLVM.BuildCondBr(_builder, predicate, thenBlock.BlockRef, elseBlock.BlockRef);
-
-        thenBlock.Predecessors.Add(_currentBlock);
-        elseBlock.Predecessors.Add(_currentBlock);
-        _currentBlock.Successors.Add(thenBlock);
-        _currentBlock.Successors.Add(elseBlock);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
     }
 
     private void CompileBrFalse(int operand)
     {
         var predicate = _virtualRegisterStack.Pop();
 
-        /*if (predicate.TypeOf().ToNativeType() == typeof(int)) //TODO: remove after testing
-        {
-            predicate = LLVM.BuildICmp(_builder, LLVMIntPredicate.LLVMIntEQ, predicate,
-                LLVM.ConstInt(LLVM.Int32Type(), 1, false), GetVirtualRegisterName());
-        }*/
-
         var predicateNegated = LLVM.BuildNot(_builder, predicate, GetVirtualRegisterName());
-        var elseBlock = GetBlock(_stream.Position);
-        var thenBlock = GetBlock(_stream.Position + operand);
-        LLVM.BuildCondBr(_builder, predicateNegated, thenBlock.BlockRef,
-            elseBlock.BlockRef);
-
-        elseBlock.Predecessors.Add(_currentBlock);
-        thenBlock.Predecessors.Add(_currentBlock);
-        _currentBlock.Successors.Add(elseBlock);
-        _currentBlock.Successors.Add(thenBlock);
+        
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicateNegated);
     }
 
     private void CompileBneUn(int operand)
     {
-        var value2 = _virtualRegisterStack.Pop();
-        var value1 = _virtualRegisterStack.Pop();
-
-        var predicate = BuildComparison(LLVMIntPredicate.LLVMIntNE, LLVMRealPredicate.LLVMRealUNE, value1, value2);
-        var elseBlock = GetBlock(_stream.Position);
-        var thenBlock = GetBlock(_stream.Position + operand);
-        LLVM.BuildCondBr(_builder, predicate, thenBlock.BlockRef, elseBlock.BlockRef);
-
-        elseBlock.Predecessors.Add(_currentBlock);
-        thenBlock.Predecessors.Add(_currentBlock);
-        _currentBlock.Successors.Add(elseBlock);
-        _currentBlock.Successors.Add(thenBlock);
+        var predicate = BuildPredicateFromStack(LLVMIntPredicate.LLVMIntNE, LLVMRealPredicate.LLVMRealUNE);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
     }
 
     private void CompileBeq(int operand)
     {
-        var value2 = _virtualRegisterStack.Pop();
-        var value1 = _virtualRegisterStack.Pop();
-
-        var predicate = BuildComparison(LLVMIntPredicate.LLVMIntEQ, LLVMRealPredicate.LLVMRealUEQ, value1, value2);
-        var elseBlock = GetBlock(_stream.Position);
-        var thenBlock = GetBlock(_stream.Position + operand);
-        LLVM.BuildCondBr(_builder, predicate, thenBlock.BlockRef, elseBlock.BlockRef);
-
-        elseBlock.Predecessors.Add(_currentBlock);
-        thenBlock.Predecessors.Add(_currentBlock);
-        _currentBlock.Successors.Add(elseBlock);
-        _currentBlock.Successors.Add(thenBlock);
+        var predicate = BuildPredicateFromStack(LLVMIntPredicate.LLVMIntEQ, LLVMRealPredicate.LLVMRealOEQ);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
     }
+
+    private void CompileBge(int operand)
+    {
+        var predicate = BuildPredicateFromStack(LLVMIntPredicate.LLVMIntSGE, LLVMRealPredicate.LLVMRealOGE);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
+    }
+
+    private void CompileBgeUn(int operand)
+    {
+        var predicate = BuildPredicateFromStack(LLVMIntPredicate.LLVMIntUGE, LLVMRealPredicate.LLVMRealUGE);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
+    }
+
+    private void CompileBgt(int operand)
+    {
+        var predicate = BuildPredicateFromStack(LLVMIntPredicate.LLVMIntSGT, LLVMRealPredicate.LLVMRealOGT);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
+    }
+
+    private void CompileBgtUn(int operand)
+    {
+        var predicate = BuildPredicateFromStack(LLVMIntPredicate.LLVMIntUGT, LLVMRealPredicate.LLVMRealUGT);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
+    }
+
+    private void CompileBle(int operand)
+    {
+        var predicate = BuildPredicateFromStack(LLVMIntPredicate.LLVMIntSLE, LLVMRealPredicate.LLVMRealOLE);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
+    }
+
+    private void CompileBleUn(int operand)
+    {
+        var predicate = BuildPredicateFromStack(LLVMIntPredicate.LLVMIntULE, LLVMRealPredicate.LLVMRealULE);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
+    }
+
+    private void CompileBlt(int operand)
+    {
+        var predicate = BuildPredicateFromStack(LLVMIntPredicate.LLVMIntSLT, LLVMRealPredicate.LLVMRealOLT);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
+    }
+
+    private void CompileBltUn(int operand)
+    {
+        var predicate = BuildPredicateFromStack(LLVMIntPredicate.LLVMIntULT, LLVMRealPredicate.LLVMRealULT);
+        BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
+    }
+
 
     #endregion
 
@@ -879,6 +936,26 @@ public class MethodBodyCompiler
 
     #region Private Helpers
 
+
+    private void BuildConditionalBranch(long thenOffset, long elseOffset, LLVMValueRef predicate)
+    {
+        var thenBlock = GetBlock(thenOffset);
+        var elseBlock = GetBlock(elseOffset);
+        LLVM.BuildCondBr(_builder, predicate, thenBlock.BlockRef, elseBlock.BlockRef);
+        
+        thenBlock.Predecessors.Add(_currentBlock);
+        elseBlock.Predecessors.Add(_currentBlock);
+        _currentBlock.Successors.Add(thenBlock);
+        _currentBlock.Successors.Add(elseBlock);
+    }
+
+    private LLVMValueRef BuildPredicateFromStack(LLVMIntPredicate intPredicate, LLVMRealPredicate readPredicate)
+    {
+        var value2 = _virtualRegisterStack.Pop();
+        var value1 = _virtualRegisterStack.Pop();
+
+        return BuildComparison(LLVMIntPredicate.LLVMIntNE, LLVMRealPredicate.LLVMRealUNE, value1, value2);
+    }
     private void SaveCurrentStack()
     {
         while (_virtualRegisterStack.Any())
