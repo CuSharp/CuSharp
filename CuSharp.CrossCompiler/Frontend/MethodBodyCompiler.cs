@@ -30,13 +30,11 @@ public class MethodBodyCompiler
 
     public IEnumerable<(ILOpCode, object?)> CompileMethodBody()
     {
-
         _entryBlockNode = new BlockNode() { BlockRef = LLVM.GetEntryBasicBlock(_functionsDto.Function) };
         _currentBlock = _entryBlockNode;
         IList<(ILOpCode, object?)> opCodes = new List<(ILOpCode, object?)>();
         while (_reader.BaseStream.Position < _reader.BaseStream.Length)
         {
-
             if (_reader.BaseStream.Position == _reader.BaseStream.Length)
             {
                 throw new ArgumentOutOfRangeException("Unexpected end of method body.");
@@ -44,8 +42,6 @@ public class MethodBodyCompiler
 
             if (_blockList.ContainsKey(_stream.Position))
             {
-
-
                 var lastInstruction = LLVM.GetLastInstruction(_currentBlock.BlockRef);
                 if (lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMBr)
                 {
@@ -217,7 +213,9 @@ public class MethodBodyCompiler
             //case ILOpCode.Ckfinite: throw new NotSupportedException();
             //case ILOpCode.Conv_i1: throw new NotSupportedException();
             //case ILOpCode.Conv_i2: throw new NotSupportedException();
-            //case ILOpCode.Conv_i4: throw new NotSupportedException();
+            case ILOpCode.Conv_i4:
+                CompileConvI4();
+                break;
             case ILOpCode.Conv_i8: break; //TODO
             //case ILOpCode.Conv_r4: throw new NotSupportedException();
             //case ILOpCode.Conv_r8: throw new NotSupportedException();
@@ -467,7 +465,9 @@ public class MethodBodyCompiler
                 break;
             //case ILOpCode.Ldflda: throw new NotSupportedException();
             //case ILOpCode.Stfld: throw new NotSupportedException();
-            //case ILOpCode.Ldlen: throw new NotSupportedException();
+            case ILOpCode.Ldlen:
+                CompileLdlen();
+                break;
             //case ILOpCode.Ldobj: throw new NotSupportedException();
             //case ILOpCode.Ldsfld: throw new NotSupportedException();
             //case ILOpCode.Ldsflda: throw new NotSupportedException();
@@ -865,6 +865,14 @@ public class MethodBodyCompiler
         _virtualRegisterStack.Push(value);
     }
 
+    private void CompileLdlen()
+    {
+        var array = _virtualRegisterStack.Pop();
+        var length = LLVM.GetArrayLength(array.TypeOf());
+        var lengthReference = LLVM.ConstInt(LLVMTypeRef.Int32Type(), length, false);
+        _virtualRegisterStack.Push(lengthReference);
+    }
+
     #endregion
 
     #region Stores
@@ -932,6 +940,16 @@ public class MethodBodyCompiler
 
     #endregion
 
+    #region Converts
+
+    private void CompileConvI4()
+    {
+        var value = _virtualRegisterStack.Pop();
+        var nativeValue = LLVM.ConstIntGetSExtValue(value);
+        var convertedValue = LLVM.ConstInt(LLVMTypeRef.Int32Type(), (ulong)nativeValue, true);
+        _virtualRegisterStack.Push(convertedValue);
+    }
+
     #endregion
 
     #region Private Helpers
@@ -984,8 +1002,19 @@ public class MethodBodyCompiler
         {
             if (!_currentBlock.LocalVariables.ContainsKey(i))
             {
-                var phi = LLVM.BuildPhi(_builder, _inputKernel.LocalVariables[i].LocalType.ToLLVMType(),
+                var localVariable = _inputKernel.LocalVariables[i];
+                LLVMValueRef phi;
+
+                if (localVariable.LocalType.IsArray)
+                {
+                    phi = LLVM.BuildPhi(_builder, _inputKernel.LocalVariables[i].LocalType.ToLLVMType(localVariable.LocalIndex),
                     GetVirtualRegisterName());
+                }
+                else
+                {
+                    phi = LLVM.BuildPhi(_builder, _inputKernel.LocalVariables[i].LocalType.ToLLVMType(), GetVirtualRegisterName());
+                }
+                 
                 _currentBlock.LocalVariables.Add(i, phi);
                 _currentBlock.PhiInstructions.Add(i, phi);
             }
@@ -1079,6 +1108,8 @@ public class MethodBodyCompiler
                param1.TypeOf().TypeKind == LLVMTypeKind.LLVMDoubleTypeKind &&
                param2.TypeOf().TypeKind == LLVMTypeKind.LLVMDoubleTypeKind;
     }
+
+    #endregion
 
     #endregion
 }

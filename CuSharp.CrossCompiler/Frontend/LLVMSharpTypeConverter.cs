@@ -14,7 +14,13 @@ public static class LLVMSharpTypeConverter
         if (type == typeof(float)) return LLVMTypeRef.FloatType();
         if (type == typeof(double)) return LLVMTypeRef.DoubleType();
         if (type == typeof(uint)) return LLVMTypeRef.Int32Type();
-        throw new NotSupportedException("Parameter type unsupported");
+        throw new NotSupportedException($"Parameter type '{type}' is unsupported");
+    }
+
+    public static LLVMTypeRef ToLLVMType(this Type type, int elementCount)
+    {
+        if (type == typeof(int[])) return LLVMTypeRef.ArrayType(LLVMTypeRef.Int32Type(), (uint)elementCount);
+        throw new NotSupportedException($"Parameter type '{type}' is unsupported");
     }
 
     public static Type ToNativeType(this LLVMTypeRef type)
