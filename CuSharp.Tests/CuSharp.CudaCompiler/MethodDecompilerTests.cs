@@ -28,13 +28,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Ldc_i4_6, null), (ILOpCode.Add, null), (ILOpCode.Ldc_i4_7, null), (ILOpCode.Add, null),
                 (ILOpCode.Ldc_i4_8, null), (ILOpCode.Add, null), (ILOpCode.Stloc_2, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarIntAdditionWithConst";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntAdditionWithConst);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -52,13 +53,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Ldarg_1, null), (ILOpCode.Add, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Add, null),
                 (ILOpCode.Stloc_1, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarLongAdditionWithConst";
             var method = _methodLoader.GetScalarLongMethodInfo(MethodsToCompile.ScalarLongAdditionWithConst);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -75,13 +77,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Add, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarIntAdditionOpCode";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntAddition);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -98,13 +101,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Sub, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarIntSubtractionOpCode";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntSubtraction);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -121,13 +125,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Mul, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarIntMultiplicationOpCode";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntMultiplication);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -144,13 +149,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Div, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarIntDivisionOpCode";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntDivision);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -167,13 +173,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Rem, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarIntRemainderOpCode";
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntRemainder);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -191,13 +198,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Ldarg_1, null), (ILOpCode.Add, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Add, null),
                 (ILOpCode.Stloc_1, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarFloatAdditionWithConst";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatAdditionWithConst);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -215,13 +223,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Ldarg_1, null), (ILOpCode.Add, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Add, null),
                 (ILOpCode.Stloc_1, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarDoubleAdditionWithConst";
             var method = _methodLoader.GetScalarDoubleMethodInfo(MethodsToCompile.ScalarDoubleAdditionWithConst);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -238,13 +247,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Add, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarFloatAdditionOpCode";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatAddition);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -261,13 +271,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Sub, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarFloatSubtractionOpCode";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatSubtraction);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -284,13 +295,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Mul, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarFloatMultiplicationOpCode";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatMultiplication);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -307,13 +319,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Div, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarFloatDivisionOpCode";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatDivision);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -330,13 +343,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Rem, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestScalarFloatRemainderOpCode";
             var method = _methodLoader.GetScalarFloatMethodInfo(MethodsToCompile.ScalarFloatRemainder);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -355,13 +369,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Ldelem_i4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_i4, null), (ILOpCode.Add, null), (ILOpCode.Stelem_i4, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestArrayIntAdditionOpCode";
             var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.ArrayIntAddition);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -380,13 +395,14 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 (ILOpCode.Ldelem_r4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_r4, null), (ILOpCode.Add, null), (ILOpCode.Stelem_r4, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Arrange
             const string kernelName = "TestArrayFloatAdditionOpCode";
             var method = _methodLoader.GetArrayFloatMethodInfo(MethodsToCompile.ArrayFloatAddition);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody();
@@ -403,20 +419,21 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.ArrayIntAdditionWithKernelTools);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
 
             var expected = new List<(ILOpCode, object?)>
             {
-                (ILOpCode.Nop, null), (ILOpCode.Call, actual[1].Item2), (ILOpCode.Ldfld, actual[2].Item2),
-                (ILOpCode.Call, actual[3].Item2), (ILOpCode.Ldfld, actual[4].Item2), (ILOpCode.Mul, null),
-                (ILOpCode.Call, actual[6].Item2), (ILOpCode.Ldfld, actual[7].Item2), (ILOpCode.Add, null), (ILOpCode.Stloc_0, null),
+                (ILOpCode.Nop, null), (ILOpCode.Call, actual[GetIndexInReleaseMode(1, 1)].Item2), (ILOpCode.Ldfld, actual[GetIndexInReleaseMode(2, 1)].Item2),
+                (ILOpCode.Call, actual[GetIndexInReleaseMode(3, 1)].Item2), (ILOpCode.Ldfld, actual[GetIndexInReleaseMode(4, 1)].Item2), (ILOpCode.Mul, null),
+                (ILOpCode.Call, actual[GetIndexInReleaseMode(6, 1)].Item2), (ILOpCode.Ldfld, actual[GetIndexInReleaseMode(7, 1)].Item2), (ILOpCode.Add, null), (ILOpCode.Stloc_0, null),
                 (ILOpCode.Ldarg_2, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_i4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_i4, null), (ILOpCode.Add, null), (ILOpCode.Stelem_i4, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -430,20 +447,21 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             var method = _methodLoader.GetArrayFloatMethodInfo(MethodsToCompile.ArrayFloatAdditionWithKernelTools);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
 
             var expected = new List<(ILOpCode, object?)>
             {
-                (ILOpCode.Nop, null), (ILOpCode.Call, actual[1].Item2), (ILOpCode.Ldfld, actual[2].Item2),
-                (ILOpCode.Call, actual[3].Item2), (ILOpCode.Ldfld, actual[4].Item2), (ILOpCode.Mul, null),
-                (ILOpCode.Call, actual[6].Item2), (ILOpCode.Ldfld, actual[7].Item2), (ILOpCode.Add, null), (ILOpCode.Stloc_0, null),
+                (ILOpCode.Nop, null), (ILOpCode.Call, actual[GetIndexInReleaseMode(1, 1)].Item2), (ILOpCode.Ldfld, actual[GetIndexInReleaseMode(2, 1)].Item2),
+                (ILOpCode.Call, actual[GetIndexInReleaseMode(3, 1)].Item2), (ILOpCode.Ldfld, actual[GetIndexInReleaseMode(4, 1)].Item2), (ILOpCode.Mul, null),
+                (ILOpCode.Call, actual[GetIndexInReleaseMode(6, 1)].Item2), (ILOpCode.Ldfld, actual[GetIndexInReleaseMode(7, 1)].Item2), (ILOpCode.Add, null), (ILOpCode.Stloc_0, null),
                 (ILOpCode.Ldarg_2, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_r4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_r4, null), (ILOpCode.Add, null), (ILOpCode.Stelem_r4, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -457,33 +475,34 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.ArrayIntShortHandOperationsWithKernelTools);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Act
             var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
 
             var expected = new List<(ILOpCode, object?)>
             {
-                (ILOpCode.Nop, null), (ILOpCode.Call, actual[1].Item2), (ILOpCode.Ldfld, actual[2].Item2),
-                (ILOpCode.Call, actual[3].Item2), (ILOpCode.Ldfld, actual[4].Item2), (ILOpCode.Mul, null),
-                (ILOpCode.Call, actual[6].Item2), (ILOpCode.Ldfld, actual[7].Item2), (ILOpCode.Add, null),
+                (ILOpCode.Nop, null), (ILOpCode.Call, actual[GetIndexInReleaseMode(1, 1)].Item2), (ILOpCode.Ldfld, actual[GetIndexInReleaseMode(2, 1)].Item2),
+                (ILOpCode.Call, actual[GetIndexInReleaseMode(3, 1)].Item2), (ILOpCode.Ldfld, actual[GetIndexInReleaseMode(4, 1)].Item2), (ILOpCode.Mul, null),
+                (ILOpCode.Call, actual[GetIndexInReleaseMode(6, 1)].Item2), (ILOpCode.Ldfld, actual[GetIndexInReleaseMode(7, 1)].Item2), (ILOpCode.Add, null),
                 (ILOpCode.Stloc_0, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null),
-                (ILOpCode.Ldelema, actual[12].Item2), (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null),
+                (ILOpCode.Ldelema, actual[GetIndexInReleaseMode(12, 1)].Item2), (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null),
                 (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelem_i4, null), (ILOpCode.Add, null),
                 (ILOpCode.Stind_i4, null),
-                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[22].Item2),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[GetIndexInReleaseMode(22, 1)].Item2),
                 (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_i4, null), (ILOpCode.Sub, null), (ILOpCode.Stind_i4, null),
-                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[32].Item2),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[GetIndexInReleaseMode(32, 1)].Item2),
                 (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_i4, null), (ILOpCode.Mul, null), (ILOpCode.Stind_i4, null),
-                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[42].Item2),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[GetIndexInReleaseMode(42, 1)].Item2),
                 (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_i4, null), (ILOpCode.Div, null), (ILOpCode.Stind_i4, null),
-                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[52].Item2),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Ldelema, actual[GetIndexInReleaseMode(52, 1)].Item2),
                 (ILOpCode.Dup, null), (ILOpCode.Ldind_i4, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ldloc_0, null),
                 (ILOpCode.Ldelem_i4, null), (ILOpCode.Rem, null), (ILOpCode.Stind_i4, null), (ILOpCode.Ret, null)
             };
+            expected = RemoveNopInReleaseMode(expected);
 
             // Assert
             Assert.Equal(expected, actual);
@@ -510,7 +529,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.NotSupportedNestedCall);
             var kernel = new MSILKernel(kernelName, method);
             var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
 
             // Assert
             Assert.Throws<NotSupportedException>(() =>
@@ -518,58 +537,20 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
                 new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody());
         }
 
-        [Fact]
-        public void TestLogicalAndOpCode()
+        private static List<(ILOpCode, object?)> RemoveNopInReleaseMode(List<(ILOpCode, object?)> opCodesWithOperands)
         {
-            // Arrange
-            const string kernelName = "TestLogicalAndOpCode";
-            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.LogicalAnd);
-            var kernel = new MSILKernel(kernelName, method);
-            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
-
-            // Act
-            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
-
-            var expected = new List<(ILOpCode, object?)>
-            {
-                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Bne_un_s, actual[3].Item2),
-                (ILOpCode.Ldarg_1, null), (ILOpCode.Ldarg_2, null), (ILOpCode.Ceq, null), (ILOpCode.Br_s, actual[7].Item2),
-                (ILOpCode.Ldc_i4_0,  null), (ILOpCode.Stloc_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Brfalse_s, actual[11].Item2),
-                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldc_i4_1, null), (ILOpCode.Add, null),
-                (ILOpCode.Starg_s, actual[16].Item2), (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null),
-                (ILOpCode.Mul, null), (ILOpCode.Starg_s, actual[21].Item2), (ILOpCode.Ret, null)
-            };
-
-            // Assert
-            Assert.Equal(expected, actual);
+            #if (RELEASE)
+            opCodesWithOperands = opCodesWithOperands.Where(inst => inst.Item1 != ILOpCode.Nop).ToList();
+            #endif
+            return opCodesWithOperands;
         }
 
-        [Fact]
-        public void TestLogicalOrOpCode()
+        private static int GetIndexInReleaseMode(int index, int amountToDecrease)
         {
-            // Arrange
-            const string kernelName = "TestLogicalOrOpCode";
-            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.LogicalOr);
-            var kernel = new MSILKernel(kernelName, method);
-            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWihtEntryBlock(functionsDto.Function);
-
-            // Act
-            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
-
-            var expected = new List<(ILOpCode, object?)>
-            {
-                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Beq_s, actual[3].Item2),
-                (ILOpCode.Ldarg_1, null), (ILOpCode.Ldarg_2, null), (ILOpCode.Ceq, null), (ILOpCode.Br_s, actual[7].Item2),
-                (ILOpCode.Ldc_i4_1,  null), (ILOpCode.Stloc_0, null), (ILOpCode.Ldloc_0, null), (ILOpCode.Brfalse_s, actual[11].Item2),
-                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldc_i4_1, null), (ILOpCode.Add, null),
-                (ILOpCode.Starg_s, actual[16].Item2), (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null),
-                (ILOpCode.Mul, null), (ILOpCode.Starg_s, actual[21].Item2), (ILOpCode.Ret, null)
-            };
-
-            // Assert
-            Assert.Equal(expected, actual);
+            #if (RELEASE)
+            index -= amountToDecrease;
+            #endif
+            return index;
         }
     }
 }

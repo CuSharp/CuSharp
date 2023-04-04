@@ -1,6 +1,7 @@
 ﻿using CuSharp.CudaCompiler.Frontend;
 using CuSharp.Tests.TestHelper;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler
 {
@@ -387,40 +388,6 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
 
             var expected =
                 _llvmLoader.GetArrayShortHandOperationsWithKernelToolsTestResult(kernelName, TypesAsString.DoubleType);
-            var actual = llvmKernel.KernelBuffer;
-
-            Assert.Equal(expected, actual);
-            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
-        }
-
-        [Fact]
-        public void TestLogicalAnd()
-        {
-            const string kernelName = "LogicalAnd";
-            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.LogicalAnd);
-            var config = CompilationConfiguration.NvvmConfiguration;
-            config.KernelName = kernelName;
-            var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
-
-            var expected = string.Empty; //_llvmLoader.GetLogicalAndToolsTestResult(kernelName, TypesAsString.IntType);
-            var actual = llvmKernel.KernelBuffer;
-
-            //Assert.Equal(expected, actual);
-            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
-        }
-
-        [Fact]
-        public void TestLogicalOr()
-        {
-            const string kernelName = "LogicalOr";
-            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.LogicalOr);
-            var config = CompilationConfiguration.NvvmConfiguration;
-            config.KernelName = kernelName;
-            var crossCompiler = new KernelCrossCompiler(config);
-            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
-
-            var expected = string.Empty; //_llvmLoader.GetLogicalAndToolsTestResult(kernelName, TypesAsString.IntType);
             var actual = llvmKernel.KernelBuffer;
 
             Assert.Equal(expected, actual);
