@@ -14,7 +14,7 @@ namespace CuSharp.Tests.TestHelper
             return new FunctionsDto(function, externalFunctions);
         }
 
-        public LLVMBuilderRef GetBuilderWihtEntryBlock(LLVMValueRef function)
+        public LLVMBuilderRef GetBuilderWithEntryBlock(LLVMValueRef function)
         {
             var builder = LLVM.CreateBuilder();
             var entryBlock = LLVM.AppendBasicBlock(function, "entry");
