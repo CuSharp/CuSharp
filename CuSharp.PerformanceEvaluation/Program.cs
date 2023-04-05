@@ -23,17 +23,21 @@ public class Program
         {
             Launch(i, dev, verify);
             double result = 0;
+            double jitResult = 0;
             for (int j = 0; j < 10; j++)
             {
-                result += Launch(i, dev, verify);
+                var results = Launch(i, dev, verify);
+                result += results.Item1;
+                jitResult += results.Item2;
             }
 
             result /= 10;
-            Console.WriteLine($"Width: {i},Size: {i * i},\t Avg: {result}");
+            jitResult /= 10;
+            Console.WriteLine($"Width: {i},Size: {i * i},\t Avg: {result},\tJIT Avg: {jitResult}");
         }
     }
 
-    static double Launch(int matrixWidth, CuDevice dev, bool verify)
+    static (double, double) Launch(int matrixWidth, CuDevice dev, bool verify)
     {
 
         uint gridDim = (uint) (matrixWidth % 32 == 0 ? matrixWidth / 32 : matrixWidth / 32 + 1);
@@ -53,8 +57,11 @@ public class Program
         var devC = dev.Copy(c);
         var devWidth = dev.Copy(matrixWidth);
         CuSharp.CuSharp.StartTimer();
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
         dev.Launch(Kernels.IntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,
             devWidth);
+        sw.Stop();
         var result = CuSharp.CuSharp.GetTimeMS();
         c = dev.Copy(devC);
         if (verify)
@@ -70,6 +77,6 @@ public class Program
         devB.Dispose();
         devC.Dispose();
         devWidth.Dispose();
-        return result;
+        return (result, sw.ElapsedMilliseconds);
     }
 }
