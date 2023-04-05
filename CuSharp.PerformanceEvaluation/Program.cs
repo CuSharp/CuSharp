@@ -77,6 +77,6 @@ public class Program
         devB.Dispose();
         devC.Dispose();
         devWidth.Dispose();
-        return (result, sw.ElapsedMilliseconds);
+        return (result, sw.Elapsed.TotalMilliseconds);
     }
 }
