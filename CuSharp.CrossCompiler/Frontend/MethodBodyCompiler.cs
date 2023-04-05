@@ -19,6 +19,7 @@ public class MethodBodyCompiler
     private long _blockCounter;
     private string? _nameOfMethodToCall;
 
+    #region PublicInterface
     public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto)
     {
         _inputKernel = inputKernel;
@@ -67,6 +68,7 @@ public class MethodBodyCompiler
         return opCodes;
     }
 
+    #endregion
     private (ILOpCode, object?) CompileNextOpCode()
     {
         var opCode = ReadOpCode();
@@ -217,35 +219,39 @@ public class MethodBodyCompiler
                 CompileConvI4();
                 break;
             case ILOpCode.Conv_i8: break; //TODO
-            //case ILOpCode.Conv_r4: throw new NotSupportedException();
-            //case ILOpCode.Conv_r8: throw new NotSupportedException();
-            //case ILOpCode.Conv_u1: throw new NotSupportedException();
-            //case ILOpCode.Conv_u2: throw new NotSupportedException();
-            //case ILOpCode.Conv_u4: throw new NotSupportedException();
+            case ILOpCode.Conv_r4: 
+                CompileConvR4();
+                break;
+            case ILOpCode.Conv_r8: throw new NotSupportedException();
+            case ILOpCode.Conv_u1: throw new NotSupportedException();
+            case ILOpCode.Conv_u2: throw new NotSupportedException();
+            case ILOpCode.Conv_u4: throw new NotSupportedException();
             case ILOpCode.Conv_u8: break; //TODO
-            //case ILOpCode.Conv_i: throw new NotSupportedException();
-            //case ILOpCode.Conv_u: throw new NotSupportedException();
-            //case ILOpCode.Conv_r_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i1: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i2: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i4: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i8: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u1: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u2: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u4: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u8: throw new NotSupportedException();
+            case ILOpCode.Conv_i: throw new NotSupportedException();
+            case ILOpCode.Conv_u: throw new NotSupportedException();
+            case ILOpCode.Conv_r_un: 
+                CompileConvRUn();
+                break;
+            case ILOpCode.Conv_ovf_i1: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_i2: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_i4: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_i8: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_u1: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_u2: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_u4: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_u8: throw new NotSupportedException();
             case ILOpCode.Conv_ovf_i: break; //TODO 
-            //case ILOpCode.Conv_ovf_u: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i1_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i2_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i4_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i8_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u1_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u2_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u4_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u8_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u_un: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_u: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_i1_un: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_i2_un: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_i4_un: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_i8_un: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_u1_un: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_u2_un: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_u4_un: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_u8_un: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_i_un: throw new NotSupportedException();
+            case ILOpCode.Conv_ovf_u_un: throw new NotSupportedException();
             //case ILOpCode.Cpblk: throw new NotSupportedException();
             case ILOpCode.Div:
                 CompileDiv();
@@ -628,7 +634,6 @@ public class MethodBodyCompiler
 
     private void CompileBr(int operand)
     {
-        LLVMBasicBlockRef block;
         if (operand != 0) //Create a block after this one even if the actual branch is further down
         {
             GetBlock(_stream.Position);
@@ -950,6 +955,19 @@ public class MethodBodyCompiler
         _virtualRegisterStack.Push(convertedValue);
     }
 
+    private void CompileConvRUn()
+    {
+        var value = _virtualRegisterStack.Pop(); //Unsigned int
+        var converted = LLVM.BuildUIToFP(_builder, value, LLVMTypeRef.FloatType(), GetVirtualRegisterName());
+        _virtualRegisterStack.Push(converted);
+    }
+
+    private void CompileConvR4()
+    {
+        var value = _virtualRegisterStack.Pop();
+        var converted = LLVM.BuildFPCast(_builder, value, LLVMTypeRef.FloatType(), GetVirtualRegisterName());
+        _virtualRegisterStack.Push(converted);
+    }
     #endregion
 
     #region Private Helpers
@@ -1047,8 +1065,15 @@ public class MethodBodyCompiler
                 }
                 else // Add arbitrary value (required because of NVVM)
                 {
-                    phi.Value.AddIncoming(new[] { LLVM.ConstInt(phi.Value.TypeOf(), 1, false) }, new[] { pred.BlockRef }, 1);
-                    //arbitraryCounter++;
+                    if (_inputKernel.LocalVariables[phi.Key].LocalType == typeof(float) ||
+                        _inputKernel.LocalVariables[phi.Key].LocalType == typeof(double))
+                    {
+                        phi.Value.AddIncoming(new[] { LLVM.ConstReal(phi.Value.TypeOf(), 1.0) }, new[] { pred.BlockRef }, 1);
+                    }
+                    else
+                    {
+                        phi.Value.AddIncoming(new[] { LLVM.ConstInt(phi.Value.TypeOf(), 1, false) }, new[] { pred.BlockRef }, 1);
+                    }
                 }
             }
             
