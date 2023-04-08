@@ -36,7 +36,7 @@ public class IntegrationTests
         dev.Launch(MethodsToCompile.ArrayIntAdditionWithKernelTools, (1,1,1), ((uint) length,1,1), devA, devB, devC);
         c = dev.Copy(devC);
 
-        _output.WriteLine($"Used gpu device: '{dev.ToString()}'");
+        _output.WriteLine($"Used gpu device: '{dev}'");
         Assert.True(c.SequenceEqual(expectedC));
     }
 

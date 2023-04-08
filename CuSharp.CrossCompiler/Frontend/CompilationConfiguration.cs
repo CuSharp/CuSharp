@@ -62,7 +62,7 @@ public class CompilationConfiguration
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)));
             },
 
-            (LLVMModuleRef moduleRef) =>
+            (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item2", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ctaid.y",
@@ -81,7 +81,7 @@ public class CompilationConfiguration
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)));
             },
 
-            (LLVMModuleRef moduleRef) =>
+            (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item3", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ctaid.z",

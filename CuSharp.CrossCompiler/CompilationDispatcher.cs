@@ -8,10 +8,12 @@ namespace CuSharp.CudaCompiler;
 public class CompilationDispatcher
 {
     private readonly Dictionary<string, PTXKernel> _kernelCache;
+    private readonly bool EnableOptimizer;
 
-    public CompilationDispatcher(Dictionary<string, PTXKernel>? kernelCache = null)
+    public CompilationDispatcher(Dictionary<string, PTXKernel>? kernelCache = null, bool enableOptimizer = false)
     {
         _kernelCache = kernelCache ?? new Dictionary<string, PTXKernel>();
+        EnableOptimizer = enableOptimizer;
     }
     public PTXKernel Compile(string kernelName, MethodInfo methodInfo)
     {
@@ -22,7 +24,7 @@ public class CompilationDispatcher
         nvvmConfiguration.KernelName = kernelName;
         
         var msilToLlvmCrosscompiler = new KernelCrossCompiler(nvvmConfiguration);
-        var llvmKernel = msilToLlvmCrosscompiler.Compile(kernel);
+        var llvmKernel = msilToLlvmCrosscompiler.Compile(kernel, EnableOptimizer);
         ptxKernel = CompileLlvmToPtx(llvmKernel);
         _kernelCache.Add(GetMethodIdentity(methodInfo), ptxKernel);
         return ptxKernel;
@@ -41,13 +43,15 @@ public class CompilationDispatcher
     {
         var nvvmHandle = new NVVMProgram();
         nvvmHandle.AddModule(llvmKernel.KernelBuffer, llvmKernel.Name);
+#if DEBUG
         var verifyResult = nvvmHandle.Verify(new string[0]);
         if (verifyResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
         {
             nvvmHandle.GetProgramLog(out string log);
             throw new Exception(log);
         }
-        var compilationResult = nvvmHandle.Compile(new string[0]);
+#endif 
+        var compilationResult = nvvmHandle.Compile(new string[]{"-fma=1"});
         if (compilationResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
         {
             nvvmHandle.GetProgramLog(out string log);

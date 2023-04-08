@@ -24,9 +24,12 @@ public class CuSharpTests
     [Fact]
     public void TestTimerIsZero()
     {
-        global::CuSharp.CuSharp.GetDefaultDevice(); //done just to initialize
-        global::CuSharp.CuSharp.StartTimer();
-        var time = global::CuSharp.CuSharp.GetTimeMS();
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice(); //done just to initialize
+        var first = global::CuSharp.CuSharp.CreateEvent();
+        var second = global::CuSharp.CuSharp.CreateEvent();
+        first.Record();
+        second.Record();
+        var time = first.GetDeltaTo(second);
         Assert.True(time < 0.5);
     }
 

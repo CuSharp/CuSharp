@@ -582,7 +582,7 @@ public class MethodBodyCompiler
         var param2 = _virtualRegisterStack.Pop();
         var param1 = _virtualRegisterStack.Pop();
         LLVMValueRef result;
-
+        
         if (AreParamsCompatibleAndInt(param1, param2))
         {
             result = LLVM.BuildSDiv(_builder, param1, param2, GetVirtualRegisterName());

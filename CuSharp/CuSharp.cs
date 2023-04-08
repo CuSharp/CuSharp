@@ -1,11 +1,20 @@
-﻿using ManagedCuda;
+﻿using CuSharp.CudaCompiler;
+using CuSharp.Event;
+using ManagedCuda;
 
 namespace CuSharp;
 public static class CuSharp
 {
 
+    public static bool EnableOptimizer { get; set; }
+
     static CuSharp()
     {
+#if DEBUG
+        EnableOptimizer = false;
+#else
+        EnableOptimizer = true;
+#endif
     }
     public static IEnumerator<(int, string)> GetDeviceList()
     {
@@ -23,27 +32,19 @@ public static class CuSharp
             throw new ArgumentException("Device ID does not exist");
         }
         
-        return new CuDevice(deviceId);
+        return new CuDevice(deviceId, new CompilationDispatcher(null, EnableOptimizer));
     }
 
     public static CuDevice GetDefaultDevice()
     {
-        return new CuDevice();
+        return new CuDevice(compiler: new CompilationDispatcher(null, EnableOptimizer));
     }
 
+    public static CuEvent CreateEvent()
+    {
+        return new CudaEventWrapper();
+    }
+    
     private static CudaEvent startEvent;
-    public static void  StartTimer()
-    {
-        startEvent = new CudaEvent();
-        startEvent.Record();
-    }
-
-    public static float GetTimeMS()
-    {
-        var cuEvent = new CudaEvent();
-        cuEvent.Record();
-        cuEvent.Synchronize();
-        return CudaEvent.ElapsedTime(startEvent, cuEvent);
-    }
 
 }
