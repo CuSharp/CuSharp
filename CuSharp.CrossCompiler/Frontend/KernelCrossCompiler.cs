@@ -22,7 +22,7 @@ public class KernelCrossCompiler
         _builder = LLVM.CreateBuilder();
     }
 
-    public LLVMKernel Compile(MSILKernel inputKernel)
+    public LLVMKernel Compile(MSILKernel inputKernel, bool optimize = false)
     {
         GenerateDataLayoutAndTarget();
         
@@ -33,11 +33,30 @@ public class KernelCrossCompiler
 
         new MethodBodyCompiler(inputKernel, _builder, functionsDto).CompileMethodBody();
         GenerateAnnotations(function);
+        
+        if(optimize) RunOptimization(function);
 
         return new LLVMKernel(inputKernel.Name, GetModuleAsString());
     }
 
-    
+
+    private void RunOptimization(LLVMValueRef function)
+    {
+        //FROM: https://github.com/dotnet/LLVMSharp/blob/main/samples/KaleidoscopeTutorial/Chapter4/KaleidoscopeLLVM/Program.cs
+        //FROM: https://llvm.org/docs/NewPassManager.html
+        
+        LLVMPassManagerRef passManager = LLVM.CreateFunctionPassManagerForModule(_module);
+        
+        LLVM.AddBasicAliasAnalysisPass(passManager);
+        LLVM.AddPromoteMemoryToRegisterPass(passManager);
+        LLVM.AddInstructionCombiningPass(passManager);
+        LLVM.AddReassociatePass(passManager);
+        LLVM.AddCFGSimplificationPass(passManager);
+        LLVM.AddGVNPass(passManager);
+
+        LLVM.InitializeFunctionPassManager(passManager);
+        LLVM.RunFunctionPassManager(passManager, function);
+    }
     private string GetModuleAsString()
     {
         var unmanagedString = LLVM.PrintModuleToString(_module);
