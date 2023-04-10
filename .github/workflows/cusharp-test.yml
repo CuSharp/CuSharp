@@ -19,8 +19,10 @@ jobs:
       run: dotnet restore
     - name: cuda-toolkit
       uses: Jimver/cuda-toolkit@v0.2.10
-      id: cuda-toolkit
       with:
         cuda: '12.0.0'
+    - run: echo "Installed cuda version is ${{steps.cuda-toolkit.outputs.cuda}}"
+    - run: echo "Cuda install location ${{steps.cuda-toolkit.outputs.CUDA_PATH}}"
+    - run: nvcc -V
     - name: Test UnitTests
       run: dotnet test --filter "TestCategory=Unit" /p:Configuration=Release
