@@ -2,13 +2,13 @@ name: CuSharp-Test
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "test" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "test" ]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -22,19 +22,8 @@ jobs:
       with:
         cuda: '12.0.0'
     - run: echo "Cuda install location is ${{ env.CUDA_PATH }}"
-    - run: echo "LD_LIBRARY_PATH is ${{ env.LD_LIBRARY_PATH }}"
-    - name: LS env.CUDA_PATH
-      working-directory: ${{ env.CUDA_PATH }}
-      run: |
-        ls -la
-        cd nvvm
-        ls -la
-        cd lib64
-        ls -la
-        cd nvvm
-        ls -la
     - run: nvcc -V
-    #- name: Test UnitTests
-    #  run: dotnet test --filter "TestCategory=Unit" /p:Configuration=Release
-    #  env:
-    #    CUDA_PATH: ${{ env.CUDA_PATH }}
+    - name: Test UnitTests
+      run: dotnet test --filter "TestCategory=Unit" /p:Configuration=Release
+      env:
+        CUDA_PATH: ${{ env.CUDA_PATH }}
