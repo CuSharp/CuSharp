@@ -17,5 +17,7 @@ jobs:
         dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore
+    - name: cuda-toolkit
+      uses: Jimver/cuda-toolkit@v0.2.10
     - name: Test UnitTests
       run: dotnet test --filter "TestCategory=Unit" /p:Configuration=Release
