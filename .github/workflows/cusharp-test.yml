@@ -26,3 +26,5 @@ jobs:
     - run: nvcc -V
     - name: Test UnitTests
       run: dotnet test --filter "TestCategory=Unit" /p:Configuration=Release
+      env:
+        CUDA_PATH: ${{ env.CUDA_PATH }}
