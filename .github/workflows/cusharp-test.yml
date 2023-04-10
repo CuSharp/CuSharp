@@ -17,13 +17,13 @@ jobs:
         dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore
-    #- name: cuda-toolkit
-    #  uses: Jimver/cuda-toolkit@v0.2.10
-    #  with:
-    #    cuda: '12.0.0'
-    - run: echo "Cuda install location is ${{env.CUDA_PATH}}"
+    - name: cuda-toolkit
+      uses: Jimver/cuda-toolkit@v0.2.10
+      with:
+        cuda: '12.0.0'
+    - run: echo "Cuda install location is ${{ env.CUDA_PATH }}"
     - name: Change directory and list contents
-      working-directory: env.CUDA_PATH
+      working-directory: ${{ env.CUDA_PATH }}
       run: |
         ls -la
         cd nvvm
