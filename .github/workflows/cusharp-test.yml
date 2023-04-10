@@ -21,7 +21,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${{ env.CUDA_PATH }}
-        key: cuda-toolkit-${{ env.CUDA_VERSION }}-${{ runner.os }}-${{ hashFiles('**/cuda.version') }}
+        key: cuda-toolkit-${{ env.CUDA_PATH }}-${{ runner.os }}
     - name: cuda-toolkit
       if: steps.cache.outputs.cache-hit != 'true'
       uses: Jimver/cuda-toolkit@v0.2.10
