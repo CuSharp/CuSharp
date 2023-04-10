@@ -6,3 +6,4 @@
 CuSharp.sln.DotSettings.user
 **/coverage.cobertura.xml
 **/coveragereport/
+**/coverage.json

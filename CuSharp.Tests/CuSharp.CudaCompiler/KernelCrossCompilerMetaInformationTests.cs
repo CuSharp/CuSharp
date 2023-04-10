@@ -5,6 +5,7 @@ using Xunit;
 namespace CuSharp.Tests.CuSharp.CudaCompiler;
 
 [Collection("Sequential")]
+[Trait(TestCategories.TestCategory, TestCategories.Unit)]
 public class KernelCrossCompilerMetaInformationTests
 {
     private readonly MethodInfoLoader _methodLoader = new();
