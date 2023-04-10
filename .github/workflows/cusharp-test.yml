@@ -23,13 +23,15 @@ jobs:
         cuda: '12.0.0'
     - run: echo "Cuda install location is ${{ env.CUDA_PATH }}"
     - run: echo "LD_LIBRARY_PATH is ${{ env.LD_LIBRARY_PATH }}"
-    - name: Change directory and list contents
+    - name: LS env.CUDA_PATH
       working-directory: ${{ env.CUDA_PATH }}
       run: |
         ls -la
         cd nvvm
         ls -la
-        cd bin
+        cd lib64
+        ls -la
+        cd nvvm
         ls -la
     - run: nvcc -V
     #- name: Test UnitTests
