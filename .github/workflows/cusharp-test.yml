@@ -24,6 +24,9 @@ jobs:
     - run: echo "Cuda install location is ${{ env.CUDA_PATH }}"
     - run: nvcc -V
     - name: Test UnitTests
-      run: dotnet test --filter "TestCategory=Unit" /p:Configuration=Release
+      run:
+        dotnet test --filter "TestCategory=Unit" /p:Configuration=Release
+        dotnet test --filter "TestCategory=UnitReleaseOnly" /p:Configuration=Release
+        dotnet test --filter "TestCategory=UnitDebugOnly" /p:Configuration=Debug
       env:
         CUDA_PATH: ${{ env.CUDA_PATH }}
