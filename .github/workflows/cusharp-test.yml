@@ -17,12 +17,6 @@ jobs:
         dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore
-    - name: Cache CUDA Toolkit
-      uses: actions/cache@v2
-      with:
-        path: /usr/local/cuda-12.0
-        key: cuda-toolkit-12.0
-        restore-keys: cuda-toolkit-
     - name: cuda-toolkit
       uses: Jimver/cuda-toolkit@v0.2.10
       with:
@@ -37,7 +31,7 @@ jobs:
         ls -la
         cd bin
         ls -la
-    #- run: nvcc -V
+    - run: nvcc -V
     #- name: Test UnitTests
     #  run: dotnet test --filter "TestCategory=Unit" /p:Configuration=Release
     #  env:
