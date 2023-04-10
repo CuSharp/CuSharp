@@ -18,6 +18,7 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Cache CUDA Toolkit
+      if: ${{ env.CUDA_PATH != '' }} 
       uses: actions/cache@v2
       with:
         path: ${{ env.CUDA_PATH }}
