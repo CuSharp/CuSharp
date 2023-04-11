@@ -18,10 +18,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Cache CUDA Toolkit
-      if: ${{ env.CUDA_PATH != '' }} 
       uses: actions/cache@v2
       with:
-        path: ${{ env.CUDA_PATH }}
+        path: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.0"
         key: cuda-toolkit-${{ runner.os }}
     - name: cuda-toolkit
       if: steps.cache.outputs.cache-hit != 'true'
