@@ -1,11 +1,8 @@
 name: CuSharp-Test
 
 on:
-  push:
-    branches: [ "test" ]
-  pull_request:
-    branches: [ "test" ]
-
+  workflow_dispatch:
+  
 jobs:
   build:
     runs-on: windows-latest
@@ -17,18 +14,11 @@ jobs:
         dotnet-version: 6.0.x
     - name: Restore dependencies
       run: dotnet restore
-    - name: Cache CUDA Toolkit
-      uses: actions/cache@v2
-      with:
-        path: "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.0"
-        key: cuda-toolkit-${{ runner.os }}
     - name: cuda-toolkit
       if: steps.cache.outputs.cache-hit != 'true'
       uses: Jimver/cuda-toolkit@v0.2.10
       with:
         cuda: '12.0.0'
-    - run: echo "Cuda install location is ${{ env.CUDA_PATH }}"
-    - run: nvcc -V
     - name: Test UnitTests
       run: |
         dotnet test --filter "TestCategory=Unit" /p:Configuration=Release &&
