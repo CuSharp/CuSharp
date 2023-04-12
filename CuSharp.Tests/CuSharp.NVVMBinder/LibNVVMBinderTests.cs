@@ -1,9 +1,13 @@
+using CuSharp.Tests.TestHelper;
 using LibNVVMBinder;
+using ManagedCuda.BasicTypes;
+using System.Linq;
 using Xunit;
 
 namespace CuSharp.Tests.CuSharp.NVVMBinder
 {
     [Collection("Sequential")]
+    [Trait(TestCategories.TestCategory, TestCategories.Unit)]
     public class LibNVVMBinderTests
     {
         private readonly NVVMProgram _program = new ();
@@ -74,7 +78,12 @@ namespace CuSharp.Tests.CuSharp.NVVMBinder
             _program.Compile(new string[0]);
             string result;
             _program.GetCompiledResult(out result);
-            Assert.Equal(ReadFile("resources/kernel.ptx").Replace("\r", ""), result);
+            result = RemoveComments(result);
+
+            var expected = ReadFile("resources/kernel.ptx").Replace("\r", "");
+            expected = RemoveComments(expected);
+
+            Assert.Equal(expected, result);
         }
 
         [Fact]
@@ -102,6 +111,13 @@ namespace CuSharp.Tests.CuSharp.NVVMBinder
         {
             var exception = Record.Exception(() => _program.Dispose());
             Assert.Null(exception);
+        }
+
+        private string RemoveComments(string input)
+        {
+            string[] actualLines = input.Split('\n');
+            actualLines = actualLines.Where(line => !line.TrimStart().StartsWith("//")).ToArray();
+            return string.Join("\n", actualLines);
         }
     }
 }

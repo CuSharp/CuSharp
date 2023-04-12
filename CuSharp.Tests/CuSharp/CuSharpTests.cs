@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections;
+﻿using CuSharp.Tests.TestHelper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -7,6 +7,7 @@ using Xunit;
 namespace CuSharp.Tests.CuSharp;
 
 [Collection("Sequential")]
+[Trait(TestCategories.TestCategory, TestCategories.Integration)]
 public class CuSharpTests
 {
     [Fact]

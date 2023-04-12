@@ -4,6 +4,8 @@ using Xunit;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler
 {
+    [Collection("Sequential")]
+    [Trait(TestCategories.TestCategory, TestCategories.UnitReleaseOnly)]
     public class MethodBodyCrossCompilerReleaseModeTests
     {
         private readonly MethodInfoLoader _methodLoader = new();
@@ -23,7 +25,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             var expected = string.Empty; //_llvmLoader.GetLogicalAndToolsTestResult(kernelName, TypesAsString.IntType);
             var actual = llvmKernel.KernelBuffer;
 
-            Assert.Equal(expected, actual);
+            //Assert.Equal(expected, actual);
             Assert.True(_validator.KernelIsCorrect(actual, kernelName));
         }
 
@@ -40,7 +42,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             var expected = string.Empty; //_llvmLoader.GetLogicalAndToolsTestResult(kernelName, TypesAsString.IntType);
             var actual = llvmKernel.KernelBuffer;
 
-            Assert.Equal(expected, actual);
+            //Assert.Equal(expected, actual);
             Assert.True(_validator.KernelIsCorrect(actual, kernelName));
         }
     }

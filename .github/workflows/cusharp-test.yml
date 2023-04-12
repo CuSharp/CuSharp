@@ -1,0 +1,27 @@
+name: CuSharp-Test
+
+on: [workflow_dispatch]
+  
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: cuda-toolkit
+      if: steps.cache.outputs.cache-hit != 'true'
+      uses: Jimver/cuda-toolkit@v0.2.10
+      with:
+        cuda: '12.0.0'
+    - name: Test UnitTests
+      run: |
+        dotnet test --filter "TestCategory=Unit" /p:Configuration=Release &&
+        dotnet test --filter "TestCategory=UnitReleaseOnly" /p:Configuration=Release &&
+        dotnet test --filter "TestCategory=UnitDebugOnly" /p:Configuration=Debug
+      env:
+        CUDA_PATH: ${{ env.CUDA_PATH }}

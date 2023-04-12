@@ -1,10 +1,12 @@
 ﻿using System;
 using CuSharp.Kernel;
+using CuSharp.Tests.TestHelper;
 using Xunit;
 
 namespace CuSharp.Tests.CuSharp
 {
     [Collection("Sequential")]
+    [Trait(TestCategories.TestCategory, TestCategories.Unit)]
     public class KernelToolsTests
     {
         [Fact]

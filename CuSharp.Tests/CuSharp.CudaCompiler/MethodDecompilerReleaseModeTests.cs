@@ -12,6 +12,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
     /// because Roslyn compiler uses partially different op-codes in debug and release mode.
     /// </summary>
     [Collection("Sequential")]
+    [Trait(TestCategories.TestCategory, TestCategories.UnitReleaseOnly)]
     public class MethodDecompilerReleaseModeTests
     {
         private readonly MethodInfoLoader _methodLoader = new();

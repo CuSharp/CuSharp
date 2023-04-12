@@ -9,6 +9,7 @@ using Xunit;
 namespace CuSharp.Tests.CuSharp.CudaCompiler
 {
     [Collection("Sequential")]
+    [Trait(TestCategories.TestCategory, TestCategories.Unit)]
     public class MethodDecompilerTests
     {
         private readonly MethodInfoLoader _methodLoader = new();

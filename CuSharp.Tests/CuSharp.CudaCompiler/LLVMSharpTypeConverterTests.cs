@@ -1,11 +1,13 @@
 ﻿using System;
 using CuSharp.CudaCompiler.Frontend;
+using CuSharp.Tests.TestHelper;
 using LLVMSharp;
 using Xunit;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler;
 
 [Collection("Sequential")]
+[Trait(TestCategories.TestCategory, TestCategories.Unit)]
 public class LLVMSharpTypeConverterTests
 {
     private bool TestNativeToLLVM(LLVMTypeRef llvmType, Type nativeType)
