@@ -1,9 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
-
-
-using System.Diagnostics;
-using CuSharp;
-using CuSharp.CudaCompiler;
+﻿using CuSharp;
 using CuSharp.PerformanceEvaluation;
 
 public class Program

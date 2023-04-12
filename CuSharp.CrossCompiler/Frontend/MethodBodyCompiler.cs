@@ -213,22 +213,42 @@ public class MethodBodyCompiler
                 break;
             //case ILOpCode.Clt_un: throw new NotSupportedException();
             //case ILOpCode.Ckfinite: throw new NotSupportedException();
-            //case ILOpCode.Conv_i1: throw new NotSupportedException();
-            //case ILOpCode.Conv_i2: throw new NotSupportedException();
+            case ILOpCode.Conv_i1:
+                CompileConvI1();
+                break;
+            case ILOpCode.Conv_i2: 
+                CompileConvI2();
+                break;
             case ILOpCode.Conv_i4:
                 CompileConvI4();
                 break;
-            case ILOpCode.Conv_i8: break; //TODO
+            case ILOpCode.Conv_i8: 
+                CompileConvI8(); 
+                break;
             case ILOpCode.Conv_r4: 
                 CompileConvR4();
                 break;
-            case ILOpCode.Conv_r8: throw new NotSupportedException();
-            case ILOpCode.Conv_u1: throw new NotSupportedException();
-            case ILOpCode.Conv_u2: throw new NotSupportedException();
-            case ILOpCode.Conv_u4: throw new NotSupportedException();
-            case ILOpCode.Conv_u8: break; //TODO
-            case ILOpCode.Conv_i: throw new NotSupportedException();
-            case ILOpCode.Conv_u: throw new NotSupportedException();
+            case ILOpCode.Conv_r8:
+                CompileConvR8();
+                break;
+            case ILOpCode.Conv_u1:
+                CompileConvU1();
+                break;
+            case ILOpCode.Conv_u2:
+                CompileConvU2();
+                break;
+            case ILOpCode.Conv_u4:
+                CompileConvU4();
+                break;
+            case ILOpCode.Conv_u8:
+                CompileConvU8(); 
+                break;
+            case ILOpCode.Conv_i:
+                CompileConvI();
+                break;
+            case ILOpCode.Conv_u:
+                CompileConvU();
+                break;
             case ILOpCode.Conv_r_un: 
                 CompileConvRUn();
                 break;
@@ -240,7 +260,9 @@ public class MethodBodyCompiler
             case ILOpCode.Conv_ovf_u2: throw new NotSupportedException();
             case ILOpCode.Conv_ovf_u4: throw new NotSupportedException();
             case ILOpCode.Conv_ovf_u8: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_i: break; //TODO 
+            case ILOpCode.Conv_ovf_i: 
+                CompileConvI();
+                break;
             case ILOpCode.Conv_ovf_u: throw new NotSupportedException();
             case ILOpCode.Conv_ovf_i1_un: throw new NotSupportedException();
             case ILOpCode.Conv_ovf_i2_un: throw new NotSupportedException();
@@ -947,31 +969,113 @@ public class MethodBodyCompiler
 
     #region Converts
 
+    private void BuildICast(LLVMTypeRef targetType)
+    {
+        var value = _virtualRegisterStack.Pop(); //Assumes Signed int or Floating-Point value
+        
+        if (IsDecimal(value))
+        {
+            LLVM.BuildFPToSI(_builder, value, targetType, GetVirtualRegisterName());
+        }
+        else
+        {
+            if (targetType.TypeKind < value.TypeOf().TypeKind)
+            {
+                value = LLVM.BuildSExt(_builder, value, targetType, GetVirtualRegisterName());
+            }
+            value = LLVM.BuildIntCast(_builder, value, targetType, GetVirtualRegisterName());
+        }
+        _virtualRegisterStack.Push(value);
+    }
+    private void CompileConvI() { CompileConvI4(); }
+
+    private void CompileConvI1()
+    {
+        BuildICast(LLVMTypeRef.Int8Type());
+    }
+
+    private void CompileConvI2()
+    {
+        BuildICast(LLVMTypeRef.Int16Type());
+    }
     private void CompileConvI4()
     {
-        var value = _virtualRegisterStack.Pop();
-        var nativeValue = LLVM.ConstIntGetSExtValue(value);
-        var convertedValue = LLVM.ConstInt(LLVMTypeRef.Int32Type(), (ulong)nativeValue, true);
-        _virtualRegisterStack.Push(convertedValue);
+        BuildICast(LLVMTypeRef.Int32Type());
+    }
+
+    private void CompileConvI8()
+    {
+        BuildICast(LLVMTypeRef.Int64Type());
     }
 
     private void CompileConvRUn()
     {
-        var value = _virtualRegisterStack.Pop(); //Unsigned int
+        var value = _virtualRegisterStack.Pop(); //Assumes: Unsigned int type
         var converted = LLVM.BuildUIToFP(_builder, value, LLVMTypeRef.FloatType(), GetVirtualRegisterName());
         _virtualRegisterStack.Push(converted);
     }
 
+
+    private void BuildRCast(LLVMTypeRef targetType)
+    {
+        var value = _virtualRegisterStack.Pop(); //assumes signed int or floating point
+        if (IsDecimal(value))
+        {
+            value = LLVM.BuildFPCast(_builder, value, targetType, GetVirtualRegisterName());
+        }
+        else
+        {
+            value = LLVM.BuildSIToFP(_builder, value, targetType, GetVirtualRegisterName());
+        }
+        _virtualRegisterStack.Push(value);
+    }
+    
     private void CompileConvR4()
     {
-        var value = _virtualRegisterStack.Pop();
-        var converted = LLVM.BuildFPCast(_builder, value, LLVMTypeRef.FloatType(), GetVirtualRegisterName());
-        _virtualRegisterStack.Push(converted);
+        BuildRCast(LLVMTypeRef.FloatType());
     }
+
+
+    private void CompileConvR8()
+    {
+        BuildRCast(LLVMTypeRef.DoubleType());
+    }
+
+    private void BuildUCast(LLVMTypeRef targetType)
+    {
+        var value = _virtualRegisterStack.Pop(); //Assumes: unsigned value
+        value = LLVM.BuildIntCast(_builder, value, targetType, GetVirtualRegisterName());
+        _virtualRegisterStack.Push(value);
+    }
+
+    private void CompileConvU()
+    {
+        CompileConvU4();
+    }
+    
+    private void CompileConvU1()
+    {
+        BuildUCast(LLVMTypeRef.Int8Type());
+    }
+
+    private void CompileConvU2()
+    {
+        BuildUCast(LLVMTypeRef.Int16Type());
+    }
+
+    private void CompileConvU4()
+    {
+        BuildUCast(LLVMTypeRef.Int32Type());
+    }
+    
+    private void CompileConvU8()
+    {
+        BuildUCast(LLVMTypeRef.Int64Type());
+    }
+    
     #endregion
 
     #region Private Helpers
-
 
     private void BuildConditionalBranch(long thenOffset, long elseOffset, LLVMValueRef predicate)
     {
@@ -1001,8 +1105,6 @@ public class MethodBodyCompiler
     }
     private void BuildPhis()
     {
-        //LLVM.PositionBuilder(_builder, _currentBlock.BlockRef, LLVM.GetFirstInstruction(_currentBlock.BlockRef)); //TODO : Check if necessary
-
         //Restore stack
         if (_currentBlock.Predecessors.Any()) //one predecessor must already exist to restore stack
         {
@@ -1037,8 +1139,6 @@ public class MethodBodyCompiler
                 _currentBlock.PhiInstructions.Add(i, phi);
             }
         }
-
-        //LLVM.PositionBuilderAtEnd(_builder, _currentBlock.BlockRef); //TOOD: Check if necessary
     }
 
     private void PatchBlockGraph(BlockNode startNode)
@@ -1056,7 +1156,6 @@ public class MethodBodyCompiler
         
         foreach (var phi in startNode.PhiInstructions) //Patch Phi Instructions
         {
-            //int arbitraryCounter = 0;
             foreach (var pred in startNode.Predecessors)
             {
                 if (pred.LocalVariables.ContainsKey(phi.Key))
@@ -1076,14 +1175,6 @@ public class MethodBodyCompiler
                     }
                 }
             }
-            
-
-            /*if (phi.Value.CountIncoming() == 0)
-            {
-                    //startNode.PhiInstructions.Remove(phi.Key);
-                    //startNode.LocalVariables.Remove(phi.Key);
-                    LLVM.InstructionRemoveFromParent(phi.Value);
-            }*/
         }
 
         foreach (var successor in startNode.Successors)
@@ -1120,6 +1211,20 @@ public class MethodBodyCompiler
         return $"block{_blockCounter++}";
     }
 
+    private bool IsDecimal(LLVMValueRef value)
+    {
+        return IsFloat(value) || IsDouble(value);
+    }
+
+    private bool IsFloat(LLVMValueRef value)
+    {
+        return value.TypeOf().ToNativeType() == typeof(float);
+    }
+
+    private bool IsDouble(LLVMValueRef value)
+    {
+        return value.TypeOf().ToNativeType() == typeof(double);
+    }
     private bool AreParamsCompatibleAndInt(LLVMValueRef param1, LLVMValueRef param2)
     {
         return param1.TypeOf().TypeKind == LLVMTypeKind.LLVMIntegerTypeKind &&
