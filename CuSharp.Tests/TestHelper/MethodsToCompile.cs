@@ -14,6 +14,11 @@ namespace CuSharp.Tests.TestHelper
 
         public static void EmptyTwoIntArrayMethod(int[] a, int[] b) { }
 
+        public static void ScalarIntAddition5Args(int a, int b, int c, int d, int e)
+        {
+            e += a + b + c + d;
+        }
+
         public static void ScalarIntAdditionWithConst(int a, int b)
         {
             int c = 12345;
@@ -105,6 +110,12 @@ namespace CuSharp.Tests.TestHelper
         {
             int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
             c[i] = a[i] + b[i];
+        }
+
+        public static void ArrayIntMultiplicationWithKernelTools(int[] a, int[] b, int[] c)
+        {
+            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            c[i] = a[i] * b[i];
         }
 
         public static void ArrayFloatAdditionWithKernelTools(float[] a, float[] b, float[] c)
@@ -375,6 +386,136 @@ namespace CuSharp.Tests.TestHelper
             }
 
             c = a;
+        }
+
+        public static void BranchesWithInt32Target(uint a, uint b)
+        {
+            uint i = 0;
+            if (a < b)
+            {
+                if (a <= b)
+                {
+                    if (a > b)
+                    {
+                        if (a >= b)
+                        {
+                            if (a == b)
+                            {
+                                if (a != b)
+                                {
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void BranchesWithIn32Target(int a, int b)
+        {
+            int i = 0;
+            if (a < b)
+            {
+                if (a <= b)
+                {
+                    if (a > b)
+                    {
+                        if (a >= b)
+                        {
+                            if (a == b)
+                            {
+                                if (a != b)
+                                {
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                    i += b;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        public static void BranchesInt8TargetUnsigned(uint a, uint b)
+        {
+            if (a < b)
+            {
+                if (a <= b)
+                {
+                    if (a > b)
+                    {
+                        if (a >= b)
+                        {
+                            if (a == b)
+                            {
+                                a += b;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

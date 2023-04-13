@@ -16,6 +16,32 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
         private readonly TestFunctionBuilder _functionBuilder = new();
 
         [Fact]
+        public void TestScalarIntAddition5Args()
+        {
+            // Arrange
+            const string kernelName = "TestScalarIntAddition5Args";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.ScalarIntAddition5Args);
+            var kernel = new MSILKernel(kernelName, method);
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
+
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Nop, null), (ILOpCode.Ldarg_s, actual[GetIndexInReleaseMode(1, 1)].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Add, null), (ILOpCode.Ldarg_2, null),
+                (ILOpCode.Add, null), (ILOpCode.Ldarg_3, null), (ILOpCode.Add, null),
+                (ILOpCode.Add, null), (ILOpCode.Starg_s, actual[GetIndexInReleaseMode(10, 1)].Item2), (ILOpCode.Ret, null)
+            };
+            expected = RemoveNopInReleaseMode(expected);
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
         public void TestScalarIntAdditionWithConst()
         {
             var expected = new List<(ILOpCode, object?)>

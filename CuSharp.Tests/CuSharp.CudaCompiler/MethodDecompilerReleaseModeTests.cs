@@ -439,5 +439,109 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             // Assert
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void TestBranchesWithInt32TargetOpCode()
+        {
+            // Arrange
+            const string kernelName = "TestBranchesWithInt32TargetOpCode";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.BranchesWithIn32Target);
+            var kernel = new MSILKernel(kernelName, method);
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
+
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Ldc_i4_0, null), (ILOpCode.Stloc_0, null), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Bge, actual[4].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Bgt, actual[7].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Ble, actual[10].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Blt, actual[13].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Bne_un, actual[16].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Beq, actual[19].Item2)
+            };
+
+            for (var i = 0; i < 32; i++)
+            {
+                expected.Add((ILOpCode.Ldloc_0, null));
+                expected.Add((ILOpCode.Ldarg_1, null));
+                expected.Add((ILOpCode.Add, null));
+                expected.Add((ILOpCode.Stloc_0, null));
+            }
+
+            expected.Add((ILOpCode.Ret, null));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TestBranchesWithInt64TargetUnsignedOpCode()
+        {
+            // Arrange
+            const string kernelName = "TestBranchesWithInt64TargetUnsignedOpCode";
+            var method = _methodLoader.GetScalarUintMethodInfo(MethodsToCompile.BranchesWithInt32Target);
+            var kernel = new MSILKernel(kernelName, method);
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
+
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Ldc_i4_0, null), (ILOpCode.Stloc_0, null), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Bge_un, actual[4].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Bgt_un, actual[7].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Ble_un, actual[10].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Blt_un, actual[13].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Bne_un, actual[16].Item2), (ILOpCode.Ldarg_0, null),
+                (ILOpCode.Ldarg_1, null), (ILOpCode.Beq, actual[19].Item2)
+            };
+
+            for (var i = 0; i < 32; i++)
+            {
+                expected.Add((ILOpCode.Ldloc_0, null));
+                expected.Add((ILOpCode.Ldarg_1, null));
+                expected.Add((ILOpCode.Add, null));
+                expected.Add((ILOpCode.Stloc_0, null));
+            }
+
+            expected.Add((ILOpCode.Ret, null));
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void TestBranchesInt8TargetUnsignedOpCode()
+        {
+            // Arrange
+            const string kernelName = "TestBranchesInt8TargetUnsignedOpCode";
+            var method = _methodLoader.GetScalarUintMethodInfo(MethodsToCompile.BranchesInt8TargetUnsigned);
+            var kernel = new MSILKernel(kernelName, method);
+            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
+            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
+
+            // Act
+            var actual = new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody().ToList();
+
+            var expected = new List<(ILOpCode, object?)>
+            {
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Bge_un_s, actual[2].Item2),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Bgt_un_s, actual[5].Item2),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Ble_un_s, actual[8].Item2),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Blt_un_s, actual[11].Item2),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Bne_un_s, actual[14].Item2),
+                (ILOpCode.Ldarg_0, null), (ILOpCode.Ldarg_1, null), (ILOpCode.Add, null),
+                (ILOpCode.Starg_s, actual[18].Item2), (ILOpCode.Ret, null)
+            };
+
+            // Assert
+            Assert.Equal(expected, actual);
+        }
     }
 }
