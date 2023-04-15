@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Diagnostics.Metrics;
+using System.Linq;
 using CuSharp.Tests.TestHelper;
 using Xunit;
 using Xunit.Abstractions;
@@ -108,6 +109,66 @@ public class IntegrationTests
 
         _output.WriteLine($"Used gpu device: '{dev}'");
         Assert.Equal(expectedC, c);
+    }
+
+    [Fact]
+    public void TestOptimizerInMatrixMultiplication()
+    {
+        const int matrixWidth = 1000;
+
+        // Warm-up
+        LaunchAndMeasureMatrixMultiplication(matrixWidth, null);
+
+        // Measure with optimizer
+        var resultWithOptimizer = LaunchAndMeasureMatrixMultiplication(matrixWidth, true);
+
+        // Measure without optimizer
+        var resultWithoutOptimizer = LaunchAndMeasureMatrixMultiplication(matrixWidth, false);
+
+        Assert.True(resultWithOptimizer.measureResult < resultWithoutOptimizer.measureResult);
+        Assert.Equal(resultWithOptimizer.matrixResult, resultWithoutOptimizer.matrixResult);
+    }
+
+    private (float measureResult, int[] matrixResult) LaunchAndMeasureMatrixMultiplication(int matrixWidth, bool? enableOptimizer)
+    {
+        if (enableOptimizer != null)
+        {
+            global::CuSharp.CuSharp.EnableOptimizer = (bool)enableOptimizer;
+        }
+
+        uint gridDim = (uint)(matrixWidth % 32 == 0 ? matrixWidth / 32 : matrixWidth / 32 + 1);
+        uint blockDim = (uint)(matrixWidth > 32 ? 32 : matrixWidth);
+        int[] a = new int[matrixWidth * matrixWidth];
+        int[] b = new int[matrixWidth * matrixWidth];
+        int[] c = new int[matrixWidth * matrixWidth];
+        for (int i = 0; i < matrixWidth * matrixWidth; i++)
+        {
+            a[i] = i;
+            b[i] = matrixWidth * matrixWidth - i;
+        }
+
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var devA = dev.Copy(a);
+        var devB = dev.Copy(b);
+        var devC = dev.Copy(c);
+        var devWidth = dev.Copy(matrixWidth);
+
+        var before = global::CuSharp.CuSharp.CreateEvent();
+        var after = global::CuSharp.CuSharp.CreateEvent();
+
+        before.Record();
+        dev.Launch(MethodsToCompile.IntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC, devWidth);
+        after.Record();
+        
+        devA.Dispose();
+        devB.Dispose();
+        devC.Dispose();
+        devWidth.Dispose();
+        var timeResult = before.GetDeltaTo(after);
+        before.Dispose();
+        after.Dispose();
+
+        return (timeResult, c);
     }
 
     [Fact]
