@@ -108,31 +108,31 @@ namespace CuSharp.Tests.TestHelper
 
         public static void ArrayIntAdditionWithKernelTools(int[] a, int[] b, int[] c)
         {
-            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
             c[i] = a[i] + b[i];
         }
 
         public static void ArrayIntMultiplicationWithKernelTools(int[] a, int[] b, int[] c)
         {
-            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
             c[i] = a[i] * b[i];
         }
 
         public static void ArrayFloatAdditionWithKernelTools(float[] a, float[] b, float[] c)
         {
-            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
             c[i] = a[i] + b[i];
         }
         
         public static void ArrayIntScalarAdd(int[] a, int b)
         {
-            int i = (int)(KernelTools.BlockDimensions.Item1 * KernelTools.BlockIndex.Item1 + KernelTools.ThreadIndex.Item1);
+            int i = (int)(KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X);
             a[i] = a[i] + b;
         }
 
         public static void ArrayIntShortHandOperationsWithKernelTools(int[] a, int[] b)
         {
-            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
             a[i] += b[i];
             a[i] -= b[i];
             a[i] *= b[i];
@@ -142,7 +142,7 @@ namespace CuSharp.Tests.TestHelper
 
         public static void ArrayLongShortHandOperationsWithKernelTools(long[] a, long[] b)
         {
-            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
             a[i] += b[i];
             a[i] -= b[i];
             a[i] *= b[i];
@@ -152,7 +152,7 @@ namespace CuSharp.Tests.TestHelper
 
         public static void ArrayFloatShortHandOperationsWithKernelTools(float[] a, float[] b)
         {
-            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
             a[i] += b[i];
             a[i] -= b[i];
             a[i] *= b[i];
@@ -162,7 +162,7 @@ namespace CuSharp.Tests.TestHelper
 
         public static void ArrayDoubleShortHandOperationsWithKernelTools(double[] a, double[] b)
         {
-            int i = (int)(KernelTools.BlockIndex.Item1 * KernelTools.BlockDimensions.Item1 + KernelTools.ThreadIndex.Item1);
+            int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
             a[i] += b[i];
             a[i] -= b[i];
             a[i] *= b[i];
@@ -177,8 +177,8 @@ namespace CuSharp.Tests.TestHelper
 
         public static void IntMatrixMultiplication(int[] a, int[] b, int[] c, int matrixWidth)
         {
-            var row = KernelTools.BlockDimensions.Item2 * KernelTools.BlockIndex.Item2 + KernelTools.ThreadIndex.Item2;
-            var col = KernelTools.BlockDimensions.Item1 * KernelTools.BlockIndex.Item1 + KernelTools.ThreadIndex.Item1;
+            var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
+            var col = KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X;
             int result = 0;
             if (row < matrixWidth && col < matrixWidth)
             {

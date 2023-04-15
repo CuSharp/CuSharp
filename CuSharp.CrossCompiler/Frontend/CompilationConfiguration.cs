@@ -45,51 +45,51 @@ public class CompilationConfiguration
         {
             (LLVMModuleRef moduleRef) =>
             {
-                return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item1", LLVM.AddFunction(moduleRef,
+                return ("CuSharp.Kernel.KernelTools.get_BlockIndex.X", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ctaid.x",
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)));
             },
             (moduleRef) =>
             {
-                return ("CuSharp.Kernel.KernelTools.get_BlockDimensions.Item1", LLVM.AddFunction(moduleRef,
+                return ("CuSharp.Kernel.KernelTools.get_BlockDimension.X", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ntid.x",
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)));
             },
             (moduleRef) =>
             {
-                return ("CuSharp.Kernel.KernelTools.get_ThreadIndex.Item1", LLVM.AddFunction(moduleRef,
+                return ("CuSharp.Kernel.KernelTools.get_ThreadIndex.X", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.tid.x",
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)));
             },
 
             (moduleRef) =>
             {
-                return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item2", LLVM.AddFunction(moduleRef,
+                return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Y", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ctaid.y",
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)));
             },
             (moduleRef) =>
             {
-                return ("CuSharp.Kernel.KernelTools.get_BlockDimensions.Item2", LLVM.AddFunction(moduleRef,
+                return ("CuSharp.Kernel.KernelTools.get_BlockDimension.Y", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ntid.y",
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)));
             },
             (moduleRef) =>
             {
-                return ("CuSharp.Kernel.KernelTools.get_ThreadIndex.Item2", LLVM.AddFunction(moduleRef,
+                return ("CuSharp.Kernel.KernelTools.get_ThreadIndex.Y", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.tid.y",
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)));
             },
 
             (moduleRef) =>
             {
-                return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item3", LLVM.AddFunction(moduleRef,
+                return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Z", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ctaid.z",
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)));
             },
             (moduleRef) =>
             {
-                return ("CuSharp.Kernel.KernelTools.get_BlockDimensions.Item3", LLVM.AddFunction(moduleRef,
+                return ("CuSharp.Kernel.KernelTools.get_BlockDimension.Z", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ntid.z",
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)));
             },

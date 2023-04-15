@@ -874,14 +874,25 @@ public class MethodBodyCompiler
             throw new ArgumentException("Name of method to call is unknown");
         }
 
-        var field = _inputKernel.MemberInfoModule.ResolveField(operand);
-        var fullQualifiedFieldName = $"{_nameOfMethodToCall}.{field?.Name}";
+        if (_functionsDto.ExternalFunctions.Any(func => func.Item1.StartsWith(_nameOfMethodToCall)))
+        {
+            var field = _inputKernel.MemberInfoModule.ResolveField(operand);
+            var fullQualifiedFieldName = $"{_nameOfMethodToCall}.{field?.Name}"
+                // Workaround is required because field names are not preserved in IL code
+                .Replace("Item1", "X")
+                .Replace("Item2", "Y")
+                .Replace("Item3", "Z");
 
-        var externalFunctionToCall =
-            _functionsDto.ExternalFunctions.First(func => func.Item1 == fullQualifiedFieldName);
-        var call = LLVM.BuildCall(_builder, externalFunctionToCall.Item2, Array.Empty<LLVMValueRef>(),
-            GetVirtualRegisterName());
-        _virtualRegisterStack.Push(call);
+            var externalFunctionToCall = _functionsDto.ExternalFunctions.First(func => func.Item1 == fullQualifiedFieldName);
+            var call = LLVM.BuildCall(_builder, externalFunctionToCall.Item2, Array.Empty<LLVMValueRef>(), GetVirtualRegisterName());
+            _virtualRegisterStack.Push(call);
+        }
+        else
+        {
+            throw new NotSupportedException("Only fields of external functions can be called");
+        }
+
+        
         _nameOfMethodToCall = null;
     }
 

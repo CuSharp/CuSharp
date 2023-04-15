@@ -7,8 +7,8 @@ public static class Kernels
     
         public static void IntMatrixMultiplication(int[] a, int[] b, int[] c, int matrixWidth)
         {
-            var row = KernelTools.BlockDimensions.Item2 * KernelTools.BlockIndex.Item2 + KernelTools.ThreadIndex.Item2;
-            var col = KernelTools.BlockDimensions.Item1 * KernelTools.BlockIndex.Item1 + KernelTools.ThreadIndex.Item1;
+            var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
+            var col = KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X;
             int result = 0;
             if (row < matrixWidth && col < matrixWidth)
             {
@@ -45,8 +45,8 @@ public static class Kernels
     public static void MandelBrot(float[] light,  int maxIterations, int N, float zoom, float deltaX, float deltaY)
     {
         
-        var row = KernelTools.BlockDimensions.Item2 * KernelTools.BlockIndex.Item2 + KernelTools.ThreadIndex.Item2;
-        var col = KernelTools.BlockDimensions.Item1 * KernelTools.BlockIndex.Item1 + KernelTools.ThreadIndex.Item1;
+        var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
+        var col = KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X;
 
         if (row < N && col < N)
         {

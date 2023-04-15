@@ -44,10 +44,10 @@ namespace CuSharp.Tests.CuSharp
         [Fact]
         public void TestBlockDimensions()
         {
-            Assert.Throws<NotSupportedException>(() => KernelTools.BlockDimensions);
+            Assert.Throws<NotSupportedException>(() => KernelTools.BlockDimension);
 
-            KernelTools.GetBlockDimensionsAction = () => (112, 112, 112);
-            Assert.True((112, 112, 112) == KernelTools.BlockDimensions);
+            KernelTools.GetBlockDimensionAction = () => (112, 112, 112);
+            Assert.True((112, 112, 112) == KernelTools.BlockDimension);
         }
     }
 }

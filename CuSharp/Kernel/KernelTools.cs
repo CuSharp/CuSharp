@@ -6,16 +6,17 @@ public static class KernelTools
 
     public static Action CallSyncThreadsAction { get; set; } = () => throw new NotSupportedException(ErrorMessage);
 
-    public static Func<(uint, uint, uint)> GetBlockIndexAction { get; set; } = () => throw new NotSupportedException(ErrorMessage);
+    public static Func<(uint X, uint Y, uint Z)> GetBlockIndexAction { get; set; } = () => throw new NotSupportedException(ErrorMessage);
 
-    public static Func<(uint, uint, uint)> GetThreadIndexAction { get; set; } = () => throw new NotSupportedException(ErrorMessage);
+    public static Func<(uint X, uint Y, uint Z)> GetThreadIndexAction { get; set; } = () => throw new NotSupportedException(ErrorMessage);
 
-    public static Func<(uint, uint, uint)> GetBlockDimensionsAction { get; set; } = () => throw new NotSupportedException(ErrorMessage);
+    public static Func<(uint X, uint Y, uint Z)> GetBlockDimensionAction { get; set; } = () => throw new NotSupportedException(ErrorMessage);
 
     public static Action SyncThreads => CallSyncThreadsAction;
 
-    public static (uint,uint,uint) BlockIndex => GetBlockIndexAction();
-    public static (uint,uint,uint) ThreadIndex => GetThreadIndexAction();
+    public static (uint X, uint Y, uint Z) BlockIndex => GetBlockIndexAction();
     
-    public static (uint, uint, uint) BlockDimensions => GetBlockDimensionsAction();
+    public static (uint X, uint Y, uint Z) ThreadIndex => GetThreadIndexAction();
+    
+    public static (uint X, uint Y, uint Z) BlockDimension => GetBlockDimensionAction();
 }
