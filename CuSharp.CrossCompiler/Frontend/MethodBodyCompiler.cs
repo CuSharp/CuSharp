@@ -941,8 +941,7 @@ public class MethodBodyCompiler
     {
         var value = _virtualRegisterStack.Pop();
         var elementPtr = _virtualRegisterStack.Pop();
-        var storeValue = LLVM.BuildStore(_builder, value, elementPtr);
-        _virtualRegisterStack.Push(storeValue);
+        LLVM.BuildStore(_builder, value, elementPtr);
     }
 
     private void CompileStelem()
@@ -952,8 +951,7 @@ public class MethodBodyCompiler
         var array = _virtualRegisterStack.Pop();
 
         var elementPtr = LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
-        var newArray = LLVM.BuildStore(_builder, value, elementPtr);
-        _virtualRegisterStack.Push(newArray);
+        LLVM.BuildStore(_builder, value, elementPtr);
     }
 
     private void CompileStloc(int operand)
