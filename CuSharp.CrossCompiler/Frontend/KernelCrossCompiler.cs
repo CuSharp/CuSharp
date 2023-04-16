@@ -24,7 +24,7 @@ public class KernelCrossCompiler
         var function = GenerateFunctionAndPositionBuilderAtEntry(inputKernel.ParameterInfos);
         var externalFunctions = GenerateDeviceIntrinsicFunctions();
 
-        var functionsDto = new FunctionsDto(function, externalFunctions);
+        var functionsDto = new FunctionsDto(function, externalFunctions, (int) function.CountParams() - inputKernel.ParameterInfos.Length);
 
         new MethodBodyCompiler(inputKernel, _builder, functionsDto).CompileMethodBody();
         GenerateAnnotations(function);
@@ -83,14 +83,12 @@ public class KernelCrossCompiler
     private LLVMValueRef GenerateFunctionAndPositionBuilderAtEntry(ParameterInfo[] parameterInfos)
     {
         var paramsListBuilder = new List<LLVMTypeRef>();
-        var paramLengthListBuilder = new List<LLVMTypeRef>();
         foreach (var paramInfo in parameterInfos)
         {
             LLVMTypeRef type;
             if (paramInfo.ParameterType.IsArray)
             {
                 type = LLVMTypeRef.PointerType(paramInfo.ParameterType.GetElementType().ToLLVMType(), 0);
-                paramLengthListBuilder.Add(LLVMTypeRef.Int32Type());
             }
             else
             {
@@ -99,7 +97,9 @@ public class KernelCrossCompiler
             paramsListBuilder.Add(type);
         }
 
-        var paramType = paramsListBuilder.Concat(paramLengthListBuilder).ToArray();
+        if(paramsListBuilder.Any()) paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); //array length list
+        
+        var paramType = paramsListBuilder.ToArray();
         var function = LLVM.AddFunction(_module, _config.KernelName, LLVM.FunctionType(LLVM.VoidType(), paramType, false));
         LLVM.SetLinkage(function, LLVMLinkage.LLVMExternalLinkage);
         NameFunctionParameters(function, "param");

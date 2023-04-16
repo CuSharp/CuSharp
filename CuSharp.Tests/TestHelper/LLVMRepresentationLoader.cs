@@ -153,17 +153,17 @@
 
         private string GetTwoParams(string type)
         {
-            return $"{type}* %param0, {type}* %param1";
+            return $"{type}* %param0, {type}* %param1, i32* %param2";
         }
 
         private string GetThreeParams(string type)
         {
-            return $"{type}* %param0, {type}* %param1, {type}* %param2";
+            return $"{type}* %param0, {type}* %param1, {type}* %param2, i32* %param3";
         }
 
         private string GetFourMixedParams(string type1, string type2, string type3, string type4)
         {
-            return $"{type1}* %param0, {type2}* %param1, {type3}* %param2, {type4}* %param3";
+            return $"{type1}* %param0, {type2}* %param1, {type3}* %param2, {type4}* %param3, i32* %param4";
         }
 
         #endregion
@@ -172,17 +172,17 @@
 
         private string GetTwoParamTypes(string type)
         {
-            return $"{type}*, {type}*";
+            return $"{type}*, {type}*, i32*";
         }
 
         private string GetThreeParamTypes(string type)
         {
-            return $"{type}*, {type}*, {type}*";
+            return $"{type}*, {type}*, {type}*, i32*";
         }
 
         private string GetFourMixedParamTypes(string type1, string type2, string type3, string type4)
         {
-            return $"{type1}*, {type2}*, {type3}*, {type4}*";
+            return $"{type1}*, {type2}*, {type3}*, {type4}*, i32*";
         }
 
         #endregion

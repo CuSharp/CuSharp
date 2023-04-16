@@ -1,6 +1,7 @@
 ﻿using CuSharp.CudaCompiler.Frontend;
 using LLVMSharp;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace CuSharp.Tests.TestHelper
@@ -11,7 +12,7 @@ namespace CuSharp.Tests.TestHelper
         {
             var function = GetFunction(kernelName, parameterInfos);
             var externalFunctions = GetExternalFunctions(kernelName);
-            return new FunctionsDto(function, externalFunctions);
+            return new FunctionsDto(function, externalFunctions, parameterInfos.Count(p => p.ParameterType.IsArray));
         }
 
         public LLVMBuilderRef GetBuilderWithEntryBlock(LLVMValueRef function)

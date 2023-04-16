@@ -26,6 +26,14 @@ public partial class CuDevice : IDisposable
         return _cudaDeviceContext.GetDeviceName();
     }
 
+    /*public void LaunchMe<T0,T1>(Action<T0,T1> method, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize, Tensor<T0> param0,Tensor<T1> param1) 
+    {
+        var cudaKernel = CompileAndGetKernel(method.GetMethodInfo(), gridSize, blockSize);
+        var lengths = new[] { ((CudaTensor<T0>) param0).Length, ((CudaTensor<T1>) param1).Length};
+        CudaDeviceVariable<int> devLengths = lengths;
+        cudaKernel.Run(((CudaTensor<T0>)param0).DevicePointer,((CudaTensor<T1>)param1).DevicePointer, devLengths.DevicePointer);
+    }*/
+
     public void Synchronize()
     {
         _cudaDeviceContext.Synchronize();

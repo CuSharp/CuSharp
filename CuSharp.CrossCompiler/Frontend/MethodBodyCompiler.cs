@@ -12,6 +12,7 @@ public class MethodBodyCompiler
     private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
     private readonly Dictionary<long, BlockNode> _blockList = new(); //contains all blocks except entry
     private readonly MemoryStream _stream;
+    private readonly Dictionary<LLVMValueRef, int> _arrayParamToLengthIndex = new();
 
     private BlockNode _entryBlockNode;
     private BlockNode _currentBlock;
@@ -27,8 +28,17 @@ public class MethodBodyCompiler
         _functionsDto = functionsDto;
         _stream = new MemoryStream(inputKernel.KernelBuffer);
         _reader = new BinaryReader(_stream);
+        GenerateArrayLengthIndexTable();
     }
 
+    private void GenerateArrayLengthIndexTable()
+    {
+        var parameters = _functionsDto.Function.GetParams();
+        for (int i = 0; i < parameters.Length-1; i++)
+        {
+            _arrayParamToLengthIndex.Add(parameters[i], i);
+        }
+    }
     public IEnumerable<(ILOpCode, object?)> CompileMethodBody()
     {
         _entryBlockNode = new BlockNode() { BlockRef = LLVM.GetEntryBasicBlock(_functionsDto.Function) };
@@ -899,11 +909,20 @@ public class MethodBodyCompiler
         _virtualRegisterStack.Push(value);
     }
 
-    private void CompileLdlen()
+    private void CompileLdlen() //TODO: change for constant arrays declared in kernel
     {
         var array = _virtualRegisterStack.Pop();
-        var length = LLVM.GetArrayLength(array.TypeOf());
-        var lengthReference = LLVM.ConstInt(LLVMTypeRef.Int32Type(), length, false);
+        LLVMValueRef lengthReference;
+        if (array.IsConstant())
+        {
+            var length = LLVM.GetArrayLength(array.TypeOf());
+            lengthReference = LLVM.ConstInt(LLVMTypeRef.Int32Type(), length, false);
+        } else
+        {
+            var index = _arrayParamToLengthIndex[array];
+            var elementPtr = LLVM.BuildGEP(_builder, LLVM.GetLastParam(_functionsDto.Function), new[] { LLVM.ConstInt(LLVMTypeRef.Int32Type(), (uint) index, false) }, GetVirtualRegisterName());
+            lengthReference = LLVM.BuildLoad(_builder, elementPtr, GetVirtualRegisterName());
+        }
         _virtualRegisterStack.Push(lengthReference);
     }
 

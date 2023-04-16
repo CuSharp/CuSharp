@@ -396,7 +396,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
         }
 
         [Fact]
-        public void TestArrayLengthAttribute()
+        public void TestArrayLengthAttributeGeneratesAdditionalLengthParams()
         {
             const string kernelName = "ArrayLengthAttributes";
             var method = _methodLoader.GetIntArrayIntMethodInfo(MethodsToCompile.ArrayLengthAttribute);

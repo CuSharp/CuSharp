@@ -1,6 +1,6 @@
 ﻿using System.Text;
 using Microsoft.CodeAnalysis;
-using System.Reflection; //needed for generated sour-code!
+using System.Reflection; //needed for generated source-code!
 
 namespace CuSharp.CodeGenerator
 {
@@ -58,7 +58,9 @@ public partial class CuDevice
     public void Launch<{GenericParameterPack(amount)}>(Action<{GenericParameterPack(amount)}> method, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize, {ParameterString(amount)}) 
     {{
         var cudaKernel = CompileAndGetKernel(method.GetMethodInfo(), gridSize, blockSize);
-        cudaKernel.Run({ArgumentPack(amount)} );
+        var lengths = new [] {{{LengthPack(amount)}}};
+        CudaDeviceVariable<int> devLengths = lengths;
+        cudaKernel.Run({ArgumentPack(amount)}, devLengths.DevicePointer);
     }}
             ";
         }
@@ -68,6 +70,10 @@ public partial class CuDevice
             return GenerateList(amount, "((CudaTensor<T{0}>)param{0}).DevicePointer", ',');
         }
 
+        private string LengthPack(int amount)
+        {
+            return GenerateList(amount, "((CudaTensor<T{0}>)param{0}).Length", ',');
+        }
         private string GenericParameterPack(int amount)
         {
             return GenerateList(amount, "T{0}", ',');

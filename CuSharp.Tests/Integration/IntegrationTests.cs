@@ -178,4 +178,19 @@ public class IntegrationTests
         Assert.Equal(expectedC1, c1);
         Assert.Equal(expectedC2, c2);
     }
+
+    [Fact]
+    public void TestArrayLengthLaunch()
+    {
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        int[] a = new int[] {1, 2, 3};
+        int b = 0;
+
+        var devA = dev.Copy(a);
+        var devB = dev.Copy(b);
+        
+        dev.Launch(MethodsToCompile.ArrayLengthAttribute, (1,1,1), (1,1,1), devA, devB);
+        b = dev.Copy(devB);
+        Assert.Equal(3, b);
+    }
 }
