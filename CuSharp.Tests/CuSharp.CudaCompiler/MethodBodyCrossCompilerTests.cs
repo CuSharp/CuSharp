@@ -394,5 +394,22 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             Assert.Equal(expected, actual);
             Assert.True(_validator.KernelIsCorrect(actual, kernelName));
         }
+
+        [Fact]
+        public void TestArrayLengthAttribute()
+        {
+            const string kernelName = "ArrayLengthAttributes";
+            var method = _methodLoader.GetIntArrayIntMethodInfo(MethodsToCompile.ArrayLengthAttribute);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = "";
+            var actual = llvmKernel.KernelBuffer;
+            
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
     }
 }

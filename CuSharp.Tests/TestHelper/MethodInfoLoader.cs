@@ -84,5 +84,10 @@ namespace CuSharp.Tests.TestHelper
         {
             return fn.Method;
         }
+
+        public MethodInfo GetIntArrayIntMethodInfo(Action<int[], int> fn)
+        {
+            return fn.Method;
+        }
     }
 }

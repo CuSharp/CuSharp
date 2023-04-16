@@ -517,5 +517,10 @@ namespace CuSharp.Tests.TestHelper
                 }
             }
         }
+
+        public static void ArrayLengthAttribute(int[] a, int b)
+        {
+            b = a.Length;
+        }
     }
 }
