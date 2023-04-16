@@ -28,7 +28,6 @@ public class MethodBodyCompiler
         _functionsDto = functionsDto;
         _stream = new MemoryStream(inputKernel.KernelBuffer);
         _reader = new BinaryReader(_stream);
-        GenerateArrayLengthIndexTable();
     }
 
     private void GenerateArrayLengthIndexTable()
@@ -41,6 +40,7 @@ public class MethodBodyCompiler
     }
     public IEnumerable<(ILOpCode, object?)> CompileMethodBody()
     {
+        GenerateArrayLengthIndexTable();
         _entryBlockNode = new BlockNode() { BlockRef = LLVM.GetEntryBasicBlock(_functionsDto.Function) };
         _currentBlock = _entryBlockNode;
         IList<(ILOpCode, object?)> opCodes = new List<(ILOpCode, object?)>();
