@@ -781,6 +781,8 @@ public class MethodBodyCompiler
     {
         var value2 = _virtualRegisterStack.Pop();
         var value1 = _virtualRegisterStack.Pop();
+        if(value2.TypeOf().ToNativeType() != value1.TypeOf().ToNativeType()) //TODO: Test extensively
+            value2 = LLVM.BuildIntCast(_builder, value2, value1.TypeOf(), GetVirtualRegisterName());
         LLVMValueRef result =
             BuildComparison(LLVMIntPredicate.LLVMIntEQ, LLVMRealPredicate.LLVMRealOEQ, value1, value2);
         _virtualRegisterStack.Push(result);
