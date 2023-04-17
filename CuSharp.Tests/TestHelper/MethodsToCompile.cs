@@ -175,6 +175,42 @@ namespace CuSharp.Tests.TestHelper
             ScalarIntAddition(a, b);
         }
 
+        public static void CallIntMethod(int a, int b, int c)
+        {
+            c = AddTwoIntegers(a, b);
+        }
+
+        private static int AddTwoIntegers(int a, int b)
+        {
+            return a + b;
+        }
+
+        public static void CallIntMethodNested(int a, int b, int c)
+        {
+            c = AddTwoIntegersNested(a, b);
+        }
+
+        private static int AddTwoIntegersNested(int a, int b)
+        {
+            int c;
+
+            if (AreEqual(a, b))
+            {
+                c = a + b;
+            }
+            else
+            {
+                c = int.MaxValue;
+            }
+
+            return c;
+        }
+
+        private static bool AreEqual(int a, int b)
+        {
+            return a == b;
+        }
+
         public static void IntMatrixMultiplication(int[] a, int[] b, int[] c, int matrixWidth)
         {
             var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;

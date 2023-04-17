@@ -1,4 +1,6 @@
-﻿using System.Reflection.Metadata;
+﻿using System;
+using System.Reflection;
+using System.Reflection.Metadata;
 using LLVMSharp;
 
 namespace CuSharp.CudaCompiler.Frontend;
@@ -9,6 +11,7 @@ public class MethodBodyCompiler
     private readonly MSILKernel _inputKernel;
     private readonly LLVMBuilderRef _builder;
     private readonly FunctionsDto _functionsDto;
+    private readonly FunctionGenerator? _functionGenerator;
     private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
     private readonly Dictionary<long, BlockNode> _blockList = new(); //contains all blocks except entry
     private readonly MemoryStream _stream;
@@ -21,11 +24,12 @@ public class MethodBodyCompiler
     private string? _nameOfMethodToCall;
 
     #region PublicInterface
-    public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto)
+    public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto, FunctionGenerator? functionGenerator = null)
     {
         _inputKernel = inputKernel;
         _builder = builder;
         _functionsDto = functionsDto;
+        _functionGenerator = functionGenerator;
         _stream = new MemoryStream(inputKernel.KernelBuffer);
         _reader = new BinaryReader(_stream);
     }
@@ -424,7 +428,7 @@ public class MethodBodyCompiler
                 break;
             //case ILOpCode.Rem_un: throw new NotSupportedException();
             case ILOpCode.Ret:
-                LLVM.BuildRetVoid(_builder);
+                CompileReturn();
                 break;
             //case ILOpCode.Shl: throw new NotSupportedException();
             //case ILOpCode.Shr: throw new NotSupportedException();
@@ -985,7 +989,41 @@ public class MethodBodyCompiler
 
         if (!isExternalFunction)
         {
-            throw new NotSupportedException("Only calls to defined external functions are supported");
+            if (_functionGenerator == null)
+                throw new ArgumentNullException("FunctionGenerator is required to compile calls, but it is null.");
+        
+            var methodInfo = method as MethodInfo;
+            var kernelToCall = new MSILKernel(methodInfo.Name, methodInfo, false);
+            var function = _functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(kernelToCall);
+
+            var parameters = methodInfo.GetParameters().ToArray();
+            
+            // TODO: Use length attribute
+            var args = new LLVMValueRef[parameters.Length];
+            for (var i = 0; i < parameters.Length; i++)
+            {
+                var argValue = _virtualRegisterStack.Pop();
+                // TODO: No pointer wrapper
+                var argPtr = LLVM.BuildAlloca(_builder, parameters[i].ParameterType.ToLLVMType(), GetVirtualRegisterName());
+                LLVM.BuildStore(_builder, argValue, argPtr);
+                args[i] = argPtr;
+            }
+
+            var call = LLVM.BuildCall(_builder, function, args, GetVirtualRegisterName());
+            _virtualRegisterStack.Push(call);
+        }
+    }
+
+    private void CompileReturn()
+    {
+        if (_virtualRegisterStack.Count == 0)
+        {
+            LLVM.BuildRetVoid(_builder);
+        }
+        else
+        {
+            var returnValue = _virtualRegisterStack.Pop();
+            LLVM.BuildRet(_builder, returnValue);
         }
     }
 

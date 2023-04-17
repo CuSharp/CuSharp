@@ -411,5 +411,39 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             Assert.Equal(expected, actual);
             Assert.True(_validator.KernelIsCorrect(actual, kernelName));
         }
+
+        [Fact]
+        public void TestCallIntMethod()
+        {
+            const string kernelName = "CallIntMethod";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.CallIntMethod);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = string.Empty; //_llvmLoader.GetLogicalAndToolsTestResult(kernelName, TypesAsString.IntType);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
+
+        [Fact]
+        public void TestCallIntMethodNested()
+        {
+            const string kernelName = "CallIntMethodNested";
+            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.CallIntMethodNested);
+            var config = CompilationConfiguration.NvvmConfiguration;
+            config.KernelName = kernelName;
+            var crossCompiler = new KernelCrossCompiler(config);
+            var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
+
+            var expected = string.Empty; //_llvmLoader.GetLogicalAndToolsTestResult(kernelName, TypesAsString.IntType);
+            var actual = llvmKernel.KernelBuffer;
+
+            Assert.Equal(expected, actual);
+            Assert.True(_validator.KernelIsCorrect(actual, kernelName));
+        }
     }
 }

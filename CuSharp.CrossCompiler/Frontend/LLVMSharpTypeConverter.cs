@@ -6,6 +6,7 @@ public static class LLVMSharpTypeConverter
 {
     public static LLVMTypeRef ToLLVMType(this Type type)
     {
+        if (type == typeof(void)) return LLVMTypeRef.VoidType();
         if (type == typeof(bool)) return LLVMTypeRef.Int1Type();
         if (type == typeof(byte)) return LLVMTypeRef.Int8Type();
         if (type == typeof(short)) return LLVMTypeRef.Int16Type();
@@ -25,6 +26,7 @@ public static class LLVMSharpTypeConverter
 
     public static Type ToNativeType(this LLVMTypeRef type)
     {
+        if (type.Equals(LLVMTypeRef.VoidType())) return typeof(void);
         if (type.Equals(LLVMTypeRef.Int1Type())) return typeof(bool);
         if (type.Equals(LLVMTypeRef.Int8Type())) return typeof(byte);
         if (type.Equals(LLVMTypeRef.Int16Type())) return typeof(short);

@@ -18,8 +18,8 @@ public class CompilationDispatcher
     public PTXKernel Compile(string kernelName, MethodInfo methodInfo)
     {
         if (_kernelCache.TryGetValue(GetMethodIdentity(methodInfo), out var ptxKernel)) return ptxKernel;
-        
-        var kernel = new MSILKernel(kernelName, methodInfo);
+
+        var kernel = new MSILKernel(kernelName, methodInfo, true);
         var nvvmConfiguration = CompilationConfiguration.NvvmConfiguration;
         nvvmConfiguration.KernelName = kernelName;
         
