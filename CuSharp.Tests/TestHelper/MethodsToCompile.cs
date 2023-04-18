@@ -224,8 +224,20 @@ public class MethodsToCompile
 
     private static int AddTwoIntArrayValues(int[] a, int[] b, int i)
     {
-        i = a.Length;
+        i = a.Length - 1;
         return a[i] + b[i];
+    }
+
+    public static void CallIntReturnArrayWithKernelTools(int[] a, int[] b, int[] c)
+    {
+        int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
+        c = AddTwoIntArray(a, b, c, i);
+    }
+
+    private static int[] AddTwoIntArray(int[] a, int[] b, int[] c, int i)
+    {
+        c[i] = a[i] + b[i];
+        return c;
     }
 
     public static void IntMatrixMultiplication(int[] a, int[] b, int[] c, int matrixWidth)

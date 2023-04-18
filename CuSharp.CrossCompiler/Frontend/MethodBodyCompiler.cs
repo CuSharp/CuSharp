@@ -829,8 +829,8 @@ public class MethodBodyCompiler
         }
         else if (!_inputKernel.ParameterInfos[index].ParameterType.IsArray)
         {
-            param = _valueParameters.ContainsKey(index)
-                ? _valueParameters[index]
+            param = _valueParameters.TryGetValue(index, out var paramValue)
+                ? paramValue
                 : LLVM.GetParam(_functionsDto.Function, (uint)index);
         }
 
@@ -947,13 +947,19 @@ public class MethodBodyCompiler
     {
         var value = _virtualRegisterStack.Pop();
         var arg = LLVM.GetParam(_functionsDto.Function, (uint)index);
-        if (arg.TypeOf().TypeKind != LLVMTypeKind.LLVMPointerTypeKind)
+        
+        if (_inputKernel.ParameterInfos[index].ParameterType.IsArray && value.TypeOf().ToNativeType().IsArray)
         {
             _valueParameters.Add(index, value);
         }
+        else if (arg.TypeOf().TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
+        {
+            if (_valueParameters.TryGetValue(index, out var valueParam)) arg = valueParam;
+            LLVM.BuildStore(_builder, value, arg);
+        }
         else
         {
-            LLVM.BuildStore(_builder, value, arg);
+            _valueParameters.Add(index, value);
         }
     }
 
@@ -1216,7 +1222,7 @@ public class MethodBodyCompiler
 
                 if (localVariable.LocalType.IsArray)
                 {
-                    phi = LLVM.BuildPhi(_builder, _inputKernel.LocalVariables[i].LocalType.ToLLVMType(localVariable.LocalIndex),
+                    phi = LLVM.BuildPhi(_builder, _inputKernel.LocalVariables[i].LocalType.ToLLVMType(),
                     GetVirtualRegisterName());
                 }
                 else
