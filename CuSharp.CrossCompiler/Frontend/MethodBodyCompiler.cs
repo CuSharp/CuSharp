@@ -1005,7 +1005,7 @@ public class MethodBodyCompiler
             
             // TODO: Use length attribute if param is pointer type
             var args = new LLVMValueRef[parameters.Length];
-            for (var i = 0; i < parameters.Length; i++)
+            for (var i = parameters.Length - 1; i >= 0; i--)
             {
                 var param = _virtualRegisterStack.Pop();
                 args[i] = param;
