@@ -170,11 +170,6 @@ namespace CuSharp.Tests.TestHelper
             a[i] %= b[i];
         }
 
-        public static void NotSupportedNestedCall(int a, int b)
-        {
-            ScalarIntAddition(a, b);
-        }
-
         public static void CallIntMethod(int a, int b, int c)
         {
             c = AddTwoIntegers(a, b);

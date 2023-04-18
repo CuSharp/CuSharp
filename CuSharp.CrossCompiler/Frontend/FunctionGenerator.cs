@@ -21,7 +21,11 @@ namespace CuSharp.CudaCompiler.Frontend
             foreach (var paramInfo in inputKernel.ParameterInfos)
             {
                 LLVMTypeRef type;
-                if (paramInfo.ParameterType.IsArray)
+                if (!inputKernel.IsMainFunction && !paramInfo.ParameterType.IsArray)
+                {
+                    type = paramInfo.ParameterType.ToLLVMType();
+                }
+                else if (paramInfo.ParameterType.IsArray)
                 {
                     type = LLVMTypeRef.PointerType(paramInfo.ParameterType.GetElementType().ToLLVMType(), 0);
                 }
@@ -32,7 +36,11 @@ namespace CuSharp.CudaCompiler.Frontend
                 paramsListBuilder.Add(type);
             }
 
-            if (paramsListBuilder.Any()) paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); // Array length list
+            if (paramsListBuilder.Any() && inputKernel.IsMainFunction ||
+                inputKernel.ParameterInfos.Any(p => p.ParameterType.IsArray))
+            {
+                paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); // Array length list
+            }
 
             var paramTypes = paramsListBuilder.ToArray();
             var function = LLVM.AddFunction(_module, inputKernel.Name, LLVM.FunctionType(inputKernel.MethodInfo.ReturnType.ToLLVMType(), paramTypes, false));

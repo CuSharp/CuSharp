@@ -820,7 +820,8 @@ public class MethodBodyCompiler
     {
         var index = operand; //Warning: needs -1 if not static but not supported!
         var param = LLVM.GetParam(_functionsDto.Function, (uint)index);
-        if (!_inputKernel.ParameterInfos[index].ParameterType.IsArray)
+        
+        if (!_inputKernel.ParameterInfos[index].ParameterType.IsArray && param.TypeOf().TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
         {
             param = LLVM.BuildLoad(_builder, param, GetVirtualRegisterName());
         }
@@ -990,23 +991,22 @@ public class MethodBodyCompiler
         if (!isExternalFunction)
         {
             if (_functionGenerator == null)
+            {
                 throw new ArgumentNullException("FunctionGenerator is required to compile calls, but it is null.");
-        
+            }
+
             var methodInfo = method as MethodInfo;
             var kernelToCall = new MSILKernel(methodInfo.Name, methodInfo, false);
             var function = _functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(kernelToCall);
 
             var parameters = methodInfo.GetParameters().ToArray();
             
-            // TODO: Use length attribute
+            // TODO: Use length attribute if param is pointer type
             var args = new LLVMValueRef[parameters.Length];
             for (var i = 0; i < parameters.Length; i++)
             {
-                var argValue = _virtualRegisterStack.Pop();
-                // TODO: No pointer wrapper
-                var argPtr = LLVM.BuildAlloca(_builder, parameters[i].ParameterType.ToLLVMType(), GetVirtualRegisterName());
-                LLVM.BuildStore(_builder, argValue, argPtr);
-                args[i] = argPtr;
+                var param = _virtualRegisterStack.Pop();
+                args[i] = param;
             }
 
             var call = LLVM.BuildCall(_builder, function, args, GetVirtualRegisterName());

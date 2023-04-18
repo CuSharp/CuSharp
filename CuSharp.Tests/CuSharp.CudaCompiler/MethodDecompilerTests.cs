@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Xml.Linq;
 using CuSharp.CudaCompiler.Frontend;
 using CuSharp.Tests.TestHelper;
+using LLVMSharp;
 using Xunit;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler
@@ -546,22 +548,6 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             Assert.Throws<NotSupportedException>(() => 
                 // Act
                 new MSILKernel(kernelName, method));
-        }
-
-        [Fact]
-        public void TestNotSupportedNestedCall()
-        {
-            // Arrange
-            const string kernelName = "TestNotSupportedNestedCall";
-            var method = _methodLoader.GetScalarIntMethodInfo(MethodsToCompile.NotSupportedNestedCall);
-            var kernel = new MSILKernel(kernelName, method);
-            var functionsDto = _functionBuilder.BuildFunctionsDto(kernelName, method.GetParameters());
-            var builder = _functionBuilder.GetBuilderWithEntryBlock(functionsDto.Function);
-
-            // Assert
-            Assert.Throws<NotSupportedException>(() =>
-                // Act
-                new MethodBodyCompiler(kernel, builder, functionsDto).CompileMethodBody());
         }
 
         private static List<(ILOpCode, object?)> RemoveNopInReleaseMode(List<(ILOpCode, object?)> opCodesWithOperands)
