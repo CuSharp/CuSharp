@@ -1,17 +1,28 @@
 ﻿using CuSharp.Kernel;
 
 namespace CuSharp.Tests.TestHelper;
+
 public class MethodsToCompile
 {
-    public void NonStaticEmptyMethod() { }
+    public void NonStaticEmptyMethod()
+    {
+    }
 
-    public static void EmptyMethod() { }
+    public static void EmptyMethod()
+    {
+    }
 
-    public static void EmptyMixedParameterMethod(int[] A, int[] B, bool b, int c) { }
+    public static void EmptyMixedParameterMethod(int[] A, int[] B, bool b, int c)
+    {
+    }
 
-    public static void EmptyIntArrayMethod(int[] a) { }
+    public static void EmptyIntArrayMethod(int[] a)
+    {
+    }
 
-    public static void EmptyTwoIntArrayMethod(int[] a, int[] b) { }
+    public static void EmptyTwoIntArrayMethod(int[] a, int[] b)
+    {
+    }
 
     public static void ScalarIntAddition5Args(int a, int b, int c, int d, int e)
     {
@@ -122,7 +133,7 @@ public class MethodsToCompile
         int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
         c[i] = a[i] + b[i];
     }
-    
+
     public static void ArrayIntScalarAdd(int[] a, int b)
     {
         int i = (int)(KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X);
@@ -169,41 +180,41 @@ public class MethodsToCompile
         a[i] %= b[i];
     }
 
-        public static void CallIntMethod(int a, int b, int c)
+    public static void CallIntMethod(int a, int b, int c)
+    {
+        c = AddTwoIntegers(a, b);
+    }
+
+    private static int AddTwoIntegers(int a, int b)
+    {
+        return a + b;
+    }
+
+    public static void CallIntMethodNested(int a, int b, int c)
+    {
+        c = AddTwoIntegersNested(a, b);
+    }
+
+    private static int AddTwoIntegersNested(int a, int b)
+    {
+        int c;
+
+        if (AreEqual(a, b))
         {
-            c = AddTwoIntegers(a, b);
+            c = a + b;
+        }
+        else
+        {
+            c = int.MaxValue;
         }
 
-        private static int AddTwoIntegers(int a, int b)
-        {
-            return a + b;
-        }
+        return c;
+    }
 
-        public static void CallIntMethodNested(int a, int b, int c)
-        {
-            c = AddTwoIntegersNested(a, b);
-        }
-
-        private static int AddTwoIntegersNested(int a, int b)
-        {
-            int c;
-
-            if (AreEqual(a, b))
-            {
-                c = a + b;
-            }
-            else
-            {
-                c = int.MaxValue;
-            }
-
-            return c;
-        }
-
-        private static bool AreEqual(int a, int b)
-        {
-            return a == b;
-        }
+    private static bool AreEqual(int a, int b)
+    {
+        return a == b;
+    }
 
     public static void IntMatrixMultiplication(int[] a, int[] b, int[] c, int matrixWidth)
     {
@@ -349,6 +360,7 @@ public class MethodsToCompile
         {
             a++;
         }
+
         c = a;
     }
 
@@ -358,6 +370,7 @@ public class MethodsToCompile
         {
             a++;
         } while (a < b);
+
         c = a;
     }
 
@@ -367,6 +380,7 @@ public class MethodsToCompile
         {
             c = a + b;
         }
+
         c++;
     }
 
@@ -378,8 +392,10 @@ public class MethodsToCompile
             {
                 continue;
             }
+
             a++;
         }
+
         c = a;
     }
 
@@ -391,8 +407,10 @@ public class MethodsToCompile
             {
                 break;
             }
+
             a++;
         }
+
         c = a;
     }
 
@@ -552,6 +570,7 @@ public class MethodsToCompile
     {
         b = a.Length;
     }
+
     public static void NotTest(bool[] a, bool b)
     {
         a[0] = b;
