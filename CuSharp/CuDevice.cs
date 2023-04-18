@@ -54,6 +54,11 @@ public partial class CuDevice : IDisposable
         return  cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
     }
 
+    public bool Copy(Tensor<bool> deviceTensor)
+    {
+        var cudaDeviceTensor = deviceTensor as CudaTensor<bool>;
+        return Convert.ToBoolean(cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<byte>);
+    }
     /// <summary>
     /// This copies a scalar value back. Potentially, race conditions can occur.
     /// </summary>

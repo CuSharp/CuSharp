@@ -8,14 +8,21 @@ public class CudaTensor<T> : Tensor<T>
     public static Tensor<E[]> FromArray<E>(E[] value) where E : struct
     {
         CudaDeviceVariable<E> devVar = value;
-        
         return new CudaTensor<E[]> {DevicePointer = devVar.DevicePointer, DeviceVariable = devVar, Length = value.Length};
     }
 
     public static Tensor<E> FromScalar<E>(E value) where E : struct
     {
-        CudaDeviceVariable<E> devVar = value;
-        return new CudaTensor<E> {DevicePointer = devVar.DevicePointer, DeviceVariable = devVar, Length = 1};
+        if (typeof(E) == typeof(bool))
+        {
+            CudaDeviceVariable<byte> devVar = Convert.ToByte(value);
+            return new CudaTensor<E> {DevicePointer = devVar.DevicePointer, DeviceVariable = devVar, Length = 1};
+        }
+        else
+        {
+            CudaDeviceVariable<E> devVar = value; 
+            return new CudaTensor<E> {DevicePointer = devVar.DevicePointer, DeviceVariable = devVar, Length = 1};           
+        }
     }
     public object DeviceVariable { get; private set; }
 
