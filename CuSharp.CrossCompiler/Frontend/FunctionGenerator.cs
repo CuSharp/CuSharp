@@ -43,7 +43,9 @@ namespace CuSharp.CudaCompiler.Frontend
             }
 
             var paramTypes = paramsListBuilder.ToArray();
-            var function = LLVM.AddFunction(_module, inputKernel.Name, LLVM.FunctionType(inputKernel.MethodInfo.ReturnType.ToLLVMType(), paramTypes, false));
+
+            // TODO: If return type is array: inputKernel.ReturnType.ToLLVMType(ElementCount)
+            var function = LLVM.AddFunction(_module, inputKernel.Name, LLVM.FunctionType(inputKernel.ReturnType.ToLLVMType(), paramTypes, false));
             LLVM.SetLinkage(function, LLVMLinkage.LLVMExternalLinkage);
             NameFunctionParameters(function, "param");
 

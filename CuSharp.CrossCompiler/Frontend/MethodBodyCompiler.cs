@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Reflection.Metadata;
 using LLVMSharp;
 
@@ -16,6 +15,7 @@ public class MethodBodyCompiler
     private readonly Dictionary<long, BlockNode> _blockList = new(); //contains all blocks except entry
     private readonly MemoryStream _stream;
     private readonly Dictionary<LLVMValueRef, int> _arrayParamToLengthIndex = new();
+    private readonly Dictionary<int, LLVMValueRef> _valueParameters = new();
 
     private BlockNode _entryBlockNode;
     private BlockNode _currentBlock;
@@ -827,6 +827,12 @@ public class MethodBodyCompiler
         {
             param = LLVM.BuildLoad(_builder, param, GetVirtualRegisterName());
         }
+        else if (!_inputKernel.ParameterInfos[index].ParameterType.IsArray)
+        {
+            param = _valueParameters.ContainsKey(index)
+                ? _valueParameters[index]
+                : LLVM.GetParam(_functionsDto.Function, (uint)index);
+        }
 
         _virtualRegisterStack.Push(param);
     }
@@ -941,7 +947,14 @@ public class MethodBodyCompiler
     {
         var value = _virtualRegisterStack.Pop();
         var arg = LLVM.GetParam(_functionsDto.Function, (uint)index);
-        LLVM.BuildStore(_builder, value, arg);
+        if (arg.TypeOf().TypeKind != LLVMTypeKind.LLVMPointerTypeKind)
+        {
+            _valueParameters.Add(index, value);
+        }
+        else
+        {
+            LLVM.BuildStore(_builder, value, arg);
+        }
     }
 
     private void CompileStdind()
@@ -1002,9 +1015,21 @@ public class MethodBodyCompiler
             var function = _functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(kernelToCall);
 
             var parameters = methodInfo.GetParameters().ToArray();
-            
+
             // TODO: Use length attribute if param is pointer type
-            var args = new LLVMValueRef[parameters.Length];
+
+            LLVMValueRef[] args;
+            if (parameters.Any(p => p.ParameterType.IsArray))
+            {
+                args = new LLVMValueRef[parameters.Length + 1];
+                args[parameters.Length] = LLVM.GetLastParam(_functionsDto.Function);
+            }
+            else
+            {
+                args = new LLVMValueRef[parameters.Length];
+            }
+
+            
             for (var i = parameters.Length - 1; i >= 0; i--)
             {
                 var param = _virtualRegisterStack.Pop();

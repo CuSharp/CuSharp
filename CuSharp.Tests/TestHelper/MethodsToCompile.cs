@@ -216,6 +216,18 @@ public class MethodsToCompile
         return a == b;
     }
 
+    public static void CallIntArrayMethodWithKernelTools(int[] a, int[] b, int[] c)
+    {
+        int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
+        c[i] = AddTwoIntArrayValues(a, b, i);
+    }
+
+    private static int AddTwoIntArrayValues(int[] a, int[] b, int i)
+    {
+        i = a.Length;
+        return a[i] + b[i];
+    }
+
     public static void IntMatrixMultiplication(int[] a, int[] b, int[] c, int matrixWidth)
     {
         var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
