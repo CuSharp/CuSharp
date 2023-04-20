@@ -28,7 +28,7 @@ public class MethodBodyCompiler
     private long _blockCounter;
     private string? _nameOfMethodToCall;
 
-    public LLVMModuleRef module { get; set; }
+    public LLVMModuleRef Module { get; set; }
     #region PublicInterface
     public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto, FunctionGenerator? functionGenerator = null)
     {
@@ -830,7 +830,7 @@ public class MethodBodyCompiler
         var len = LLVM.ConstIntGetZExtValue(elementCount);
 
         var type = LLVM.ArrayType(operand.ToLLVMType(), (uint) len);
-        var arr = LLVM.AddGlobalInAddressSpace(module, type, GetGlobalVariableName(), 3);
+        var arr = LLVM.AddGlobalInAddressSpace(Module, type, GetGlobalVariableName(), 3);
         arr.SetLinkage(LLVMLinkage.LLVMInternalLinkage);
         arr.SetInitializer(LLVM.GetUndef(type));
         _virtualRegisterStack.Push(arr);

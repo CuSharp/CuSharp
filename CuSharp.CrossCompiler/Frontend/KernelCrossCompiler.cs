@@ -29,7 +29,7 @@ public class KernelCrossCompiler
         var functionsDto = new FunctionsDto(function, externalFunctions, (int) function.CountParams() - inputKernel.ParameterInfos.Length);
 
 
-        new MethodBodyCompiler(inputKernel, _builder, functionsDto, functionGenerator){module = _module}.CompileMethodBody(); //TODO change module input
+        new MethodBodyCompiler(inputKernel, _builder, functionsDto, functionGenerator){Module = _module}.CompileMethodBody(); //TODO change module input
 
         CompileOtherMethods(functionGenerator, functionsDto);
         GenerateAnnotations(function);
