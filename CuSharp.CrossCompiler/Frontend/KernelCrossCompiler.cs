@@ -20,13 +20,12 @@ public class KernelCrossCompiler
     public LLVMKernel Compile(MSILKernel inputKernel, bool optimize = false)
     {
         GenerateDataLayoutAndTarget();
-        
         var function = GenerateFunctionAndPositionBuilderAtEntry(inputKernel.ParameterInfos);
         var externalFunctions = GenerateDeviceIntrinsicFunctions();
 
         var functionsDto = new FunctionsDto(function, externalFunctions, (int) function.CountParams() - inputKernel.ParameterInfos.Length);
 
-        new MethodBodyCompiler(inputKernel, _builder, functionsDto).CompileMethodBody();
+        new MethodBodyCompiler(inputKernel, _builder, functionsDto){module = _module}.CompileMethodBody();
         GenerateAnnotations(function);
         
         if(optimize) RunOptimization(function);

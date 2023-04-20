@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.PerformanceEvaluati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.SourceGenerator", "CuSharp.SourceGenerator\CuSharp.SourceGenerator.csproj", "{84078A3D-4DBC-4E44-9783-71648583B902}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.AOTC", "CuSharp.AOTC\CuSharp.AOTC.csproj", "{75D44696-E921-4D83-B2CF-98966F848690}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{84078A3D-4DBC-4E44-9783-71648583B902}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84078A3D-4DBC-4E44-9783-71648583B902}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84078A3D-4DBC-4E44-9783-71648583B902}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75D44696-E921-4D83-B2CF-98966F848690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75D44696-E921-4D83-B2CF-98966F848690}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75D44696-E921-4D83-B2CF-98966F848690}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75D44696-E921-4D83-B2CF-98966F848690}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

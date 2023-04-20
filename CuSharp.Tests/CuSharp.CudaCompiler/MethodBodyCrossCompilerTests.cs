@@ -405,7 +405,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
             var crossCompiler = new KernelCrossCompiler(config);
             var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
-            var expected = "";
+            var expected = _llvmLoader.GetArrayLengthAttributeTestResult(kernelName, TypesAsString.Int32Type);
             var actual = llvmKernel.KernelBuffer;
             
             Assert.Equal(expected, actual);

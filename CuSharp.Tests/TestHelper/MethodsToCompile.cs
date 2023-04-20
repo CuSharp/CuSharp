@@ -526,4 +526,11 @@ public class MethodsToCompile
         a[0] = b;
         a[1] = !b;
     }
+    
+    public static void Newarr(int[] b)
+    {
+        int[] a = new int[500];
+        a[499] = b[4];
+        b[0] = a[499];
+    }
 }

@@ -269,4 +269,18 @@ public class IntegrationTests
         Assert.True(a[0]);
         Assert.True(!a[1]);
     }
+
+
+    
+    [Fact]
+    public void TestNewArr()
+    {
+        global::CuSharp.CuSharp.EnableOptimizer = false;
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var b = new int[]{1,2,3,4,5};
+        var devB = dev.Copy(b);
+        dev.Launch(MethodsToCompile.Newarr, (1, 1, 1), (1, 1, 1), devB);
+        b = dev.Copy(devB);
+        Assert.Equal(5, b[0]);
+    }
 }
