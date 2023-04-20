@@ -20,12 +20,18 @@ public class KernelCrossCompiler
     public LLVMKernel Compile(MSILKernel inputKernel, bool optimize = false)
     {
         GenerateDataLayoutAndTarget();
-        var function = GenerateFunctionAndPositionBuilderAtEntry(inputKernel.ParameterInfos);
+
+
+        var functionGenerator = new FunctionGenerator(_module, _builder);
+        var function = functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(inputKernel);
         var externalFunctions = GenerateDeviceIntrinsicFunctions();
 
         var functionsDto = new FunctionsDto(function, externalFunctions, (int) function.CountParams() - inputKernel.ParameterInfos.Length);
 
-        new MethodBodyCompiler(inputKernel, _builder, functionsDto){module = _module}.CompileMethodBody();
+
+        new MethodBodyCompiler(inputKernel, _builder, functionsDto, functionGenerator){module = _module}.CompileMethodBody(); //TODO change module input
+
+        CompileOtherMethods(functionGenerator, functionsDto);
         GenerateAnnotations(function);
         
         if(optimize) RunOptimization(function);
@@ -33,6 +39,19 @@ public class KernelCrossCompiler
         return new LLVMKernel(inputKernel.Name, GetModuleAsString());
     }
 
+    private void CompileOtherMethods(FunctionGenerator functionGenerator, FunctionsDto functionsDto)
+    {
+        var i = 0;
+
+        while (i < functionGenerator.FunctionsToBuild.Count)
+        {
+            var (kernelToCall, function) = functionGenerator.FunctionsToBuild[i];
+            functionGenerator.AppendFunction(function);
+            functionsDto.Function = function;
+            new MethodBodyCompiler(kernelToCall, _builder, functionsDto, functionGenerator).CompileMethodBody();
+            i++;
+        }
+    }
 
     private void RunOptimization(LLVMValueRef function)
     {
@@ -79,47 +98,7 @@ public class KernelCrossCompiler
 
         return externalFunctions;
     }
-    private LLVMValueRef GenerateFunctionAndPositionBuilderAtEntry(ParameterInfo[] parameterInfos)
-    {
-        var paramsListBuilder = new List<LLVMTypeRef>();
-        foreach (var paramInfo in parameterInfos)
-        {
-            LLVMTypeRef type;
-            if (paramInfo.ParameterType.IsArray)
-            {
-                type = LLVMTypeRef.PointerType(paramInfo.ParameterType.GetElementType().ToLLVMType(), 0);
-            }
-            else
-            {
-                type = LLVMTypeRef.PointerType(paramInfo.ParameterType.ToLLVMType(), 0);
-            }
-            paramsListBuilder.Add(type);
-        }
-
-        if(paramsListBuilder.Any()) paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); //array length list
-        
-        var paramType = paramsListBuilder.ToArray();
-        var function = LLVM.AddFunction(_module, _config.KernelName, LLVM.FunctionType(LLVM.VoidType(), paramType, false));
-        LLVM.SetLinkage(function, LLVMLinkage.LLVMExternalLinkage);
-        NameFunctionParameters(function, "param");
-        
-        var entryBlock = LLVM.AppendBasicBlock(function, "entry");
-        LLVM.PositionBuilderAtEnd(_builder, entryBlock);
-        
-        return function;
-    }
-
-    private void NameFunctionParameters(LLVMValueRef function, string prefix)
-    {
-        var parameters = LLVM.GetParams(function);
-                
-        var counter = 0;
-        foreach (var param in parameters)
-        {
-            LLVM.SetValueName(param, $"{prefix}{counter}");
-            counter++;
-        }
-    }
+    
     private void GenerateDataLayoutAndTarget()
     {
         if (_config.DataLayout != "")

@@ -3,6 +3,7 @@ using System.Reflection.Emit;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
+
 using LLVMSharp;
 
 namespace CuSharp.CudaCompiler.Frontend;
@@ -13,10 +14,12 @@ public class MethodBodyCompiler
     private readonly MSILKernel _inputKernel;
     private readonly LLVMBuilderRef _builder;
     private readonly FunctionsDto _functionsDto;
+    private readonly FunctionGenerator? _functionGenerator;
     private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
     private readonly Dictionary<long, BlockNode> _blockList = new(); //contains all blocks except entry
     private readonly MemoryStream _stream;
     //private readonly Dictionary<LLVMValueRef, int> _arrayParamToLengthIndex = new(); //TODO CHECK IF POSSIBLE
+    private readonly Dictionary<int, LLVMValueRef> _valueParameters = new();
 
     private BlockNode _entryBlockNode;
     private BlockNode _currentBlock;
@@ -27,11 +30,12 @@ public class MethodBodyCompiler
 
     public LLVMModuleRef module { get; set; }
     #region PublicInterface
-    public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto)
+    public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto, FunctionGenerator? functionGenerator = null)
     {
         _inputKernel = inputKernel;
         _builder = builder;
         _functionsDto = functionsDto;
+        _functionGenerator = functionGenerator;
         _stream = new MemoryStream(inputKernel.KernelBuffer);
         _reader = new BinaryReader(_stream);
     }
@@ -430,7 +434,7 @@ public class MethodBodyCompiler
                 break;
             //case ILOpCode.Rem_un: throw new NotSupportedException();
             case ILOpCode.Ret:
-                LLVM.BuildRetVoid(_builder);
+                CompileReturn();
                 break;
             //case ILOpCode.Shl: throw new NotSupportedException();
             //case ILOpCode.Shr: throw new NotSupportedException();
@@ -520,10 +524,8 @@ public class MethodBodyCompiler
             //case ILOpCode.Ldvirtftn: throw new NotSupportedException();
             //case ILOpCode.Mkrefany: throw new NotSupportedException();
             case ILOpCode.Newarr:
-                int metaDataToken = _reader.ReadInt32() -3; //TODO find out why -3
-                var m = Assembly.GetCallingAssembly();
-                var mo = m.GetModules()[0];
-                operand = mo.ResolveType(metaDataToken);
+                var metaDataToken = _reader.ReadInt32(); 
+                operand = _inputKernel.MethodInfo.Module.ResolveType(metaDataToken);
                 CompileNewarr((Type) operand);
                 break;
             //case ILOpCode.Refanytype: throw new NotSupportedException();
@@ -841,9 +843,16 @@ public class MethodBodyCompiler
     {
         var index = operand; //Warning: needs -1 if not static but not supported!
         var param = LLVM.GetParam(_functionsDto.Function, (uint)index);
-        if (!_inputKernel.ParameterInfos[index].ParameterType.IsArray)
+        
+        if (!_inputKernel.ParameterInfos[index].ParameterType.IsArray && param.TypeOf().TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
         {
             param = LLVM.BuildLoad(_builder, param, GetVirtualRegisterName());
+        }
+        else if (!_inputKernel.ParameterInfos[index].ParameterType.IsArray)
+        {
+            param = _valueParameters.TryGetValue(index, out var paramValue)
+                ? paramValue
+                : LLVM.GetParam(_functionsDto.Function, (uint)index);
         }
 
         _virtualRegisterStack.Push(param);
@@ -969,7 +978,20 @@ public class MethodBodyCompiler
     {
         var value = _virtualRegisterStack.Pop();
         var arg = LLVM.GetParam(_functionsDto.Function, (uint)index);
-        LLVM.BuildStore(_builder, value, arg);
+        
+        if (_inputKernel.ParameterInfos[index].ParameterType.IsArray && value.TypeOf().ToNativeType().IsArray)
+        {
+            _valueParameters.Add(index, value);
+        }
+        else if (arg.TypeOf().TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
+        {
+            if (_valueParameters.TryGetValue(index, out var valueParam)) arg = valueParam;
+            LLVM.BuildStore(_builder, value, arg);
+        }
+        else
+        {
+            _valueParameters.Add(index, value);
+        }
     }
 
     private void CompileStdind()
@@ -1030,7 +1052,52 @@ public class MethodBodyCompiler
 
         if (!isExternalFunction)
         {
-            throw new NotSupportedException("Only calls to defined external functions are supported");
+            if (_functionGenerator == null)
+            {
+                throw new ArgumentNullException("FunctionGenerator is required to compile calls, but it is null.");
+            }
+
+            var methodInfo = method as MethodInfo;
+            var kernelToCall = new MSILKernel(methodInfo.Name, methodInfo, false);
+            var function = _functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(kernelToCall);
+
+            var parameters = methodInfo.GetParameters().ToArray();
+
+            // TODO: Use length attribute if param is pointer type
+
+            LLVMValueRef[] args;
+            if (parameters.Any(p => p.ParameterType.IsArray))
+            {
+                args = new LLVMValueRef[parameters.Length + 1];
+                args[parameters.Length] = LLVM.GetLastParam(_functionsDto.Function);
+            }
+            else
+            {
+                args = new LLVMValueRef[parameters.Length];
+            }
+
+            
+            for (var i = parameters.Length - 1; i >= 0; i--)
+            {
+                var param = _virtualRegisterStack.Pop();
+                args[i] = param;
+            }
+
+            var call = LLVM.BuildCall(_builder, function, args, GetVirtualRegisterName());
+            _virtualRegisterStack.Push(call);
+        }
+    }
+
+    private void CompileReturn()
+    {
+        if (_virtualRegisterStack.Count == 0)
+        {
+            LLVM.BuildRetVoid(_builder);
+        }
+        else
+        {
+            var returnValue = _virtualRegisterStack.Pop();
+            LLVM.BuildRet(_builder, returnValue);
         }
     }
 
@@ -1196,8 +1263,9 @@ public class MethodBodyCompiler
 
                 if (localVariable.LocalType.IsArray)
                 {
-                    phi = LLVM.BuildPhi(_builder, localVariable.LocalType.ToLLVMType(localVariable.LocalIndex),
-                        GetVirtualRegisterName());
+
+                    phi = LLVM.BuildPhi(_builder, _inputKernel.LocalVariables[i].LocalType.ToLLVMType(),
+                    GetVirtualRegisterName());
                 }
                 else
                 {

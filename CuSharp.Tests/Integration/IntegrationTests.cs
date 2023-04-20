@@ -18,6 +18,42 @@ public class IntegrationTests
     }
 
     [Fact]
+    public void TestCallIntMethod()
+    {
+        // Arrange
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+
+        var devA = dev.Copy(123);
+        var devB = dev.Copy(321);
+        var devC = dev.Copy(0);
+
+        // Act
+        dev.Launch(MethodsToCompile.CallIntMethod, (1, 1, 1), (1, 1, 1), devA, devB, devC);
+        var c = dev.Copy(devC);
+
+        // Assert
+        Assert.Equal(444, c);
+    }
+
+    [Fact]
+    public void TestCallIntMethodNested()
+    {
+        // Arrange
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+
+        var devA = dev.Copy(123);
+        var devB = dev.Copy(321);
+        var devC = dev.Copy(0);
+
+        // Act
+        dev.Launch(MethodsToCompile.CallIntMethodNested, (1, 1, 1), (1, 1, 1), devA, devB, devC);
+        var c = dev.Copy(devC);
+
+        // Assert
+        Assert.Equal(int.MaxValue, c);
+    }
+
+    [Fact]
     public void TestSimpleArrayAdd()
     {
         var dev = global::CuSharp.CuSharp.GetDefaultDevice();
