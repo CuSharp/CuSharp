@@ -20,7 +20,7 @@ public class CompilationDispatcher
     }
     public PTXKernel Compile(string kernelName, MethodInfo methodInfo)
     {
-        if ((!_disableCaching) && _kernelCache.TryGetValue(KernelHelpers.GetMethodIdentity(methodInfo), out var ptxKernel)) return ptxKernel;
+        if (!_disableCaching && _kernelCache.TryGetValue(KernelHelpers.GetMethodIdentity(methodInfo), out var ptxKernel)) return ptxKernel;
 
         var kernel = new MSILKernel(kernelName, methodInfo, true);
         var nvvmConfiguration = CompilationConfiguration.NvvmConfiguration;
@@ -37,14 +37,16 @@ public class CompilationDispatcher
     {
         var nvvmHandle = new NVVMProgram();
         nvvmHandle.AddModule(llvmKernel.KernelBuffer, llvmKernel.Name);
-#if DEBUG
-        var verifyResult = nvvmHandle.Verify(new string[0]);
-        if (verifyResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
-        {
-            nvvmHandle.GetProgramLog(out string log);
-            throw new Exception(log);
-        }
-#endif 
+        
+        #if DEBUG
+            var verifyResult = nvvmHandle.Verify(Array.Empty<string>());
+            if (verifyResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
+            {
+                nvvmHandle.GetProgramLog(out string log);
+                throw new Exception(log);
+            }
+        #endif 
+        
         var compilationResult = nvvmHandle.Compile(new string[]{"-fma=1"});
         if (compilationResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
         {

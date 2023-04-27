@@ -60,7 +60,7 @@ internal class MethodLauncher
     }
     private bool HasPrecompiledKernel(MethodInfo method)
     {
-        if (_aotKernelFolder == " ")
+        if (_aotKernelFolder == CuSharp.PathNotSet)
         {
             return false;
         }

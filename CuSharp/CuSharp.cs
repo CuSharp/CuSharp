@@ -6,8 +6,9 @@ namespace CuSharp;
 public static class CuSharp
 {
 
+    internal const string PathNotSet = "/../";
     public static bool EnableOptimizer { get; set; }
-    public static string? AotKernelFolder { get; set; } = " ";
+    public static string? AotKernelFolder { get; set; } = PathNotSet;
 
     static CuSharp()
     {
@@ -33,12 +34,14 @@ public static class CuSharp
             throw new ArgumentException("Device ID does not exist");
         }
         
-        return new CuDevice(deviceId, new CompilationDispatcher(null, EnableOptimizer), AotKernelFolder);
+        //caching disabled because CuDevice caches
+        return new CuDevice(deviceId, new CompilationDispatcher(null, EnableOptimizer, true), AotKernelFolder);
     }
 
     public static CuDevice GetDefaultDevice()
     {
-        return new CuDevice(compiler: new CompilationDispatcher(null, EnableOptimizer), aotKernelFolder:AotKernelFolder);
+        //caching disabled because CuDevice caches 
+        return new CuDevice(compiler: new CompilationDispatcher(null, EnableOptimizer, true), aotKernelFolder:AotKernelFolder);
     }
 
     public static CuEvent CreateEvent()
