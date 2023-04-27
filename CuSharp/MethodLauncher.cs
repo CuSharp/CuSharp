@@ -42,23 +42,22 @@ internal class MethodLauncher
             SetGridDimensions(k, gridSize, blockSize);
             return k;
         } 
-        var kernelName = $"{methodInfo.Name}";
 
-        CudaKernel cudaKernel;
-        if (HasPrecompiledKernel(methodInfo))
-        {
-            cudaKernel = GetPrecompiledKernel(methodInfo, kernelName, gridSize, blockSize);
-        }
-        else
-        {
-            cudaKernel = GetCompiledKernel(methodInfo, kernelName, gridSize, blockSize);
-        }
+        CudaKernel cudaKernel = GetCompiledKernel(methodInfo, gridSize, blockSize);
         
         _cache.Add(KernelHelpers.GetMethodIdentity(methodInfo), cudaKernel);
         SetGridDimensions(cudaKernel, gridSize, blockSize);
         return cudaKernel;
     }
-    
+
+    private CudaKernel GetCompiledKernel(MethodInfo method, (uint,uint,uint) gridSize, (uint,uint,uint) blockSize)
+    {
+        if (HasPrecompiledKernel(method))
+        {
+            return GetPrecompiledKernel(method, method.Name, gridSize, blockSize);
+        }
+        return GetJITCompiledKernel(method, method.Name, gridSize, blockSize);
+    }
     private bool HasPrecompiledKernel(MethodInfo method)
     {
         if (_aotKernelFolder == " ")
@@ -76,7 +75,7 @@ internal class MethodLauncher
         return _cudaDeviceContext.LoadKernelPTX(bytes, kernelName);
     }
 
-    private CudaKernel GetCompiledKernel(MethodInfo method, string kernelName, (uint, uint, uint) gridSize,
+    private CudaKernel GetJITCompiledKernel(MethodInfo method, string kernelName, (uint, uint, uint) gridSize,
         (uint, uint, uint) blockSize)
     {
             var ptxKernel = _compiler.Compile(kernelName, method);
