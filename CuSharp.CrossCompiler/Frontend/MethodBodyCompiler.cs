@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Numerics;
+using System.Reflection;
 using System.Reflection.Emit;
 using System.Reflection.Metadata;
 using System.Reflection.Metadata.Ecma335;
@@ -98,7 +99,9 @@ public class MethodBodyCompiler
             case ILOpCode.Nop:
                 break;
 
-            //case ILOpCode.Constrained: throw new NotSupportedException();
+            case ILOpCode.Constrained:
+                _reader.ReadInt32();
+                break;
             //case ILOpCode.Readonly: throw new NotSupportedException();
             //case ILOpCode.Tail: throw new NotSupportedException();
             //case ILOpCode.Unaligned: throw new NotSupportedException();
@@ -489,7 +492,10 @@ public class MethodBodyCompiler
             //case ILOpCode.Cpobj: throw new NotSupportedException();
             //case ILOpCode.Initobj: throw new NotSupportedException();
             //case ILOpCode.Isinst: throw new NotSupportedException();
-            //case ILOpCode.Ldelem: throw new NotSupportedException();
+            case ILOpCode.Ldelem:
+                _reader.ReadInt32();
+                CompileLdelem();
+                break;
             case ILOpCode.Ldelem_i1:
             case ILOpCode.Ldelem_i2:
             case ILOpCode.Ldelem_i4:
@@ -532,7 +538,10 @@ public class MethodBodyCompiler
             //case ILOpCode.Refanyval: throw new NotSupportedException();
             //case ILOpCode.Rethrow: throw new NotSupportedException();
             //case ILOpCode.Sizeof: throw new NotSupportedException();
-            //case ILOpCode.Stelem: throw new NotSupportedException();
+            case ILOpCode.Stelem: 
+                _reader.ReadInt32();
+                CompileStelem();
+                break;
             case ILOpCode.Stelem_i1:
             case ILOpCode.Stelem_i2:
             case ILOpCode.Stelem_i4:

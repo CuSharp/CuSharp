@@ -104,6 +104,7 @@ public class MethodsToCompile
         float c = a % b;
     }
 
+    [Kernel]
     public static void ArrayIntAddition(int[] a, int[] b, int[] c)
     {
         int i = 0;
@@ -122,6 +123,7 @@ public class MethodsToCompile
         c[i] = a[i] + b[i];
     }
 
+    [Kernel]
     public static void ArrayIntMultiplicationWithKernelTools(int[] a, int[] b, int[] c)
     {
         int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);

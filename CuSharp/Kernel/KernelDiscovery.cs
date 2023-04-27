@@ -20,6 +20,20 @@ public class KernelDiscovery
         }
     }
 
+    public void ScanAssembly(Assembly assembly)
+    {
+        var markedMethods = assembly
+            .GetTypes()
+            .SelectMany(t => t.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            .Where(m => Attribute.IsDefined(m, typeof(KernelAttribute)));
+        foreach (var m in markedMethods)
+        {
+            var key = $"{m.DeclaringType.Namespace}.{m.DeclaringType.Name}.{m.Name}";
+            MarkedMethods[key] = m;
+        }
+    
+    }
+
     public bool IsMarked(string name)
     {
         return MarkedMethods.ContainsKey(name);

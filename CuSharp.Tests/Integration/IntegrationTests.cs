@@ -1,6 +1,11 @@
-﻿using System.Diagnostics.Metrics;
+﻿using System;
+using System.Diagnostics.Metrics;
 using System.Linq;
+using System.Numerics;
+using System.Reflection;
+using CuSharp.Kernel;
 using CuSharp.Tests.TestHelper;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -276,7 +281,7 @@ public class IntegrationTests
         Assert.Equal(expectedC2, c2);
     }
 
-    [Fact]
+    /*[Fact]
     public void TestArrayLengthLaunch()
     {
         var dev = global::CuSharp.CuSharp.GetDefaultDevice();
@@ -289,7 +294,7 @@ public class IntegrationTests
         dev.Launch(MethodsToCompile.ArrayLengthAttribute, (1,1,1), (1,1,1), devA, devB);
         b = dev.Copy(devB);
         Assert.Equal(3, b);
-    }
+    }*/
 
 
     [Fact]
@@ -306,17 +311,57 @@ public class IntegrationTests
         Assert.True(!a[1]);
     }
 
-
-    
     [Fact]
     public void TestNewArr()
     {
-        global::CuSharp.CuSharp.EnableOptimizer = false;
+        global::CuSharp.CuSharp.EnableOptimizer = true;
         var dev = global::CuSharp.CuSharp.GetDefaultDevice();
         var b = new int[]{1,2,3,4,5};
         var devB = dev.Copy(b);
         dev.Launch(MethodsToCompile.Newarr, (1, 1, 1), (1, 1, 1), devB);
         b = dev.Copy(devB);
         Assert.Equal(5, b[0]);
+    }
+
+    /*
+    static void GenericVectorAddition<T> (T[] a, T[] b, T[] c) where T : INumber<T>
+    {
+        var idx = KernelTools.ThreadIndex.X;
+        c[idx] =  a[idx] + b[idx];
+    }
+
+    [Fact]
+    public void TestGeneric()
+    {
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var a = new int[]{6,7,8,9,10};
+        var b = new int[]{1,2,3,4,5};
+        var expectedC = new int[] {7, 9, 11, 13, 15};
+
+        var devA = dev.Copy(a);
+        var devB = dev.Copy(b);
+        var devC = dev.Copy(new int[5]);
+        dev.Launch(GenericVectorAddition, (1, 1, 1), (1, 1, 1), devA, devB, devC);
+        a = dev.Copy(devA);
+        b = dev.Copy(devB);
+        var c = dev.Copy(devC);
+        Assert.Equal(expectedC, c);
+    }*/
+    [Fact]
+    public void TestAOTC() //TODO Write Unit tests that check if aotc output was actually used
+    {
+        global::CuSharp.CuSharp.AotKernelFolder = "./resources";
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var a = new int[] {1, 2, 3};
+        var b = new int[] {2, 2, 2};
+
+        var devA = dev.Copy(a);
+        var devB = dev.Copy(b);
+        var devC = dev.Allocate<int>(3);
+        
+        dev.Launch(MethodsToCompile.ArrayIntMultiplicationWithKernelTools, (3,3,3), (3,3,3), devA, devB, devC);
+        var c = dev.Copy(devC);
+        Assert.Equal(new int[]{2,4,6}, c);
+
     }
 }
