@@ -11,7 +11,7 @@ internal class CudaTensor<T> : Tensor<T>
         return new CudaTensor<E[]>() {DevicePointer = devVar.DevicePointer, DeviceVariable = devVar};
     }
 
-    internal static Tensor<E> FromScalarAllocation<E>() where E : struct
+    internal static Tensor<E> FromScalarAllocation<E>() where E : struct //TODO Check if necesary
     {
         var devVar = new CudaDeviceVariable<E>(1);
         return new CudaTensor<E> {DevicePointer = devVar.DevicePointer, DeviceVariable = devVar};
