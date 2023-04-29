@@ -41,6 +41,6 @@ public class AOTC
         
     static void WriteFile(string outPath, MethodInfo method, byte[] kernelBuffer)
     {
-        File.WriteAllBytes($"{outPath}{Path.DirectorySeparatorChar}{KernelHelpers.GetMethodIdentity(method)}.ptx", kernelBuffer);
+        File.WriteAllBytes($"{outPath}{Path.DirectorySeparatorChar}{KernelHelpers.GetMethodIdentity(method)}ptx", kernelBuffer);
     }
 }

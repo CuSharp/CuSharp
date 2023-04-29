@@ -1,11 +1,5 @@
-﻿using System;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Numerics;
-using System.Reflection;
-using CuSharp.Kernel;
+﻿using System.Linq;
 using CuSharp.Tests.TestHelper;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.Serialization;
 using Xunit;
 using Xunit.Abstractions;
 

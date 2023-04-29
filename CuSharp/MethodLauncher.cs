@@ -64,13 +64,13 @@ internal class MethodLauncher
         {
             return false;
         }
-        string fileName = KernelHelpers.GetMethodIdentity(method) + ".ptx";
+        string fileName = KernelHelpers.GetMethodIdentity(method) + "ptx";
         return File.Exists($"{_aotKernelFolder}{Path.PathSeparator}{fileName}");
     }
 
     private CudaKernel GetPrecompiledKernel(MethodInfo method,string kernelName, (uint,uint,uint) gridSize, (uint,uint,uint) blockSize) 
     {
-        string fileName = KernelHelpers.GetMethodIdentity(method) + ".ptx";
+        string fileName = KernelHelpers.GetMethodIdentity(method) + "ptx";
         byte[] bytes = File.ReadAllBytes($"{_aotKernelFolder}{Path.PathSeparator}{fileName}");
         return _cudaDeviceContext.LoadKernelPTX(bytes, kernelName);
     }
