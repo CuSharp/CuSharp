@@ -1,23 +1,28 @@
 ﻿using System.Reflection;
+using System.Runtime.InteropServices.JavaScript;
 using LLVMSharp;
 
 namespace CuSharp.CudaCompiler.Frontend;
 
 public class ControlFlowGraphBuilder
 {
-    public ControlFlowGraphBuilder(BlockNode entryBlockNode, IList<LocalVariableInfo> localVariableInfos)
+    public ControlFlowGraphBuilder(BlockNode entryBlockNode, IList<LocalVariableInfo> localVariableInfos, LLVMBuilderRef builder, Func<string> RegisterNamer)
     {
-        EntryBlockNode = entryBlockNode;
+        _entryBlockNode = entryBlockNode;
         CurrentBlock = entryBlockNode;
         _localVariables = localVariableInfos;
+        _builder = builder;
+        _registerNamer = RegisterNamer;
     }
 
-    public readonly Dictionary<long, BlockNode> BlockList = new(); //contains all blocks except entry
-    public BlockNode EntryBlockNode;
+    private readonly Dictionary<long, BlockNode> BlockList = new(); //contains all blocks except entry
+    private readonly BlockNode _entryBlockNode;
     public BlockNode CurrentBlock;
-    private IList<LocalVariableInfo> _localVariables;
+    private readonly IList<LocalVariableInfo> _localVariables;
+    private readonly LLVMBuilderRef _builder;
+    private readonly Func<string> _registerNamer;
     private int BlockCounter => BlockList.Count;
-    public string NextBlockName => $"block{BlockCounter}";
+    private string NextBlockName => $"block{BlockCounter}";
     
     public BlockNode GetBlock(long index, LLVMValueRef function)
     {
@@ -52,7 +57,7 @@ public class ControlFlowGraphBuilder
 
     public void PatchBlockGraph()
     {
-        PatchBlockGraph(EntryBlockNode);
+        PatchBlockGraph(_entryBlockNode);
     }
     
     private void PatchBlockGraph(BlockNode startNode)
@@ -65,7 +70,14 @@ public class ControlFlowGraphBuilder
         {
             foreach (var pred in startNode.Predecessors)
             {
-                phi.AddIncoming(new[]{pred.SavedStack.Pop()},new []{pred.BlockRef},1);
+                var value = pred.SavedStack.Pop();
+                var phiType = phi.TypeOf();
+                if (!value.TypeOf().Equals(phiType))
+                {
+                    value = LLVM.BuildIntCast(_builder, value, phiType, _registerNamer());
+                } 
+                
+                phi.AddIncoming(new[]{value},new []{pred.BlockRef},1);
             }
         }
         
@@ -76,7 +88,20 @@ public class ControlFlowGraphBuilder
             {
                 if (pred.LocalVariables.ContainsKey(phi.Key))
                 {
-                    phi.Value.AddIncoming(new[] { pred.LocalVariables[phi.Key] }, new[] { pred.BlockRef }, 1);
+                    var value = pred.LocalVariables[phi.Key];
+                    var phiType = phi.Value.TypeOf();
+                    if (!value.TypeOf().Equals(phiType) && (value.TypeOf().Equals(LLVMTypeRef.FloatType()) || value.TypeOf().Equals(LLVMTypeRef.DoubleType())))
+                    {
+                        value = LLVM.BuildFPCast(_builder, value, phiType, _registerNamer());
+                    } else if (!value.TypeOf().Equals(phiType) && phiType.TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
+                    {
+                        value = LLVM.BuildPointerCast(_builder, value, phiType, _registerNamer());
+                    }
+                    else if (!value.TypeOf().Equals(phiType))
+                    {
+                        value = LLVM.BuildIntCast(_builder, value, phiType, _registerNamer());
+                    }
+                    phi.Value.AddIncoming(new[] { value }, new[] { pred.BlockRef }, 1);
 
                 }
                 else // Add arbitrary value (required because of NVVM)
@@ -101,6 +126,33 @@ public class ControlFlowGraphBuilder
         foreach (var successor in startNode.Successors)
         {
             PatchBlockGraph(successor);
+        }
+    }
+    
+    public void BuildPhis(Stack<LLVMValueRef> virtualRegisterStack)
+    {
+        //Restore stack
+        if (CurrentBlock.Predecessors.Any()) //one predecessor must already exist to restore stack
+        {
+            var savedStackList = CurrentBlock.Predecessors.First().SavedStack.ToArray();
+            for (int i = CurrentBlock.Predecessors.First().SavedStack.Count() -1; i > -1; i--) //predecessors must all contain same size of saved stack
+            {
+                var phi = LLVM.BuildPhi(_builder, savedStackList[i].TypeOf(), _registerNamer());
+                virtualRegisterStack.Push(phi);
+                CurrentBlock.RestoredStack.Push(phi);
+            }
+        }
+        
+        //Restore local variables 
+        for (int i = 0; i < _localVariables.Count; i++)
+        {
+            if (!CurrentBlock.LocalVariables.ContainsKey(i))
+            {
+                var phi = LLVM.BuildPhi(_builder, _localVariables[i].LocalType.ToLLVMType(), _registerNamer());
+                
+                CurrentBlock.LocalVariables.Add(i, phi);
+                CurrentBlock.PhiInstructions.Add(i, phi);
+            }
         }
     }
 }

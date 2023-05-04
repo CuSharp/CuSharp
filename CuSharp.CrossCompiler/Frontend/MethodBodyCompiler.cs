@@ -32,7 +32,7 @@ public class MethodBodyCompiler
         _functionGenerator = functionGenerator;
         _stream = new MemoryStream(inputKernel.KernelBuffer);
         _reader = new BinaryReader(_stream);
-        _cfg = new ControlFlowGraphBuilder(new BlockNode {BlockRef = LLVM.GetEntryBasicBlock(_functionsDto.Function)}, _inputKernel.LocalVariables);
+        _cfg = new ControlFlowGraphBuilder(new BlockNode {BlockRef = LLVM.GetEntryBasicBlock(_functionsDto.Function)}, _inputKernel.LocalVariables, _builder, GetVirtualRegisterName);
     }
 
     /*private void GenerateArrayLengthIndexTable() TODO CHECK IF POSSIBLE
@@ -58,7 +58,7 @@ public class MethodBodyCompiler
             {
                 SaveCurrentStack();
                 _cfg.SwitchBlock(_stream.Position, _builder);
-                BuildPhis();
+                _cfg.BuildPhis(_virtualRegisterStack);
             }
 
             opCodes.Add(CompileNextOpCode());
@@ -200,9 +200,12 @@ public class MethodBodyCompiler
                 break;
             case ILOpCode.Call:
                 operand = _reader.ReadInt32();
-                CompileCall((int)operand);
+                CompileCall((int) operand);
                 break;
-            //case ILOpCode.Callvirt: throw new NotSupportedException();
+            case ILOpCode.Callvirt:
+                operand = _reader.ReadInt32();
+                CompileCallvirt((int) operand);
+                break;
             //case ILOpCode.Calli: throw new NotSupportedException();
             case ILOpCode.Ceq:
                 CompileCeq();
@@ -683,6 +686,7 @@ public class MethodBodyCompiler
     private void CompileBrTrue(int operand)
     {
         var predicate = _virtualRegisterStack.Pop();
+
         BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
     }
 
@@ -764,6 +768,7 @@ public class MethodBodyCompiler
     {
         var value2 = _virtualRegisterStack.Pop();
         var value1 = _virtualRegisterStack.Pop();
+        value2 = CastValue2IfIncompatibleInts(value1, value2);
         LLVMValueRef result =
             BuildComparison(LLVMIntPredicate.LLVMIntSLT, LLVMRealPredicate.LLVMRealOLT, value1, value2);
         _virtualRegisterStack.Push(result);
@@ -774,6 +779,7 @@ public class MethodBodyCompiler
 
         var value2 = _virtualRegisterStack.Pop();
         var value1 = _virtualRegisterStack.Pop();
+        value2 = CastValue2IfIncompatibleInts(value1, value2);
         LLVMValueRef result =
             BuildComparison(LLVMIntPredicate.LLVMIntSGT, LLVMRealPredicate.LLVMRealOGT, value1, value2);
         _virtualRegisterStack.Push(result);
@@ -783,13 +789,18 @@ public class MethodBodyCompiler
     {
         var value2 = _virtualRegisterStack.Pop();
         var value1 = _virtualRegisterStack.Pop();
-        if(value2.TypeOf().ToNativeType() != value1.TypeOf().ToNativeType()) //TODO: Test extensively
-            value2 = LLVM.BuildIntCast(_builder, value2, value1.TypeOf(), GetVirtualRegisterName());
+        value2 = CastValue2IfIncompatibleInts(value1, value2);
         LLVMValueRef result =
             BuildComparison(LLVMIntPredicate.LLVMIntEQ, LLVMRealPredicate.LLVMRealOEQ, value1, value2);
         _virtualRegisterStack.Push(result);
     }
 
+    private LLVMValueRef CastValue2IfIncompatibleInts(LLVMValueRef value1, LLVMValueRef value2)
+    {
+        if(value2.TypeOf().ToNativeType() != value1.TypeOf().ToNativeType()) //TODO: Test extensively
+                    value2 = LLVM.BuildIntCast(_builder, value2, value1.TypeOf(), GetVirtualRegisterName());
+        return value2;
+    }
     private LLVMValueRef BuildComparison(LLVMIntPredicate intPredicate, LLVMRealPredicate realPredicate,
         LLVMValueRef value1, LLVMValueRef value2)
     {
@@ -797,6 +808,7 @@ public class MethodBodyCompiler
         LLVMValueRef result;
         if (AreParamsCompatibleAndInt(value1, value2))
         {
+            value2 = CastValue2IfIncompatibleInts(value1, value2);
             result = LLVM.BuildICmp(_builder, intPredicate, value1, value2, GetVirtualRegisterName());
         }
         else if (AreParamsCompatibleAndDecimal(value1, value2))
@@ -1026,6 +1038,16 @@ public class MethodBodyCompiler
 
     #region Calls
 
+    private void CompileCallvirt(int operand)
+    {
+        if (_nameOfMethodToCall != "CuSharp.Kernel.KernelTools.get_SyncThreads")
+        {
+            throw new Exception("Cannot call external virtual functions");
+        }
+        
+        var externalFunctionToCall = _functionsDto.ExternalFunctions.First(func => func.Item1 == _nameOfMethodToCall);
+        LLVM.BuildCall(_builder, externalFunctionToCall.Item2, Array.Empty<LLVMValueRef>(), "");
+    }
     private void CompileCall(int operand)
     {
         if (operand < 0)
@@ -1224,35 +1246,7 @@ public class MethodBodyCompiler
             _cfg.CurrentBlock.SavedStack.Push(_virtualRegisterStack.Pop());
         }
     }
-    private void BuildPhis()
-    {
-        //Restore stack
-        if (_cfg.CurrentBlock.Predecessors.Any()) //one predecessor must already exist to restore stack
-        {
-            var savedStackList = _cfg.CurrentBlock.Predecessors.First().SavedStack.ToArray();
-            for (int i = _cfg.CurrentBlock.Predecessors.First().SavedStack.Count() -1; i > -1; i--) //predecessors must all contain same size of saved stack
-            {
-                var phi = LLVM.BuildPhi(_builder, savedStackList[i].TypeOf(), GetVirtualRegisterName());
-                _virtualRegisterStack.Push(phi);
-                _cfg.CurrentBlock.RestoredStack.Push(phi);
-            }
-        }
-        
-        //Restore local variables 
-        for (int i = 0; i < _inputKernel.LocalVariables.Count; i++)
-        {
-            if (!_cfg.CurrentBlock.LocalVariables.ContainsKey(i))
-            {
-                var localVariable = _inputKernel.LocalVariables[i];
-                LLVMValueRef phi;
 
-                phi = LLVM.BuildPhi(_builder, _inputKernel.LocalVariables[i].LocalType.ToLLVMType(), GetVirtualRegisterName());
-                
-                _cfg.CurrentBlock.LocalVariables.Add(i, phi);
-                _cfg.CurrentBlock.PhiInstructions.Add(i, phi);
-            }
-        }
-    }
     
     private ILOpCode ReadOpCode()
     {

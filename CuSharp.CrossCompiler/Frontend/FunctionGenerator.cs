@@ -31,7 +31,7 @@ namespace CuSharp.CudaCompiler.Frontend
                 }
                 else
                 {
-                    type = LLVMTypeRef.PointerType(paramInfo.ParameterType.ToLLVMType(), 0);
+                    type = paramInfo.ParameterType.ToLLVMType();
                 }
                 paramsListBuilder.Add(type);
             }
