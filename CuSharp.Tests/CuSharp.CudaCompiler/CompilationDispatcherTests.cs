@@ -6,6 +6,7 @@ using CuSharp.CudaCompiler.Backend;
 using CuSharp.CudaCompiler.Kernels;
 using CuSharp.Tests.TestHelper;
 using Xunit;
+using static CuSharp.Tests.TestHelper.MethodInfoLoader;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler;
 
@@ -13,9 +14,6 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler;
 [Trait(TestCategories.TestCategory, TestCategories.Unit)]
 public class CompilationDispatcherTests
 {
-    private readonly MethodInfoLoader _methodLoader = new();
-
-
     [Fact]
     public void TestMethodIsCached()
     {
@@ -24,9 +22,9 @@ public class CompilationDispatcherTests
         var dispatcher = new CompilationDispatcher(cache);
 
 
-        var ptxKernel = dispatcher.Compile(kernelName, _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyIntArrayMethod));
+        var ptxKernel = dispatcher.Compile(kernelName, GetMethodInfo<int[]>(MethodsToCompile.EmptyIntArrayMethod));
 
-        Assert.Contains(KernelHelpers.GetMethodIdentity(_methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyIntArrayMethod)), cache.Keys);
+        Assert.Contains(KernelHelpers.GetMethodIdentity(GetMethodInfo<int[]>(MethodsToCompile.EmptyIntArrayMethod)), cache.Keys);
         Assert.Equal(kernelName, ptxKernel.Name);
     }
 
@@ -37,8 +35,8 @@ public class CompilationDispatcherTests
         var cache = new Dictionary<string, PTXKernel>();
         var dispatcher = new CompilationDispatcher(cache);
 
-        var ptxKernel1 = dispatcher.Compile(kernelName, _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyIntArrayMethod));
-        var ptxKernel2 = dispatcher.Compile(kernelName, _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyIntArrayMethod));
+        var ptxKernel1 = dispatcher.Compile(kernelName, GetMethodInfo<int[]>(MethodsToCompile.EmptyIntArrayMethod));
+        var ptxKernel2 = dispatcher.Compile(kernelName, GetMethodInfo<int[]>(MethodsToCompile.EmptyIntArrayMethod));
 
         Assert.Single(cache);
         Assert.Equal(cache.First().Value, ptxKernel1);
