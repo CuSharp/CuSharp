@@ -2,13 +2,15 @@
 using CuSharp.Tests.TestHelper;
 using Xunit;
 
+using static CuSharp.Tests.TestHelper.MethodInfoLoader;
+using static CuSharp.Tests.TestHelper.MethodsToCompile;
+
 namespace CuSharp.Tests.CuSharp.CudaCompiler;
 
 [Collection("Sequential")]
 [Trait(TestCategories.TestCategory, TestCategories.Unit)]
 public class KernelCrossCompilerMetaInformationTests
 {
-    private readonly MethodInfoLoader _methodLoader = new();
     private readonly LLVMRepresentationLoader _llvmLoader = new();
     private readonly TestValidator _validator = new();
 
@@ -16,7 +18,7 @@ public class KernelCrossCompilerMetaInformationTests
     public void TestEmptyMethodCompiles()
     {
         const string kernelName = "EmptyMethodKernel";
-        var method = _methodLoader.GetMethodInfo(MethodsToCompile.EmptyMethod);
+        var method = GetMethodInfo(EmptyMethod);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = kernelName;
         var crossCompiler = new KernelCrossCompiler(config);
@@ -30,7 +32,7 @@ public class KernelCrossCompilerMetaInformationTests
     public void TestEmptyMethodIsCorrectIR()
     {
         const string kernelName = "EmptyMethodKernel";
-        var method = _methodLoader.GetMethodInfo(MethodsToCompile.EmptyMethod);
+        var method = GetMethodInfo(EmptyMethod);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = kernelName;
         var crossCompiler = new KernelCrossCompiler(config);
@@ -45,7 +47,7 @@ public class KernelCrossCompilerMetaInformationTests
     public void TestArrayParameterMethod()
     {
         const string kernelName = "ArrayParameterMethod";
-        var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyTwoIntArrayMethod);
+        var method = GetMethodInfo<int[]>(EmptyTwoIntArrayMethod);
         var config = new CompilationConfiguration { KernelName = kernelName };
         var compiler = new KernelCrossCompiler(config);
 
@@ -58,7 +60,7 @@ public class KernelCrossCompilerMetaInformationTests
     public void TestArrayParameterMethodIsCorrectIR()
     {
         const string kernelName = "ArrayParameterMethod";
-        var method = _methodLoader.GetArrayIntMethodInfo(MethodsToCompile.EmptyTwoIntArrayMethod);
+        var method = GetMethodInfo<int[]>(EmptyTwoIntArrayMethod);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = kernelName;
         var compiler = new KernelCrossCompiler(config);
@@ -72,7 +74,7 @@ public class KernelCrossCompilerMetaInformationTests
     public void TestMixedParameterMethod()
     {
         const string kernelName = "MixedParameterMethod";
-        var method = _methodLoader.GetMixedMethodInfo(MethodsToCompile.EmptyMixedParameterMethod);
+        var method = GetMethodInfo<int[], bool, int>(EmptyMixedParameterMethod);
         var config = new CompilationConfiguration { KernelName = kernelName };
         var compiler = new KernelCrossCompiler(config);
 
@@ -84,7 +86,7 @@ public class KernelCrossCompilerMetaInformationTests
     [Fact]
     public void TestMixedParameterMethodIsCorrectIR()
     {
-        var method = _methodLoader.GetMixedMethodInfo(MethodsToCompile.EmptyMixedParameterMethod);
+        var method = GetMethodInfo<int[], bool, int>(EmptyMixedParameterMethod);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = "MixedParameterMethod";
         var compiler = new KernelCrossCompiler(config);

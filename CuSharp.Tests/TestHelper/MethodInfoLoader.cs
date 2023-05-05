@@ -3,89 +3,44 @@ using System.Reflection;
 
 namespace CuSharp.Tests.TestHelper
 {
-    public class MethodInfoLoader
+    public static class MethodInfoLoader
     {
-        public MethodInfo GetMethodInfo(Action fn)
+        public static MethodInfo GetMethodInfo(Action fn)
         {
             return fn.Method;
         }
 
-        public MethodInfo GetMixedMethodInfo(Action<int[], int[], bool, int> fn)
+        public static MethodInfo GetMethodInfo<T>(Action<T> fn)
         {
             return fn.Method;
         }
 
-        public MethodInfo GetScalarIntMethodInfo(Action<int, int> fn)
+        public static MethodInfo GetMethodInfo<T>(Action<T, T> fn)
         {
             return fn.Method;
         }
 
-        public MethodInfo GetScalarIntMethodInfo(Action<int, int, int> fn)
+        public static MethodInfo GetMethodInfo<T>(Action<T, T, T> fn)
         {
             return fn.Method;
         }
 
-        public MethodInfo GetScalarIntMethodInfo(Action<int, int, int, int, int> fn)
+        public static MethodInfo GetMethodInfo<T>(Action<T, T, T, T> fn)
         {
             return fn.Method;
         }
 
-        public MethodInfo GetScalarUintMethodInfo(Action<uint, uint> fn)
+        public static MethodInfo GetMethodInfo<T>(Action<T, T, T, T, T> fn)
         {
             return fn.Method;
         }
 
-        public MethodInfo GetScalarLongMethodInfo(Action<long, long> fn)
+        public static MethodInfo GetMethodInfo<T0, T1>(Action<T0, T1> fn)
         {
             return fn.Method;
         }
 
-        public MethodInfo GetScalarFloatMethodInfo(Action<float, float> fn)
-        {
-            return fn.Method;
-        }
-
-        public MethodInfo GetScalarDoubleMethodInfo(Action<double, double> fn)
-        {
-            return fn.Method;
-        }
-
-        public MethodInfo GetArrayIntMethodInfo(Action<int[]> fn)
-        {
-            return fn.Method;
-        }
-
-        public MethodInfo GetArrayIntMethodInfo(Action<int[], int[]> fn)
-        {
-            return fn.Method;
-        }
-
-        public MethodInfo GetArrayIntMethodInfo(Action<int[], int[], int[]> fn)
-        {
-            return fn.Method;
-        }
-
-        public MethodInfo GetArrayLongMethodInfo(Action<long[], long[]> fn)
-        {
-            return fn.Method;
-        }
-
-        public MethodInfo GetArrayFloatMethodInfo(Action<float[], float[]> fn)
-        {
-            return fn.Method;
-        }
-
-        public MethodInfo GetArrayFloatMethodInfo(Action<float[], float[], float[]> fn)
-        {
-            return fn.Method;
-        }
-
-        public MethodInfo GetArrayDoubleMethodInfo(Action<double[], double[]> fn)
-        {
-            return fn.Method;
-        }
-
-        public MethodInfo GetIntArrayIntMethodInfo(Action<int[], int> fn)
+        public static MethodInfo GetMethodInfo<T0, T1, T2>(Action<T0, T0, T1, T2> fn)
         {
             return fn.Method;
         }
