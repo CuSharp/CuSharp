@@ -42,7 +42,7 @@ public class MethodBodyCompiler
             _arrayParamToLengthIndex.Add(parameters[i], i);
         }
     }
-    public IEnumerable<(ILOpCode, object?)> CompileMethodBody()
+    public IEnumerable<(ILOpCode OpCode, object? Operand)> CompileMethodBody()
     {
         GenerateArrayLengthIndexTable();
         _entryBlockNode = new BlockNode() { BlockRef = LLVM.GetEntryBasicBlock(_functionsDto.Function) };
