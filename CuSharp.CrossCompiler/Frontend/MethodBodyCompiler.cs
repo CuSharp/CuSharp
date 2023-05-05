@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Reflection.Metadata;
+
 using LLVMSharp;
 
 namespace CuSharp.CudaCompiler.Frontend;
@@ -12,17 +13,16 @@ public class MethodBodyCompiler
     private readonly FunctionsDto _functionsDto;
     private readonly FunctionGenerator? _functionGenerator;
     private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
-    private readonly Dictionary<long, BlockNode> _blockList = new(); //contains all blocks except entry
     private readonly MemoryStream _stream;
-    private readonly Dictionary<LLVMValueRef, int> _arrayParamToLengthIndex = new();
+    //private readonly Dictionary<LLVMValueRef, int> _arrayParamToLengthIndex = new(); //TODO CHECK IF POSSIBLE
     private readonly Dictionary<int, LLVMValueRef> _valueParameters = new();
 
-    private BlockNode _entryBlockNode;
-    private BlockNode _currentBlock;
     private long _virtualRegisterCounter;
-    private long _blockCounter;
+    private long _globalVariableCounter;
     private string? _nameOfMethodToCall;
+    private ControlFlowGraphBuilder _cfg; 
 
+    public LLVMModuleRef Module { get; set; }
     #region PublicInterface
     public MethodBodyCompiler(MSILKernel inputKernel, LLVMBuilderRef builder, FunctionsDto functionsDto, FunctionGenerator? functionGenerator = null)
     {
@@ -34,19 +34,24 @@ public class MethodBodyCompiler
         _reader = new BinaryReader(_stream);
     }
 
-    private void GenerateArrayLengthIndexTable()
+    /*private void GenerateArrayLengthIndexTable() TODO CHECK IF POSSIBLE
     {
         var parameters = _functionsDto.Function.GetParams();
         for (int i = 0; i < parameters.Length-1; i++)
         {
             _arrayParamToLengthIndex.Add(parameters[i], i);
         }
-    }
+    }*/
+
     public IEnumerable<(ILOpCode OpCode, object? Operand)> CompileMethodBody()
     {
-        GenerateArrayLengthIndexTable();
-        _entryBlockNode = new BlockNode() { BlockRef = LLVM.GetEntryBasicBlock(_functionsDto.Function) };
-        _currentBlock = _entryBlockNode;
+        //GenerateArrayLengthIndexTable(); TODO CHECK IF POSSIBLE
+
+        var entryBlock = LLVM.AppendBasicBlock(_functionsDto.Function, "entry");
+        LLVM.PositionBuilderAtEnd(_builder, entryBlock);
+        
+        _cfg = new ControlFlowGraphBuilder(new BlockNode {BlockRef = entryBlock}, _inputKernel.LocalVariables, _builder, GetVirtualRegisterName);
+        
         IList<(ILOpCode, object?)> opCodes = new List<(ILOpCode, object?)>();
         while (_reader.BaseStream.Position < _reader.BaseStream.Length)
         {
@@ -55,29 +60,17 @@ public class MethodBodyCompiler
                 throw new ArgumentOutOfRangeException("Unexpected end of method body.");
             }
 
-            if (_blockList.ContainsKey(_stream.Position))
+            if (_cfg.PositionIsBlockStart(_stream.Position))
             {
-                var lastInstruction = LLVM.GetLastInstruction(_currentBlock.BlockRef);
-                if (lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMBr)
-                {
-                    LLVM.BuildBr(_builder, _blockList[_stream.Position].BlockRef); //Terminator instruction is needed!
-
-                    _blockList[_stream.Position].Predecessors.Add(_currentBlock);
-                    _currentBlock.Successors.Add(_blockList[_stream.Position]);
-                }
-
                 SaveCurrentStack();
-
-                LLVM.PositionBuilderAtEnd(_builder, _blockList[_stream.Position].BlockRef);
-                _currentBlock = _blockList[_stream.Position];
-
-                BuildPhis();
+                _cfg.SwitchBlock(_stream.Position, _builder);
+                _cfg.BuildPhis(_virtualRegisterStack);
             }
 
             opCodes.Add(CompileNextOpCode());
         }
 
-        PatchBlockGraph(_entryBlockNode);
+        _cfg.PatchBlockGraph();
 
         return opCodes;
     }
@@ -92,7 +85,9 @@ public class MethodBodyCompiler
             case ILOpCode.Nop:
                 break;
 
-            //case ILOpCode.Constrained: throw new NotSupportedException();
+            case ILOpCode.Constrained:
+                _reader.ReadInt32();
+                break;
             //case ILOpCode.Readonly: throw new NotSupportedException();
             //case ILOpCode.Tail: throw new NotSupportedException();
             //case ILOpCode.Unaligned: throw new NotSupportedException();
@@ -211,9 +206,12 @@ public class MethodBodyCompiler
                 break;
             case ILOpCode.Call:
                 operand = _reader.ReadInt32();
-                CompileCall((int)operand);
+                CompileCall((int) operand);
                 break;
-            //case ILOpCode.Callvirt: throw new NotSupportedException();
+            case ILOpCode.Callvirt:
+                operand = _reader.ReadInt32();
+                CompileCallvirt((int) operand);
+                break;
             //case ILOpCode.Calli: throw new NotSupportedException();
             case ILOpCode.Ceq:
                 CompileCeq();
@@ -483,7 +481,10 @@ public class MethodBodyCompiler
             //case ILOpCode.Cpobj: throw new NotSupportedException();
             //case ILOpCode.Initobj: throw new NotSupportedException();
             //case ILOpCode.Isinst: throw new NotSupportedException();
-            //case ILOpCode.Ldelem: throw new NotSupportedException();
+            case ILOpCode.Ldelem:
+                _reader.ReadInt32();
+                CompileLdelem();
+                break;
             case ILOpCode.Ldelem_i1:
             case ILOpCode.Ldelem_i2:
             case ILOpCode.Ldelem_i4:
@@ -507,9 +508,9 @@ public class MethodBodyCompiler
                 break;
             //case ILOpCode.Ldflda: throw new NotSupportedException();
             //case ILOpCode.Stfld: throw new NotSupportedException();
-            case ILOpCode.Ldlen:
+            /*case ILOpCode.Ldlen:
                 CompileLdlen();
-                break;
+                break;*/
             //case ILOpCode.Ldobj: throw new NotSupportedException();
             //case ILOpCode.Ldsfld: throw new NotSupportedException();
             //case ILOpCode.Ldsflda: throw new NotSupportedException();
@@ -517,12 +518,19 @@ public class MethodBodyCompiler
             //case ILOpCode.Ldtoken: throw new NotSupportedException();
             //case ILOpCode.Ldvirtftn: throw new NotSupportedException();
             //case ILOpCode.Mkrefany: throw new NotSupportedException();
-            //case ILOpCode.Newarr: throw new NotSupportedException();
+            case ILOpCode.Newarr:
+                var metaDataToken = _reader.ReadInt32(); 
+                operand = _inputKernel.MethodInfo.Module.ResolveType(metaDataToken);
+                CompileNewarr((Type) operand);
+                break;
             //case ILOpCode.Refanytype: throw new NotSupportedException();
             //case ILOpCode.Refanyval: throw new NotSupportedException();
             //case ILOpCode.Rethrow: throw new NotSupportedException();
             //case ILOpCode.Sizeof: throw new NotSupportedException();
-            //case ILOpCode.Stelem: throw new NotSupportedException();
+            case ILOpCode.Stelem: 
+                _reader.ReadInt32();
+                CompileStelem();
+                break;
             case ILOpCode.Stelem_i1:
             case ILOpCode.Stelem_i2:
             case ILOpCode.Stelem_i4:
@@ -672,19 +680,19 @@ public class MethodBodyCompiler
     {
         if (operand != 0) //Create a block after this one even if the actual branch is further down
         {
-            GetBlock(_stream.Position);
+            _cfg.GetBlock(_stream.Position, _functionsDto.Function);
         }
 
-        var target = GetBlock(_stream.Position + operand);
+        var target = _cfg.GetBlock(_stream.Position + operand, _functionsDto.Function);
         LLVM.BuildBr(_builder, target.BlockRef);
 
-        target.Predecessors.Add(_currentBlock);
-        _currentBlock.Successors.Add(target);
+        _cfg.CurrentBlock.AddSuccessors(target);
     }
 
     private void CompileBrTrue(int operand)
     {
         var predicate = _virtualRegisterStack.Pop();
+
         BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
     }
 
@@ -766,6 +774,7 @@ public class MethodBodyCompiler
     {
         var value2 = _virtualRegisterStack.Pop();
         var value1 = _virtualRegisterStack.Pop();
+        value2 = CastValue2IfIncompatibleInts(value1, value2);
         LLVMValueRef result =
             BuildComparison(LLVMIntPredicate.LLVMIntSLT, LLVMRealPredicate.LLVMRealOLT, value1, value2);
         _virtualRegisterStack.Push(result);
@@ -776,6 +785,7 @@ public class MethodBodyCompiler
 
         var value2 = _virtualRegisterStack.Pop();
         var value1 = _virtualRegisterStack.Pop();
+        value2 = CastValue2IfIncompatibleInts(value1, value2);
         LLVMValueRef result =
             BuildComparison(LLVMIntPredicate.LLVMIntSGT, LLVMRealPredicate.LLVMRealOGT, value1, value2);
         _virtualRegisterStack.Push(result);
@@ -785,13 +795,18 @@ public class MethodBodyCompiler
     {
         var value2 = _virtualRegisterStack.Pop();
         var value1 = _virtualRegisterStack.Pop();
-        if(value2.TypeOf().ToNativeType() != value1.TypeOf().ToNativeType()) //TODO: Test extensively
-            value2 = LLVM.BuildIntCast(_builder, value2, value1.TypeOf(), GetVirtualRegisterName());
+        value2 = CastValue2IfIncompatibleInts(value1, value2);
         LLVMValueRef result =
             BuildComparison(LLVMIntPredicate.LLVMIntEQ, LLVMRealPredicate.LLVMRealOEQ, value1, value2);
         _virtualRegisterStack.Push(result);
     }
 
+    private LLVMValueRef CastValue2IfIncompatibleInts(LLVMValueRef value1, LLVMValueRef value2)
+    {
+        if(value2.TypeOf().ToNativeType() != value1.TypeOf().ToNativeType()) //TODO: Test extensively
+                    value2 = LLVM.BuildIntCast(_builder, value2, value1.TypeOf(), GetVirtualRegisterName());
+        return value2;
+    }
     private LLVMValueRef BuildComparison(LLVMIntPredicate intPredicate, LLVMRealPredicate realPredicate,
         LLVMValueRef value1, LLVMValueRef value2)
     {
@@ -799,6 +814,7 @@ public class MethodBodyCompiler
         LLVMValueRef result;
         if (AreParamsCompatibleAndInt(value1, value2))
         {
+            value2 = CastValue2IfIncompatibleInts(value1, value2);
             result = LLVM.BuildICmp(_builder, intPredicate, value1, value2, GetVirtualRegisterName());
         }
         else if (AreParamsCompatibleAndDecimal(value1, value2))
@@ -814,6 +830,17 @@ public class MethodBodyCompiler
         return result;
     }
 
+    private void CompileNewarr(Type operand)
+    {
+        var elementCount = _virtualRegisterStack.Pop();
+        var len = LLVM.ConstIntGetZExtValue(elementCount);
+
+        var type = LLVM.ArrayType(operand.ToLLVMType(), (uint) len);
+        var arr = LLVM.AddGlobalInAddressSpace(Module, type, GetGlobalVariableName(), 3);
+        arr.SetLinkage(LLVMLinkage.LLVMInternalLinkage);
+        arr.SetInitializer(LLVM.GetUndef(type));
+        _virtualRegisterStack.Push(arr);
+    }
     #endregion
 
     #region Loads
@@ -863,7 +890,7 @@ public class MethodBodyCompiler
 
     private void CompileLdloc(int operand)
     {
-        var param = _currentBlock.LocalVariables[operand];
+        var param = _cfg.CurrentBlock.LocalVariables[operand];
         _virtualRegisterStack.Push(param);
     }
 
@@ -871,8 +898,18 @@ public class MethodBodyCompiler
     {
         var index = _virtualRegisterStack.Pop();
         var array = _virtualRegisterStack.Pop();
-        int x = 5;
-        var elementPtr = LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
+        LLVMValueRef[] indices;
+        
+        if (array.TypeOf().GetElementType().TypeKind == LLVMTypeKind.LLVMArrayTypeKind) //needs dual index: one to deref array, one to deref element in array
+        {
+            indices = new[] {LLVM.ConstInt(LLVM.Int32Type(), 0, false), index};
+        }
+        else
+        {
+            indices = new[] {index};
+        }
+
+        var elementPtr = LLVM.BuildGEP(_builder, array, indices, GetVirtualRegisterName());
         var value = LLVM.BuildLoad(_builder, elementPtr, GetVirtualRegisterName());
         _virtualRegisterStack.Push(value);
     }
@@ -922,7 +959,7 @@ public class MethodBodyCompiler
         _virtualRegisterStack.Push(value);
     }
 
-    private void CompileLdlen() //TODO: change for constant arrays declared in kernel
+    /*private void CompileLdlen() //TODO: test for constant arrays declared in kernel
     {
         var array = _virtualRegisterStack.Pop();
         LLVMValueRef lengthReference;
@@ -937,7 +974,7 @@ public class MethodBodyCompiler
             lengthReference = LLVM.BuildLoad(_builder, elementPtr, GetVirtualRegisterName());
         }
         _virtualRegisterStack.Push(lengthReference);
-    }
+    }*/
 
     #endregion
 
@@ -975,21 +1012,31 @@ public class MethodBodyCompiler
         var value = _virtualRegisterStack.Pop();
         var index = _virtualRegisterStack.Pop();
         var array = _virtualRegisterStack.Pop();
+        LLVMValueRef[] indices;
 
-        var elementPtr = LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
-        LLVM.BuildStore(_builder, value, elementPtr);
+        if (array.TypeOf().GetElementType().TypeKind == LLVMTypeKind.LLVMArrayTypeKind) //needs two indexes: one to deref array, one to deref element in array
+        { 
+            indices = new[] {LLVM.ConstInt(LLVM.Int32Type(), 0, false), index};
+        }
+        else
+        {
+            indices = new[] {index};
+        }
+        var elementPtr = LLVM.BuildGEP(_builder, array, indices, GetVirtualRegisterName());
+        LLVM.BuildStore(_builder, value, elementPtr);    
+        
     }
 
     private void CompileStloc(int operand)
     {
         var param = _virtualRegisterStack.Pop();
-        if (_currentBlock.LocalVariables.ContainsKey(operand))
+        if (_cfg.CurrentBlock.LocalVariables.ContainsKey(operand))
         {
-            _currentBlock.LocalVariables[operand] = param;
+            _cfg.CurrentBlock.LocalVariables[operand] = param;
         }
         else
         {
-            _currentBlock.LocalVariables.Add(operand, param);
+            _cfg.CurrentBlock.LocalVariables.Add(operand, param);
         }
     }
 
@@ -997,6 +1044,16 @@ public class MethodBodyCompiler
 
     #region Calls
 
+    private void CompileCallvirt(int operand)
+    {
+        if (_nameOfMethodToCall != "CuSharp.Kernel.KernelTools.get_SyncThreads")
+        {
+            throw new Exception("Cannot call external virtual functions");
+        }
+        
+        var externalFunctionToCall = _functionsDto.ExternalFunctions.First(func => func.Item1 == _nameOfMethodToCall);
+        LLVM.BuildCall(_builder, externalFunctionToCall.Item2, Array.Empty<LLVMValueRef>(), "");
+    }
     private void CompileCall(int operand)
     {
         if (operand < 0)
@@ -1006,10 +1063,10 @@ public class MethodBodyCompiler
 
         var method = _inputKernel.MemberInfoModule.ResolveMethod(operand);
         _nameOfMethodToCall = $"{method?.DeclaringType?.FullName}.{method?.Name}";
-        var isExternalFunction =
+        var isIntrinsicFunction =
             _functionsDto.ExternalFunctions.Any(func => func.Item1.StartsWith(_nameOfMethodToCall));
 
-        if (!isExternalFunction)
+        if (!isIntrinsicFunction)
         {
             if (_functionGenerator == null)
             {
@@ -1017,12 +1074,11 @@ public class MethodBodyCompiler
             }
 
             var methodInfo = method as MethodInfo;
-            var kernelToCall = new MSILKernel(methodInfo.Name, methodInfo, false);
-            var function = _functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(kernelToCall);
+            var kernelToCall = new MSILKernel(methodInfo!.Name, methodInfo, false);
+            var function = _functionGenerator.GetOrDeclareFunction(kernelToCall);
+            //var function = _functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(kernelToCall); //TODO REMOVE
 
             var parameters = methodInfo.GetParameters().ToArray();
-
-            // TODO: Use length attribute if param is pointer type
 
             LLVMValueRef[] args;
             if (parameters.Any(p => p.ParameterType.IsArray))
@@ -1174,14 +1230,11 @@ public class MethodBodyCompiler
 
     private void BuildConditionalBranch(long thenOffset, long elseOffset, LLVMValueRef predicate)
     {
-        var thenBlock = GetBlock(thenOffset);
-        var elseBlock = GetBlock(elseOffset);
+        var thenBlock = _cfg.GetBlock(thenOffset, _functionsDto.Function);
+        var elseBlock = _cfg.GetBlock(elseOffset, _functionsDto.Function);
         LLVM.BuildCondBr(_builder, predicate, thenBlock.BlockRef, elseBlock.BlockRef);
         
-        thenBlock.Predecessors.Add(_currentBlock);
-        elseBlock.Predecessors.Add(_currentBlock);
-        _currentBlock.Successors.Add(thenBlock);
-        _currentBlock.Successors.Add(elseBlock);
+        _cfg.CurrentBlock.AddSuccessors(thenBlock, elseBlock);
     }
 
     private LLVMValueRef BuildPredicateFromStack(LLVMIntPredicate intPredicate, LLVMRealPredicate realPredicate)
@@ -1195,101 +1248,11 @@ public class MethodBodyCompiler
     {
         while (_virtualRegisterStack.Any())
         {
-            _currentBlock.SavedStack.Push(_virtualRegisterStack.Pop());
-        }
-    }
-    private void BuildPhis()
-    {
-        //Restore stack
-        if (_currentBlock.Predecessors.Any()) //one predecessor must already exist to restore stack
-        {
-            var savedStackList = _currentBlock.Predecessors.First().SavedStack.ToArray();
-            for (int i = _currentBlock.Predecessors.First().SavedStack.Count() -1; i > -1; i--) //predecessors must all contain same size of saved stack
-            {
-                var phi = LLVM.BuildPhi(_builder, savedStackList[i].TypeOf(), GetVirtualRegisterName());
-                _virtualRegisterStack.Push(phi);
-                _currentBlock.RestoredStack.Push(phi);
-            }
-        }
-        
-        //Restore local variables 
-        for (int i = 0; i < _inputKernel.LocalVariables.Count; i++)
-        {
-            if (!_currentBlock.LocalVariables.ContainsKey(i))
-            {
-                var localVariable = _inputKernel.LocalVariables[i];
-                LLVMValueRef phi;
-
-                if (localVariable.LocalType.IsArray)
-                {
-                    phi = LLVM.BuildPhi(_builder, _inputKernel.LocalVariables[i].LocalType.ToLLVMType(),
-                    GetVirtualRegisterName());
-                }
-                else
-                {
-                    phi = LLVM.BuildPhi(_builder, _inputKernel.LocalVariables[i].LocalType.ToLLVMType(), GetVirtualRegisterName());
-                }
-                 
-                _currentBlock.LocalVariables.Add(i, phi);
-                _currentBlock.PhiInstructions.Add(i, phi);
-            }
+            _cfg.CurrentBlock.SavedStack.Push(_virtualRegisterStack.Pop());
         }
     }
 
-    private void PatchBlockGraph(BlockNode startNode)
-    {
-        if (startNode.Visited) return;
-        startNode.Visited = true;
-
-        foreach (var phi in startNode.RestoredStack)
-        {
-            foreach (var pred in startNode.Predecessors)
-            {
-                phi.AddIncoming(new[]{pred.SavedStack.Pop()},new []{pred.BlockRef},1);
-            }
-        }
-        
-        foreach (var phi in startNode.PhiInstructions) //Patch Phi Instructions
-        {
-            foreach (var pred in startNode.Predecessors)
-            {
-                if (pred.LocalVariables.ContainsKey(phi.Key))
-                {
-                    phi.Value.AddIncoming(new[] { pred.LocalVariables[phi.Key] }, new[] { pred.BlockRef }, 1);
-                }
-                else // Add arbitrary value (required because of NVVM)
-                {
-                    if (_inputKernel.LocalVariables[phi.Key].LocalType == typeof(float) ||
-                        _inputKernel.LocalVariables[phi.Key].LocalType == typeof(double))
-                    {
-                        phi.Value.AddIncoming(new[] { LLVM.ConstReal(phi.Value.TypeOf(), 1.0) }, new[] { pred.BlockRef }, 1);
-                    }
-                    else
-                    {
-                        phi.Value.AddIncoming(new[] { LLVM.ConstInt(phi.Value.TypeOf(), 1, false) }, new[] { pred.BlockRef }, 1);
-                    }
-                }
-            }
-        }
-
-        foreach (var successor in startNode.Successors)
-        {
-            PatchBlockGraph(successor);
-        }
-    }
-
-    private BlockNode GetBlock(long index)
-    {
-        if (_blockList.ContainsKey(index))
-        {
-            return _blockList[index];
-        }
-
-        var block = LLVM.AppendBasicBlock(_functionsDto.Function, GetBlockName());
-        _blockList.Add(index, new BlockNode() { BlockRef = block });
-        return _blockList[index];
-    }
-
+    
     private ILOpCode ReadOpCode()
     {
         var opCodeByte = _reader.ReadByte();
@@ -1301,9 +1264,9 @@ public class MethodBodyCompiler
         return $"reg{_virtualRegisterCounter++}";
     }
 
-    private string GetBlockName()
+    private string GetGlobalVariableName()
     {
-        return $"block{_blockCounter++}";
+        return $"glob{_globalVariableCounter++}";
     }
 
     private bool IsDecimal(LLVMValueRef value)

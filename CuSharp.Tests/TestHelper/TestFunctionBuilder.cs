@@ -12,7 +12,7 @@ namespace CuSharp.Tests.TestHelper
         {
             var function = GetFunction(kernelName, parameterInfos);
             var externalFunctions = GetExternalFunctions(kernelName);
-            return new FunctionsDto(function, externalFunctions, parameterInfos.Count(p => p.ParameterType.IsArray));
+            return new FunctionsDto(function, externalFunctions);
         }
 
         public LLVMBuilderRef GetBuilderWithEntryBlock(LLVMValueRef function)
@@ -35,6 +35,7 @@ namespace CuSharp.Tests.TestHelper
                         : paramInfo.ParameterType.ToLLVMType(), 0);
                 paramsListBuilder.Add(type);
             }
+            if(paramsListBuilder.Any()) paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); //array length list
             var paramType = paramsListBuilder.ToArray();
             return LLVM.AddFunction(module, kernelName, LLVM.FunctionType(LLVM.VoidType(), paramType, false));
         }

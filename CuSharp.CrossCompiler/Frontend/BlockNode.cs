@@ -1,4 +1,5 @@
-﻿using LLVMSharp;
+﻿using System.Reflection;
+using LLVMSharp;
 
 namespace CuSharp.CudaCompiler.Frontend;
 
@@ -13,4 +14,14 @@ public class BlockNode
     
     public Stack<LLVMValueRef> SavedStack { get; set; } = new();
     public Stack<LLVMValueRef> RestoredStack { get; set; } = new();
+
+    public void AddSuccessors(params BlockNode[] nodes)
+    {
+        foreach (var node in nodes)
+        {
+            node.Predecessors.Add(this);
+            Successors.Add(node);
+        }
+    }
+
 }

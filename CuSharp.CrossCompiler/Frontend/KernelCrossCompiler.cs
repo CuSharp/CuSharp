@@ -17,27 +17,32 @@ public class KernelCrossCompiler
         _builder = LLVM.CreateBuilder();
     }
 
-    public LLVMKernel Compile(MSILKernel inputKernel, bool optimize = false)
+    public LLVMKernel Compile(MSILKernel entryKernel, bool optimize = false)
     {
         GenerateDataLayoutAndTarget();
 
+
         var functionGenerator = new FunctionGenerator(_module, _builder);
-        var function = functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(inputKernel);
-        var externalFunctions = GenerateDeviceIntrinsicFunctions();
-
-        var functionsDto = new FunctionsDto(function, externalFunctions, (int) function.CountParams() - inputKernel.ParameterInfos.Length);
-
-        new MethodBodyCompiler(inputKernel, _builder, functionsDto, functionGenerator).CompileMethodBody();
-
-        CompileOtherMethods(functionGenerator, functionsDto);
-        GenerateAnnotations(function);
+        //var function = functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(inputKernel);
+        var intrinsicFunctions = GenerateDeviceIntrinsicFunctions();
         
-        if(optimize) RunOptimization(function);
+        var entryFunction = functionGenerator.GetOrDeclareFunction(entryKernel);
+        var functionsDto = new FunctionsDto(entryFunction, intrinsicFunctions);
 
-        return new LLVMKernel(inputKernel.Name, GetModuleAsString());
+
+        foreach (var current in functionGenerator.AllFunctionsToCompile())
+        {
+            functionsDto.Function = current.llvmFunction;
+            new MethodBodyCompiler(current.msilFunction, _builder, functionsDto, functionGenerator){Module = _module}.CompileMethodBody(); //TODO change module input   
+            if(optimize) RunOptimization(current.llvmFunction);
+        }
+
+        //CompileOtherMethods(functionGenerator, functionsDto);
+        GenerateAnnotations(entryFunction);
+        return new LLVMKernel(entryKernel.Name, GetModuleAsString());
     }
 
-    private void CompileOtherMethods(FunctionGenerator functionGenerator, FunctionsDto functionsDto)
+    /*private void CompileOtherMethods(FunctionGenerator functionGenerator, FunctionsDto functionsDto)
     {
         var i = 0;
 
@@ -49,7 +54,7 @@ public class KernelCrossCompiler
             new MethodBodyCompiler(kernelToCall, _builder, functionsDto, functionGenerator).CompileMethodBody();
             i++;
         }
-    }
+    }*/
 
     private void RunOptimization(LLVMValueRef function)
     {

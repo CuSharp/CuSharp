@@ -104,6 +104,7 @@ public class MethodsToCompile
         float c = a % b;
     }
 
+    [Kernel]
     public static void ArrayIntAddition(int[] a, int[] b, int[] c)
     {
         int i = 0;
@@ -122,12 +123,18 @@ public class MethodsToCompile
         c[i] = a[i] + b[i];
     }
 
+    [Kernel]
     public static void ArrayIntMultiplicationWithKernelTools(int[] a, int[] b, int[] c)
     {
         int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
         c[i] = a[i] * b[i];
     }
-
+    
+    [Kernel]
+    public static void AOTCArrayIntAddition(int[] a, int[] b, int[] c)
+    {
+        //Empty because aotc
+    }
     public static void ArrayFloatAdditionWithKernelTools(float[] a, float[] b, float[] c)
     {
         int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
@@ -599,5 +606,49 @@ public class MethodsToCompile
     {
         a[0] = b;
         a[1] = !b;
+    }
+    
+    public static void Newarr(int[] b)
+    {
+        int[] a = new int[500];
+        a[499] = b[4];
+        b[0] = a[499];
+    }
+
+    const int size = 1;
+    public static void SharedMemoryTestKernel(int[] a, int b)
+    {
+        
+        var newA = new int[size];
+        var newB = new int[size];
+        newA[0] = a[0];
+        newB[0] = b;
+        b += newA[0] * newB[0];
+        a[0] = b;
+    }
+
+    public static void SignedIntOverflow(int[] a)
+    {
+        a[0]++;
+    }
+    
+    public static void UnsignedIntOverflow(uint[] a)
+    {
+        a[0]++;
+    }
+    
+    public static void TestScalars(int[] a, int b)
+    {
+        a[0] = b;
+    }
+
+    public static void ArrayAdditionNested(int[] a, int[] b, int[] c)
+    {
+        c[0] = AddForNested(a[0], b[0]);
+    }
+
+    public static int AddForNested(int a, int b)
+    {
+        return a + b;
     }
 }

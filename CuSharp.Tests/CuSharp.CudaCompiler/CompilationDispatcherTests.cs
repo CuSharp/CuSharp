@@ -3,9 +3,9 @@ using System.Linq;
 using System.Reflection;
 using CuSharp.CudaCompiler;
 using CuSharp.CudaCompiler.Backend;
+using CuSharp.CudaCompiler.Kernels;
 using CuSharp.Tests.TestHelper;
 using Xunit;
-
 using static CuSharp.Tests.TestHelper.MethodInfoLoader;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler;
@@ -24,19 +24,10 @@ public class CompilationDispatcherTests
 
         var ptxKernel = dispatcher.Compile(kernelName, GetMethodInfo<int[]>(MethodsToCompile.EmptyIntArrayMethod));
 
-        Assert.Contains(GetMethodIdentity(GetMethodInfo<int[]>(MethodsToCompile.EmptyIntArrayMethod)), cache.Keys);
+        Assert.Contains(KernelHelpers.GetMethodIdentity(GetMethodInfo<int[]>(MethodsToCompile.EmptyIntArrayMethod)), cache.Keys);
         Assert.Equal(kernelName, ptxKernel.Name);
     }
 
-    private string GetMethodIdentity(MethodInfo method)
-    {
-        string paramString = "";
-        foreach(var param in method.GetParameters())
-        {
-            paramString += param.ParameterType + ";";
-        }
-        return $"{method.DeclaringType.FullName}.{method.Name}:{paramString}";
-    }
     [Fact]
     public void TestCacheIsUsedOnSecondCompile()
     {

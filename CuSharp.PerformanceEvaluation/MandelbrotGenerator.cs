@@ -7,46 +7,48 @@ public class MandelbrotGenerator
 {
     public static void Generate()
     {
-        int N = 2000;
-        uint gridDim = (uint) (N % 32 == 0 ? N / 32 : N / 32 + 1);
-        uint blockDim = (uint) (N > 32 ? 32 : N);
-        int size = N * N;
-        int maxIterations = 1000;
+        int n = 2000;
+        uint gridDim = (uint) (n % 32 == 0 ? n / 32 : n / 32 + 1);
+        uint blockDim = (uint) (n > 32 ? 32 : n);
+        int size = n * n;
+        int maxIterations = 100;
         var mandelbrot = new float[size];
 
         CuSharp.EnableOptimizer = true;
         var dev = CuSharp.GetDefaultDevice();
 
         var devMandelbrot = dev.Copy(mandelbrot);
-        var devN = dev.Copy(N);
-        var devMaxIterations = dev.Copy(maxIterations);
         
-        float zoom = 1000.0f;
-        var devZoom = dev.Copy(zoom);
-
+        //float zoom = 1000.0f;
         float deltaX = 2.0f;
-        var devDeltaX = dev.Copy(deltaX);
         float deltaY = 1.0f;
-        var devDeltaY = dev.Copy(deltaY);
-        
-        
-        dev.Launch(Kernels.MandelBrot, (gridDim,gridDim,1), (blockDim, blockDim,1), devMandelbrot, devMaxIterations, devN, devZoom, devDeltaX, devDeltaY);
-        mandelbrot = dev.Copy(devMandelbrot);
-        Bitmap bmp = new Bitmap(N,N, PixelFormat.Format32bppPArgb);
-        for (int x = 0; x < N; x++)
+
+        for (float zoom = 1000.0f; zoom < 10000.0f; zoom += 1000)
         {
-            for (int y = 0; y < N; y++)
+            dev.Launch<float[], int, int, float,float,float >(Kernels.MandelBrot, (gridDim,gridDim,1), (blockDim, blockDim,1), devMandelbrot, maxIterations, n, zoom, deltaX, deltaY);
+            mandelbrot = dev.Copy(devMandelbrot);
+            SaveAsBitMap(mandelbrot, n, maxIterations, zoom.ToString() + ".png");
+        }
+        
+    }
+
+    private static void SaveAsBitMap(float[] mandelbrot, int width, int maxIterations, string filename)
+    {
+        
+        Bitmap bmp = new Bitmap(width,width, PixelFormat.Format32bppPArgb);
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < width; y++)
             {
-                var m = mandelbrot[y * N + x];
+                var m = mandelbrot[y * width + x];
                 var color = GetColor(m, maxIterations);
-                bmp.SetPixel(x, y, Color.FromArgb(255, color.Item1,color.Item2,color.Item3));
+                bmp.SetPixel(x, y, Color.FromArgb(255, color.R,color.G,color.B));
             }
         }
         
-        bmp.Save("test.png", ImageFormat.Png);
+        bmp.Save(filename, ImageFormat.Png);
     }
-
-    private static (int,int,int) GetColor(float m, int maxIter)
+    private static (int R, int G, int B) GetColor(float m, int maxIter)
     {
         if (m == maxIter)
         {

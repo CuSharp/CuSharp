@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
+
+        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
 	<ItemGroup>
@@ -15,6 +17,9 @@
 		<Compile Remove="coverage.cobertura.xml" />
 		<EmbeddedResource Remove="coverage.cobertura.xml" />
 		<None Remove="coverage.cobertura.xml" />
+		<None Update="resources\CuSharp.Tests.TestHelper.MethodsToCompile.AOTCArrayIntAddition_System.Int32[].System.Int32[].System.Int32[].ptx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>

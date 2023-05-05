@@ -4,7 +4,7 @@ namespace CuSharp.CudaCompiler.Frontend;
 
 public static class LLVMSharpTypeConverter
 {
-    public static LLVMTypeRef ToLLVMType(this Type type)
+    public static LLVMTypeRef ToLLVMType(this Type? type)
     {
         if (type == typeof(void)) return LLVMTypeRef.VoidType();
         if (type == typeof(bool)) return LLVMTypeRef.Int1Type();

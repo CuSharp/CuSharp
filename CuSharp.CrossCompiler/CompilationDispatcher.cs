@@ -2,55 +2,51 @@
 using System.Text;
 using CuSharp.CudaCompiler.Backend;
 using CuSharp.CudaCompiler.Frontend;
+using CuSharp.CudaCompiler.Kernels;
 using LibNVVMBinder;
 
 namespace CuSharp.CudaCompiler;
 public class CompilationDispatcher
 {
     private readonly Dictionary<string, PTXKernel> _kernelCache;
-    private readonly bool EnableOptimizer;
+    private readonly bool _enableOptimizer;
+    private readonly bool _disableCaching;
 
-    public CompilationDispatcher(Dictionary<string, PTXKernel>? kernelCache = null, bool enableOptimizer = false)
+    public CompilationDispatcher(Dictionary<string, PTXKernel>? kernelCache = null, bool enableOptimizer = false, bool disableCaching = false)
     {
         _kernelCache = kernelCache ?? new Dictionary<string, PTXKernel>();
-        EnableOptimizer = enableOptimizer;
+        _enableOptimizer = enableOptimizer;
+        _disableCaching = disableCaching;
     }
     public PTXKernel Compile(string kernelName, MethodInfo methodInfo)
     {
-        if (_kernelCache.TryGetValue(GetMethodIdentity(methodInfo), out var ptxKernel)) return ptxKernel;
+        if (!_disableCaching && _kernelCache.TryGetValue(KernelHelpers.GetMethodIdentity(methodInfo), out var ptxKernel)) return ptxKernel;
 
         var kernel = new MSILKernel(kernelName, methodInfo, true);
         var nvvmConfiguration = CompilationConfiguration.NvvmConfiguration;
         nvvmConfiguration.KernelName = kernelName;
         
         var msilToLlvmCrosscompiler = new KernelCrossCompiler(nvvmConfiguration);
-        var llvmKernel = msilToLlvmCrosscompiler.Compile(kernel, EnableOptimizer);
+        var llvmKernel = msilToLlvmCrosscompiler.Compile(kernel, _enableOptimizer);
         ptxKernel = CompileLlvmToPtx(llvmKernel);
-        _kernelCache.Add(GetMethodIdentity(methodInfo), ptxKernel);
+        _kernelCache.Add(KernelHelpers.GetMethodIdentity(methodInfo), ptxKernel);
         return ptxKernel;
     }
 
-    private string GetMethodIdentity(MethodInfo method)
-    {
-        string paramString = "";
-        foreach(var param in method.GetParameters())
-        {
-            paramString += param.ParameterType + ";";
-        }
-        return $"{method.DeclaringType.FullName}.{method.Name}:{paramString}";
-    }
     private static PTXKernel CompileLlvmToPtx(LLVMKernel llvmKernel)
     {
         var nvvmHandle = new NVVMProgram();
         nvvmHandle.AddModule(llvmKernel.KernelBuffer, llvmKernel.Name);
-#if DEBUG
-        var verifyResult = nvvmHandle.Verify(new string[0]);
-        if (verifyResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
-        {
-            nvvmHandle.GetProgramLog(out string log);
-            throw new Exception(log);
-        }
-#endif 
+        
+        #if DEBUG
+            var verifyResult = nvvmHandle.Verify(Array.Empty<string>());
+            if (verifyResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
+            {
+                nvvmHandle.GetProgramLog(out string log);
+                throw new Exception(log);
+            }
+        #endif 
+        
         var compilationResult = nvvmHandle.Compile(new string[]{"-fma=1"});
         if (compilationResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
         {

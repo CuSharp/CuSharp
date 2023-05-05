@@ -92,6 +92,10 @@
                 kernelName, GetTwoParams(type), GetTwoParamTypes(type),
                 GetArrayShortHandOperationsWithKernelToolsMethodBody(type));
 
+        public string GetArrayLengthAttributeTestResult(string kernelName, string type) =>
+            GetExpectedLLVMRepresentation(
+                kernelName, GetTwoParams(type), GetTwoParamTypes(type),
+                GetArrayLengthAttributeMethodBody(type));
         private string GetExpectedLLVMRepresentation(string kernelName, string parameters, string paramTypes, string methodBody, bool printCompleteOutput = true)
         {
             const string dataLayout = "target datalayout = \"e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-i128:128:128-f32:32:32-f64:64:64-v16:16:16-v32:32:32-v64:64:64-v128:128:128-n16:32:64\"\n";
@@ -338,6 +342,14 @@
                    $"  %reg28 = load {type}, {type}* %reg27\n" +
                    $"  %reg29 = {GetDivRemPrefix(prefix)}rem {type} %reg26, %reg28\n" +
                    $"  store {type} %reg29, {type}* %reg25\n" +
+                   $"  ret void";
+        }
+        
+        private string GetArrayLengthAttributeMethodBody(string type)
+        {
+            return $"  %reg0 = getelementptr {type}, {type}* %param2, {type} 0\n" +
+                   $"  %reg1 = load {type}, {type}* %reg0\n" +
+                   $"  store {type} %reg1, {type}* %param1\n" +
                    $"  ret void";
         }
         #endregion

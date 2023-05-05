@@ -1,99 +1,50 @@
 ﻿using System.Reflection;
 using CuSharp.CudaCompiler;
+using CuSharp.CudaCompiler.Kernels;
 using ManagedCuda;
 using ManagedCuda.VectorTypes;
 
 namespace CuSharp;
 public partial class CuDevice : IDisposable
 {
-    private readonly CompilationDispatcher Compiler; 
     private readonly CudaContext _cudaDeviceContext;
-
-    internal CuDevice(int deviceId = 0, CompilationDispatcher? compiler = null)
+    private readonly MethodLauncher _launcher;
+    
+    internal CuDevice(int deviceId = 0, CompilationDispatcher? compiler = null, string aotKernelFolder = CuSharp.PathNotSet)
     {
+        
         _cudaDeviceContext = new CudaContext(deviceId);
-        if (compiler == null)
-        {
-            Compiler = new CompilationDispatcher();
-        }
-        else
-        {
-            Compiler = compiler;
-        }
+        _launcher = new MethodLauncher(aotKernelFolder, compiler, _cudaDeviceContext);
     }
     public override string ToString()
     {
         return _cudaDeviceContext.GetDeviceName();
     }
 
-    /*public void LaunchMe<T0,T1>(Action<T0,T1> method, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize, Tensor<T0> param0,Tensor<T1> param1) 
-    {
-        var cudaKernel = CompileAndGetKernel(method.GetMethodInfo(), gridSize, blockSize);
-        var lengths = new[] { ((CudaTensor<T0>) param0).Length, ((CudaTensor<T1>) param1).Length};
-        CudaDeviceVariable<int> devLengths = lengths;
-        cudaKernel.Run(((CudaTensor<T0>)param0).DevicePointer,((CudaTensor<T1>)param1).DevicePointer, devLengths.DevicePointer);
-    }*/
-
     public void Synchronize()
     {
         _cudaDeviceContext.Synchronize();
     }
-    public Tensor<T[]> Copy<T>(T[] hostTensor) where T : struct
+
+    public Tensor<T[]> Allocate<T>(int size) where T : struct
     {
-        return CudaTensor<T[]>.FromArray(hostTensor);
+        return new CudaTensor<T>(size);
     }
 
-    public Tensor<T> Copy<T>(T hostScalar) where T : struct
+    public Tensor<T[]> Copy<T>(T[] hostTensor) where T : struct
     {
-        return CudaTensor<T>.FromScalar(hostScalar);
+        return new CudaTensor<T>(hostTensor);
+    }
+
+    public Tensor<T> CreateScalar<T>(T hostScalar) where T : struct
+    {
+        return new CudaScalar<T>(hostScalar);
     }
     
     public T[] Copy<T>(Tensor<T[]> deviceTensor) where T : struct
     {
-        var cudaDeviceTensor = deviceTensor as CudaTensor<T[]>;
-        return  cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
-    }
-
-    public bool Copy(Tensor<bool> deviceTensor)
-    {
-        var cudaDeviceTensor = deviceTensor as CudaTensor<bool>;
-        return Convert.ToBoolean(cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<byte>);
-    }
-    /// <summary>
-    /// This copies a scalar value back. Potentially, race conditions can occur.
-    /// </summary>
-    public T Copy<T>(Tensor<T> deviceTensor) where T : struct
-    {
         var cudaDeviceTensor = deviceTensor as CudaTensor<T>;
-        return cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
-    }
-
-    private Dictionary<string, CudaKernel> _cache = new ();
-    private CudaKernel CompileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) gridSize, (uint,uint,uint) blockSize)
-    {
-        if (_cache.TryGetValue(GetMethodIdentity(methodInfo), out var k))
-        {
-            k.GridDimensions = new dim3(gridSize.Item1, gridSize.Item2, gridSize.Item3);
-            k.BlockDimensions = new dim3(blockSize.Item1, blockSize.Item2, blockSize.Item3);
-            return k;
-        } 
-        var kernelName = $"{methodInfo.Name}";
-        var ptxKernel = Compiler.Compile(kernelName, methodInfo);
-        var cudaKernel = _cudaDeviceContext.LoadKernelPTX(ptxKernel.KernelBuffer, kernelName);
-        _cache.Add(GetMethodIdentity(methodInfo), cudaKernel);
-        cudaKernel.GridDimensions = new dim3(gridSize.Item1, gridSize.Item2, gridSize.Item3);
-        cudaKernel.BlockDimensions = new dim3(blockSize.Item1, blockSize.Item2, blockSize.Item3);
-        return cudaKernel;
-    }
-    
-    private static string GetMethodIdentity(MethodInfo method)
-    {
-        string paramString = "";
-        foreach(var param in method.GetParameters())
-        {
-            paramString += param.ParameterType + ";";
-        }
-        return $"{method.DeclaringType.FullName}.{method.Name}:{paramString}";
+        return  cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
     }
 
     public void Dispose()

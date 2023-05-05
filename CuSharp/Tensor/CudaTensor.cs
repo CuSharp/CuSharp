@@ -3,32 +3,31 @@ using ManagedCuda;
 using ManagedCuda.BasicTypes;
 
 namespace CuSharp;
-public class CudaTensor<T> : Tensor<T>  
+internal class CudaTensor<T> : Tensor<T[]> where T : struct
 {
-    public static Tensor<E[]> FromArray<E>(E[] value) where E : struct
+    internal CudaTensor(int size)
     {
-        CudaDeviceVariable<E> devVar = value;
-        return new CudaTensor<E[]> {DevicePointer = devVar.DevicePointer, DeviceVariable = devVar, Length = value.Length};
+        var devVar = new CudaDeviceVariable<T>(size);
+        DevicePointer = devVar.DevicePointer;
+        DeviceVariable = devVar;
+        Length = size;
+    }
+    
+    internal CudaTensor(T[] value) 
+    {
+        CudaDeviceVariable<T> devVar = value;
+        DevicePointer = devVar.DevicePointer;
+        DeviceVariable = devVar;
+        Length = value.Length;
     }
 
-    public static Tensor<E> FromScalar<E>(E value) where E : struct
-    {
-        if (typeof(E) == typeof(bool))
-        {
-            CudaDeviceVariable<byte> devVar = Convert.ToByte(value);
-            return new CudaTensor<E> {DevicePointer = devVar.DevicePointer, DeviceVariable = devVar, Length = 1};
-        }
-        else
-        {
-            CudaDeviceVariable<E> devVar = value; 
-            return new CudaTensor<E> {DevicePointer = devVar.DevicePointer, DeviceVariable = devVar, Length = 1};           
-        }
-    }
-    public object DeviceVariable { get; private set; }
+    internal object DeviceVariable { get; private set; }
 
-    public CUdeviceptr DevicePointer { get; private set; }
-    public int Length { get; private set; }
-    public void Dispose()
+    internal CUdeviceptr DevicePointer { get; private set; }
+    
+    internal int Length { get; private set; }
+    
+    public override void Dispose()
     {
         (DeviceVariable as IDisposable).Dispose();
     }
