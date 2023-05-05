@@ -1238,8 +1238,8 @@ public class MethodBodyCompiler
 
     private void BuildConditionalBranch(long thenOffset, long elseOffset, LLVMValueRef predicate)
     {
-        var thenBlock = _cfg.GetBlock(thenOffset, _functionsDto.Function);
         var elseBlock = _cfg.GetBlock(elseOffset, _functionsDto.Function);
+        var thenBlock = _cfg.GetBlock(thenOffset, _functionsDto.Function);
         LLVM.BuildCondBr(_builder, predicate, thenBlock.BlockRef, elseBlock.BlockRef);
         
         _cfg.CurrentBlock.AddSuccessors(thenBlock, elseBlock);
