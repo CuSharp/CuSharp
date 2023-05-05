@@ -48,13 +48,14 @@ public class Program
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
         var devC = dev.Copy(c);
-        var devWidth = dev.Copy(matrixWidth);
+        //var devWidth = dev.Copy(matrixWidth);
         var before = CuSharp.CuSharp.CreateEvent();
         var after = CuSharp.CuSharp.CreateEvent();
         
         before.Record();
-        dev.Launch(Kernels.IntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,
-            devWidth);
+        //dev.Launch<int[], int[], int[], int>(Kernels.IntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);
+        dev.Launch<int[],int[],int[],int,int,int>(Kernels.TiledIntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim,1), devA, devB, devC, matrixWidth, 32, (int) (blockDim));
+        
         after.Record();
         c = dev.Copy(devC);
         if (verify)
@@ -69,7 +70,7 @@ public class Program
         devA.Dispose();
         devB.Dispose();
         devC.Dispose();
-        devWidth.Dispose();
+        //devWidth.Dispose();
         var result = before.GetDeltaTo(after);
         before.Dispose();
         after.Dispose();

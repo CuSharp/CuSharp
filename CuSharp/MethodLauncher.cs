@@ -28,8 +28,9 @@ internal class MethodLauncher
         var lengths = new int [parameters.Length];
         CudaDeviceVariable<int> devLengths = lengths;
         var castParams = parameters
-            .Select(p => p.GetType().GetProperty("DevicePointer", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)!
-            .GetValue(p))
+            .Select(p => p.GetType()
+                             .GetProperty("DevicePointer", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(p) ?? 
+                            p.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(p))
             .Append(devLengths.DevicePointer)
             .ToArray();
         cudaKernel.Run(castParams);
@@ -65,13 +66,13 @@ internal class MethodLauncher
             return false;
         }
         string fileName = KernelHelpers.GetMethodIdentity(method) + "ptx";
-        return File.Exists($"{_aotKernelFolder}{Path.PathSeparator}{fileName}");
+        return File.Exists($"{_aotKernelFolder}{Path.DirectorySeparatorChar}{fileName}");
     }
 
     private CudaKernel GetPrecompiledKernel(MethodInfo method,string kernelName, (uint,uint,uint) gridSize, (uint,uint,uint) blockSize) 
     {
         string fileName = KernelHelpers.GetMethodIdentity(method) + "ptx";
-        byte[] bytes = File.ReadAllBytes($"{_aotKernelFolder}{Path.PathSeparator}{fileName}");
+        byte[] bytes = File.ReadAllBytes($"{_aotKernelFolder}{Path.DirectorySeparatorChar}{fileName}");
         return _cudaDeviceContext.LoadKernelPTX(bytes, kernelName);
     }
 

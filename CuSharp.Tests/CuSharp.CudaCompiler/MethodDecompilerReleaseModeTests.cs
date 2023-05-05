@@ -561,9 +561,9 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler
 
             // Act Call
             var call = functionGenerator.FunctionsToBuild[0];
-            functionGenerator.AppendFunction(call.function);
-            functionsDto.Function = call.function;
-            var actualCall = new MethodBodyCompiler(call.kernelToCall, builder, functionsDto, functionGenerator)
+            functionGenerator.AppendFunction(call.llvmFunction);
+            functionsDto.Function = call.llvmFunction;
+            var actualCall = new MethodBodyCompiler(call.msilFunction, builder, functionsDto, functionGenerator)
                 .CompileMethodBody().ToList();
 
             var expectedMain = new List<(ILOpCode, object?)>

@@ -7,13 +7,11 @@ namespace CuSharp.CudaCompiler.Frontend
         public LLVMValueRef Function { get; set; }
         public (string, LLVMValueRef)[] ExternalFunctions { get; set; }
         
-        public int ArrayParameterCount { get; }
 
-        public FunctionsDto(LLVMValueRef function, (string, LLVMValueRef)[] externalFunctions, int amountOfArrayParams)
+        public FunctionsDto(LLVMValueRef function, (string, LLVMValueRef)[] externalFunctions)
         {
             Function = function;
             ExternalFunctions = externalFunctions;
-            ArrayParameterCount = amountOfArrayParams;
         }
     }
 }

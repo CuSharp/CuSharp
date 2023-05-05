@@ -32,7 +32,6 @@ public class MethodBodyCompiler
         _functionGenerator = functionGenerator;
         _stream = new MemoryStream(inputKernel.KernelBuffer);
         _reader = new BinaryReader(_stream);
-        _cfg = new ControlFlowGraphBuilder(new BlockNode {BlockRef = LLVM.GetEntryBasicBlock(_functionsDto.Function)}, _inputKernel.LocalVariables, _builder, GetVirtualRegisterName);
     }
 
     /*private void GenerateArrayLengthIndexTable() TODO CHECK IF POSSIBLE
@@ -46,6 +45,12 @@ public class MethodBodyCompiler
     public IEnumerable<(ILOpCode, object?)> CompileMethodBody()
     {
         //GenerateArrayLengthIndexTable(); TODO CHECK IF POSSIBLE
+
+        var entryBlock = LLVM.AppendBasicBlock(_functionsDto.Function, "entry");
+        LLVM.PositionBuilderAtEnd(_builder, entryBlock);
+        
+        _cfg = new ControlFlowGraphBuilder(new BlockNode {BlockRef = entryBlock}, _inputKernel.LocalVariables, _builder, GetVirtualRegisterName);
+        
         IList<(ILOpCode, object?)> opCodes = new List<(ILOpCode, object?)>();
         while (_reader.BaseStream.Position < _reader.BaseStream.Length)
         {
@@ -1057,10 +1062,10 @@ public class MethodBodyCompiler
 
         var method = _inputKernel.MemberInfoModule.ResolveMethod(operand);
         _nameOfMethodToCall = $"{method?.DeclaringType?.FullName}.{method?.Name}";
-        var isExternalFunction =
+        var isIntrinsicFunction =
             _functionsDto.ExternalFunctions.Any(func => func.Item1.StartsWith(_nameOfMethodToCall));
 
-        if (!isExternalFunction)
+        if (!isIntrinsicFunction)
         {
             if (_functionGenerator == null)
             {
@@ -1069,11 +1074,10 @@ public class MethodBodyCompiler
 
             var methodInfo = method as MethodInfo;
             var kernelToCall = new MSILKernel(methodInfo!.Name, methodInfo, false);
-            var function = _functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(kernelToCall);
+            var function = _functionGenerator.GetOrDeclareFunction(kernelToCall);
+            //var function = _functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(kernelToCall); //TODO REMOVE
 
             var parameters = methodInfo.GetParameters().ToArray();
-
-            // TODO: Use length attribute if param is pointer type
 
             LLVMValueRef[] args;
             if (parameters.Any(p => p.ParameterType.IsArray))

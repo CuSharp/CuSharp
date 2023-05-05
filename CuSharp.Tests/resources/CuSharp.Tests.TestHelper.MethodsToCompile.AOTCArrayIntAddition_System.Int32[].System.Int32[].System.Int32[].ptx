@@ -12,7 +12,7 @@
 
 	// .globl	ArrayIntAddition
 
-.visible .entry ArrayIntAddition(
+.visible .entry AOTCArrayIntAddition(
 	.param .u64 ArrayIntAddition_param_0,
 	.param .u64 ArrayIntAddition_param_1,
 	.param .u64 ArrayIntAddition_param_2,

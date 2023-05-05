@@ -28,37 +28,23 @@ public partial class CuDevice : IDisposable
 
     public Tensor<T[]> Allocate<T>(int size) where T : struct
     {
-        return CudaTensor<T[]>.FromArrayAllocation<T>(size);
+        return new CudaTensor<T>(size);
     }
 
     public Tensor<T[]> Copy<T>(T[] hostTensor) where T : struct
     {
-        return CudaTensor<T[]>.FromArray(hostTensor);
+        return new CudaTensor<T>(hostTensor);
     }
 
-    public Tensor<T> Copy<T>(T hostScalar) where T : struct
+    public Tensor<T> CreateScalar<T>(T hostScalar) where T : struct
     {
-        return CudaTensor<T>.FromScalar(hostScalar);
+        return new CudaScalar<T>(hostScalar);
     }
     
     public T[] Copy<T>(Tensor<T[]> deviceTensor) where T : struct
     {
-        var cudaDeviceTensor = deviceTensor as CudaTensor<T[]>;
-        return  cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
-    }
-
-    public bool Copy(Tensor<bool> deviceTensor)
-    {
-        var cudaDeviceTensor = deviceTensor as CudaTensor<bool>;
-        return Convert.ToBoolean(cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<byte>);
-    }
-    /// <summary>
-    /// This copies a scalar value back. Potentially, race conditions can occur.
-    /// </summary>
-    public T Copy<T>(Tensor<T> deviceTensor) where T : struct
-    {
         var cudaDeviceTensor = deviceTensor as CudaTensor<T>;
-        return cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
+        return  cudaDeviceTensor.DeviceVariable as CudaDeviceVariable<T>;
     }
 
     public void Dispose()

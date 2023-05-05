@@ -1,4 +1,6 @@
-﻿using LLVMSharp;
+﻿using System.Reflection;
+using CuSharp.CudaCompiler.Kernels;
+using LLVMSharp;
 
 namespace CuSharp.CudaCompiler.Frontend
 {
@@ -7,43 +9,47 @@ namespace CuSharp.CudaCompiler.Frontend
         private readonly LLVMModuleRef _module;
         private readonly LLVMBuilderRef _builder;
 
-        public List<(MSILKernel kernelToCall, LLVMValueRef function)> FunctionsToBuild { get; set; } = new();
-
+        public List<(MSILKernel msilFunction, LLVMValueRef llvmFunction)> FunctionsToBuild { get; set;  } = new(); //todo -> change to private queue
+        
         public FunctionGenerator(LLVMModuleRef module, LLVMBuilderRef builder)
         {
             _module = module;
             _builder = builder;
         }
 
-        public LLVMValueRef GenerateFunctionAndPositionBuilderAtEntry(MSILKernel inputKernel)
+        private readonly Dictionary<string, LLVMValueRef> _functionCache = new();
+        
+        public LLVMValueRef GetOrDeclareFunction(MSILKernel msilFunction)
         {
-            var paramsListBuilder = new List<LLVMTypeRef>();
-            foreach (var paramInfo in inputKernel.ParameterInfos)
+            var kernelIdentity = KernelHelpers.GetMethodIdentity(msilFunction.MethodInfo);
+            if (_functionCache.ContainsKey(kernelIdentity))
             {
-                LLVMTypeRef type;
-                if (!inputKernel.IsMainFunction && !paramInfo.ParameterType.IsArray)
-                {
-                    type = paramInfo.ParameterType.ToLLVMType();
-                }
-                else if (paramInfo.ParameterType.IsArray)
-                {
-                    type = LLVMTypeRef.PointerType(paramInfo.ParameterType.GetElementType().ToLLVMType(), 0);
-                }
-                else
-                {
-                    type = paramInfo.ParameterType.ToLLVMType();
-                }
-                paramsListBuilder.Add(type);
+                return _functionCache[kernelIdentity];
             }
+            
+            var paramTypes = GenerateLLVMParameters(msilFunction.ParameterInfos);
+            var function = LLVM.AddFunction(_module, msilFunction.Name, LLVM.FunctionType(msilFunction.ReturnType.ToLLVMType(), paramTypes, false));
+            LLVM.SetLinkage(function, LLVMLinkage.LLVMExternalLinkage);
+            NameFunctionParameters(function, "param");
+            _functionCache.Add(kernelIdentity, function);
+            FunctionsToBuild.Add((msilFunction, function));
+            return function;
+        }
 
-            if (paramsListBuilder.Any() && inputKernel.IsMainFunction ||
-                inputKernel.ParameterInfos.Any(p => p.ParameterType.IsArray))
+        public IEnumerable<(MSILKernel msilFunction, LLVMValueRef llvmFunction)> AllFunctionsToCompile()
+        {
+            while (FunctionsToBuild.Any())
             {
-                paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); // Array length list
+                var nextFunction = FunctionsToBuild.First();
+                FunctionsToBuild.Remove(nextFunction);
+                yield return nextFunction;
             }
+        }
+        
+        /*public LLVMValueRef GenerateFunctionAndPositionBuilderAtEntry(MSILKernel inputKernel)
+        {
 
-            var paramTypes = paramsListBuilder.ToArray();
-
+            var paramTypes = GenerateLLVMParameters(inputKernel.ParameterInfos);
             var function = LLVM.AddFunction(_module, inputKernel.Name, LLVM.FunctionType(inputKernel.ReturnType.ToLLVMType(), paramTypes, false));
             
             LLVM.SetLinkage(function, LLVMLinkage.LLVMExternalLinkage);
@@ -59,14 +65,42 @@ namespace CuSharp.CudaCompiler.Frontend
             }
 
             return function;
-        }
+        }*/
 
-        public void AppendFunction(LLVMValueRef function)
+        [Obsolete]
+        public void AppendFunction(LLVMValueRef function) //TODO REMOVE, only here for the tests
         {
             var entryBlock = LLVM.AppendBasicBlock(function, "entry");
             LLVM.PositionBuilderAtEnd(_builder, entryBlock);
         }
 
+        private static LLVMTypeRef[] GenerateLLVMParameters(ParameterInfo[] msilParameters)
+        {
+            
+            var paramsListBuilder = new List<LLVMTypeRef>();
+            foreach (var paramInfo in msilParameters)
+            {
+                LLVMTypeRef type;
+                if (!paramInfo.ParameterType.IsArray)
+                {
+                    type = paramInfo.ParameterType.ToLLVMType();
+                }
+                else 
+                {
+                    type = LLVMTypeRef.PointerType(paramInfo.ParameterType.GetElementType().ToLLVMType(), 0);
+                }
+
+                paramsListBuilder.Add(type);
+            }
+
+            /*if (paramsListBuilder.Any() || //TODO REMOVE 
+                inputKernel.ParameterInfos.Any(p => p.ParameterType.IsArray))
+            {
+                paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); // Array length list
+            }*/
+
+            return paramsListBuilder.ToArray();
+        }
         private void NameFunctionParameters(LLVMValueRef function, string prefix)
         {
             var parameters = LLVM.GetParams(function);

@@ -17,6 +17,9 @@
 		<Compile Remove="coverage.cobertura.xml" />
 		<EmbeddedResource Remove="coverage.cobertura.xml" />
 		<None Remove="coverage.cobertura.xml" />
+		<None Update="resources\CuSharp.Tests.TestHelper.MethodsToCompile.AOTCArrayIntAddition_System.Int32[].System.Int32[].System.Int32[].ptx">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>

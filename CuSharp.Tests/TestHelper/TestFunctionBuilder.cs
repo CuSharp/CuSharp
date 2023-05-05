@@ -12,7 +12,7 @@ namespace CuSharp.Tests.TestHelper
         {
             var function = GetFunction(kernelName, parameterInfos);
             var externalFunctions = GetExternalFunctions(kernelName);
-            return new FunctionsDto(function, externalFunctions, parameterInfos.Count(p => p.ParameterType.IsArray));
+            return new FunctionsDto(function, externalFunctions);
         }
 
         public LLVMBuilderRef GetBuilderWithEntryBlock(LLVMValueRef function)
