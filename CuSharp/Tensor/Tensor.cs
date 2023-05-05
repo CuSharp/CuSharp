@@ -9,13 +9,11 @@ public abstract class Tensor<T> : IDisposable
     //implicit conversion for scalar values
     public static implicit operator Tensor<T>(T value)
     {
-        return new CudaScalar<T>(value);
         if (typeof(T).IsArray)
         {
+            throw new Exception("Cannot implicitly convert arrays. Create and allocate arrays with CuDevice.Copy(T[])");
         }
-        else
-        {
-        }
+        return new CudaScalar<T>(value);
     }
 
     public abstract void Dispose();

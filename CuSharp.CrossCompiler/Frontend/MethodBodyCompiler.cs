@@ -1075,12 +1075,11 @@ public class MethodBodyCompiler
             var methodInfo = method as MethodInfo;
             var kernelToCall = new MSILKernel(methodInfo!.Name, methodInfo, false);
             var function = _functionGenerator.GetOrDeclareFunction(kernelToCall);
-            //var function = _functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(kernelToCall); //TODO REMOVE
 
             var parameters = methodInfo.GetParameters().ToArray();
 
             LLVMValueRef[] args;
-            if (parameters.Any(p => p.ParameterType.IsArray))
+            /*if (parameters.Any(p => p.ParameterType.IsArray)) //TODO: Remove if this is part of the array-length feature
             {
                 args = new LLVMValueRef[parameters.Length + 1];
                 args[parameters.Length] = LLVM.GetLastParam(_functionsDto.Function);
@@ -1088,8 +1087,9 @@ public class MethodBodyCompiler
             else
             {
                 args = new LLVMValueRef[parameters.Length];
-            }
-
+            }*/
+            
+            args = new LLVMValueRef[parameters.Length];
             
             for (var i = parameters.Length - 1; i >= 0; i--)
             {
@@ -1097,8 +1097,16 @@ public class MethodBodyCompiler
                 args[i] = param;
             }
 
-            var call = LLVM.BuildCall(_builder, function, args, GetVirtualRegisterName());
-            _virtualRegisterStack.Push(call);
+            if (methodInfo.ReturnType == typeof(void))
+            {
+                LLVM.BuildCall(_builder, function, args, String.Empty);
+            }
+            else
+            {
+                var call = LLVM.BuildCall(_builder, function, args, GetVirtualRegisterName());
+                
+                _virtualRegisterStack.Push(call);
+            }
         }
     }
 
