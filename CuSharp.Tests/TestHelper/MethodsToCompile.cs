@@ -651,4 +651,9 @@ public class MethodsToCompile
     {
         return a + b;
     }
+
+    public static void NestedArrayCall(int[] a, int[] b, int[] c)
+    {
+        ArrayAdditionNested(a,b,c);
+    }
 }

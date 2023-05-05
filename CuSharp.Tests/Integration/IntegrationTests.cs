@@ -420,4 +420,20 @@ public class IntegrationTests
         Assert.Equal(3, c[0]);
     }
     
+    [Fact]
+    public void TestNestedArrayAdditionNested()
+    {
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var a = new int[] {1};
+        var b = new int[] {2};
+
+        var devA = dev.Copy(a);
+        var devB = dev.Copy(b);
+        var devC = dev.Allocate<int>(1);
+        
+        dev.Launch(MethodsToCompile.NestedArrayCall, (1,1,1), (1,1,1), devA, devB, devC);
+
+        var c = dev.Copy(devC);
+        Assert.Equal(3, c[0]);
+    }
 }
