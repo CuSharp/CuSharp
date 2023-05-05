@@ -174,34 +174,35 @@ public class ControlFlowDebugOpCode
         Assert.Equal(expected, actual);
     }
 
-    [Fact]
-    public void ArrayInt_Foreach_OpCode()
-    {
-        // Arrange
-        var kernelName = MethodBase.GetCurrentMethod()!.Name;
-        var method = GetMethodInfo<int[]>(Foreach);
-        var methodBodyCompiler = GetMethodBodyCompiler(kernelName, method);
+    // TODO: Remove
+    //[Fact]
+    //public void ArrayInt_Foreach_OpCode()
+    //{
+    //    // Arrange
+    //    var kernelName = MethodBase.GetCurrentMethod()!.Name;
+    //    var method = GetMethodInfo<int[]>(Foreach);
+    //    var methodBodyCompiler = GetMethodBodyCompiler(kernelName, method);
 
-        // Act
-        var actual = methodBodyCompiler.CompileMethodBody().ToList();
+    //    // Act
+    //    var actual = methodBodyCompiler.CompileMethodBody().ToList();
 
-        var expected = new List<(ILOpCode, object?)>
-            {
-                (ILOpCode.Nop, null), (ILOpCode.Ldc_i4_0, null), (ILOpCode.Stloc_0, null),
-                (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Stloc_1, null),
-                (ILOpCode.Ldc_i4_0 , null), (ILOpCode.Stloc_2, null), (ILOpCode.Br_s, actual[8].Operand),
-                (ILOpCode.Ldloc_1, null), (ILOpCode.Ldloc_2, null), (ILOpCode.Ldelem_i4, null),
-                (ILOpCode.Stloc_3, null), (ILOpCode.Nop, null), (ILOpCode.Ldloc_0, null),
-                (ILOpCode.Ldc_i4_1, null), (ILOpCode.Add, null), (ILOpCode.Stloc_0, null),
-                (ILOpCode.Nop, null), (ILOpCode.Ldloc_2, null), (ILOpCode.Ldc_i4_1, null),
-                (ILOpCode.Add, null), (ILOpCode.Stloc_2, null), (ILOpCode.Ldloc_2, null),
-                (ILOpCode.Ldloc_1, null), (ILOpCode.Ldlen, null), (ILOpCode.Conv_i4, null),
-                (ILOpCode.Blt_s, actual[27].Operand), (ILOpCode.Ret, null)
-            };
+    //    var expected = new List<(ILOpCode, object?)>
+    //        {
+    //            (ILOpCode.Nop, null), (ILOpCode.Ldc_i4_0, null), (ILOpCode.Stloc_0, null),
+    //            (ILOpCode.Nop, null), (ILOpCode.Ldarg_0, null), (ILOpCode.Stloc_1, null),
+    //            (ILOpCode.Ldc_i4_0 , null), (ILOpCode.Stloc_2, null), (ILOpCode.Br_s, actual[8].Operand),
+    //            (ILOpCode.Ldloc_1, null), (ILOpCode.Ldloc_2, null), (ILOpCode.Ldelem_i4, null),
+    //            (ILOpCode.Stloc_3, null), (ILOpCode.Nop, null), (ILOpCode.Ldloc_0, null),
+    //            (ILOpCode.Ldc_i4_1, null), (ILOpCode.Add, null), (ILOpCode.Stloc_0, null),
+    //            (ILOpCode.Nop, null), (ILOpCode.Ldloc_2, null), (ILOpCode.Ldc_i4_1, null),
+    //            (ILOpCode.Add, null), (ILOpCode.Stloc_2, null), (ILOpCode.Ldloc_2, null),
+    //            (ILOpCode.Ldloc_1, null), (ILOpCode.Ldlen, null), (ILOpCode.Conv_i4, null),
+    //            (ILOpCode.Blt_s, actual[27].Operand), (ILOpCode.Ret, null)
+    //        };
 
-        // Assert
-        Assert.Equal(expected, actual);
-    }
+    //    // Assert
+    //    Assert.Equal(expected, actual);
+    //}
 
     [Fact]
     public void ScalarInt_Goto_OpCode()

@@ -6,16 +6,16 @@ using System.Reflection;
 
 namespace CuSharp.Tests.TestHelper
 {
-    public class TestFunctionBuilder
+    public static class TestFunctionBuilder
     {
-        public FunctionsDto BuildFunctionsDto(string kernelName, ParameterInfo[] parameterInfos)
+        public static FunctionsDto BuildFunctionsDto(string kernelName, ParameterInfo[] parameterInfos)
         {
             var function = GetFunction(kernelName, parameterInfos);
             var externalFunctions = GetExternalFunctions(kernelName);
             return new FunctionsDto(function, externalFunctions);
         }
 
-        public LLVMBuilderRef GetBuilderWithEntryBlock(LLVMValueRef function)
+        public static LLVMBuilderRef GetBuilderWithEntryBlock(LLVMValueRef function)
         {
             var builder = LLVM.CreateBuilder();
             var entryBlock = LLVM.AppendBasicBlock(function, "entry");
@@ -23,7 +23,7 @@ namespace CuSharp.Tests.TestHelper
             return builder;
         }
 
-        private LLVMValueRef GetFunction(string kernelName, ParameterInfo[] parameterInfos)
+        private static LLVMValueRef GetFunction(string kernelName, ParameterInfo[] parameterInfos)
         {
             var module = LLVM.ModuleCreateWithName(kernelName);
             var paramsListBuilder = new List<LLVMTypeRef>();
@@ -40,7 +40,7 @@ namespace CuSharp.Tests.TestHelper
             return LLVM.AddFunction(module, kernelName, LLVM.FunctionType(LLVM.VoidType(), paramType, false));
         }
 
-        private (string, LLVMValueRef)[] GetExternalFunctions(string kernelName)
+        private static (string, LLVMValueRef)[] GetExternalFunctions(string kernelName)
         {
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
