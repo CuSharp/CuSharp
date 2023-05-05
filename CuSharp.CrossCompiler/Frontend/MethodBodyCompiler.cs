@@ -1258,7 +1258,6 @@ public class MethodBodyCompiler
             _cfg.CurrentBlock.SavedStack.Push(_virtualRegisterStack.Pop());
         }
     }
-
     
     private ILOpCode ReadOpCode()
     {
