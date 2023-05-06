@@ -15,7 +15,6 @@ public class MethodBodyCompiler
     private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
     private readonly MemoryStream _stream;
     //private readonly Dictionary<LLVMValueRef, int> _arrayParamToLengthIndex = new(); //TODO CHECK IF POSSIBLE
-    private readonly Dictionary<int, LLVMValueRef> _valueParameters = new();
 
     private long _virtualRegisterCounter;
     private long _globalVariableCounter;
@@ -50,7 +49,11 @@ public class MethodBodyCompiler
         var entryBlock = LLVM.AppendBasicBlock(_functionsDto.Function, "entry");
         LLVM.PositionBuilderAtEnd(_builder, entryBlock);
         
-        _cfg = new ControlFlowGraphBuilder(new BlockNode {BlockRef = entryBlock}, _inputKernel.LocalVariables, _builder, GetVirtualRegisterName);
+        _cfg = new ControlFlowGraphBuilder(new BlockNode {BlockRef = entryBlock}, _inputKernel.LocalVariables, _inputKernel.ParameterInfos, _builder, GetVirtualRegisterName);
+        for (int i = 0; i < _inputKernel.ParameterInfos.Length; i++)
+        {
+            _cfg.CurrentBlock.Parameters.Add(i, LLVM.GetParam(_functionsDto.Function, (uint) i));
+        }
         
         IList<(ILOpCode, object?)> opCodes = new List<(ILOpCode, object?)>();
         while (_reader.BaseStream.Position < _reader.BaseStream.Length)
@@ -847,20 +850,7 @@ public class MethodBodyCompiler
 
     private void CompileLdarg(int operand)
     {
-        var index = operand; //Warning: needs -1 if not static but not supported!
-        var param = LLVM.GetParam(_functionsDto.Function, (uint)index);
-        
-        if (!_inputKernel.ParameterInfos[index].ParameterType.IsArray && param.TypeOf().TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
-        {
-            param = LLVM.BuildLoad(_builder, param, GetVirtualRegisterName());
-        }
-        else if (!_inputKernel.ParameterInfos[index].ParameterType.IsArray)
-        {
-            param = _valueParameters.TryGetValue(index, out var paramValue)
-                ? paramValue
-                : LLVM.GetParam(_functionsDto.Function, (uint)index);
-        }
-
+        var param = _cfg.CurrentBlock.Parameters[operand];//= LLVM.GetParam(_functionsDto.Function, (uint)index);
         _virtualRegisterStack.Push(param);
     }
 
@@ -983,21 +973,7 @@ public class MethodBodyCompiler
     private void CompileStarg(int index)
     {
         var value = _virtualRegisterStack.Pop();
-        var arg = LLVM.GetParam(_functionsDto.Function, (uint)index);
-        
-        if (_inputKernel.ParameterInfos[index].ParameterType.IsArray && value.TypeOf().ToNativeType().IsArray)
-        {
-            _valueParameters.Add(index, value);
-        }
-        else if (arg.TypeOf().TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
-        {
-            if (_valueParameters.TryGetValue(index, out var valueParam)) arg = valueParam;
-            LLVM.BuildStore(_builder, value, arg);
-        }
-        else
-        {
-            _valueParameters.Add(index, value);
-        }
+        _cfg.CurrentBlock.Parameters[index] = value;
     }
 
     private void CompileStdind()
