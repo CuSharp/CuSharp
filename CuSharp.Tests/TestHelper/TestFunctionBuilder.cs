@@ -29,13 +29,12 @@ namespace CuSharp.Tests.TestHelper
             var paramsListBuilder = new List<LLVMTypeRef>();
             foreach (var paramInfo in parameterInfos)
             {
-                var type = LLVMTypeRef.PointerType(
-                    paramInfo.ParameterType.IsArray
-                        ? paramInfo.ParameterType.GetElementType().ToLLVMType()
-                        : paramInfo.ParameterType.ToLLVMType(), 0);
+                    var type = paramInfo.ParameterType.IsArray
+                        ? LLVM.PointerType(paramInfo.ParameterType.GetElementType().ToLLVMType(), 0)
+                        : paramInfo.ParameterType.ToLLVMType();
                 paramsListBuilder.Add(type);
             }
-            if(paramsListBuilder.Any()) paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); //array length list
+            //if(paramsListBuilder.Any()) paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); //array length list
             var paramType = paramsListBuilder.ToArray();
             return LLVM.AddFunction(module, kernelName, LLVM.FunctionType(LLVM.VoidType(), paramType, false));
         }
