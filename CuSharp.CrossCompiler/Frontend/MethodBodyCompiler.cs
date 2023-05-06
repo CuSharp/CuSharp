@@ -65,7 +65,7 @@ public class MethodBodyCompiler
 
             if (_cfg.PositionIsBlockStart(_stream.Position))
             {
-                SaveCurrentStack();
+                _cfg.SaveCurrentStack(_virtualRegisterStack);
                 _cfg.SwitchBlock(_stream.Position, _builder);
                 _cfg.BuildPhis(_virtualRegisterStack);
             }
@@ -1227,13 +1227,6 @@ public class MethodBodyCompiler
         var value1 = _virtualRegisterStack.Pop();
 
         return BuildComparison(intPredicate, realPredicate, value1, value2);
-    }
-    private void SaveCurrentStack()
-    {
-        while (_virtualRegisterStack.Any())
-        {
-            _cfg.CurrentBlock.SavedStack.Push(_virtualRegisterStack.Pop());
-        }
     }
     
     private ILOpCode ReadOpCode()

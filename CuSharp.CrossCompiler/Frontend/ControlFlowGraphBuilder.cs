@@ -57,6 +57,13 @@ public class ControlFlowGraphBuilder
         CurrentBlock = BlockList[position];
     }
 
+    public void SaveCurrentStack(Stack<LLVMValueRef> currentStack)
+    {
+        while (currentStack.Any())
+        {
+            CurrentBlock.SavedStack.Push(currentStack.Pop());
+        }
+    }
     public void PatchBlockGraph()
     {
         PatchBlockGraph(_entryBlockNode);
@@ -73,12 +80,7 @@ public class ControlFlowGraphBuilder
             foreach (var pred in startNode.Predecessors)
             {
                 var value = pred.SavedStack.Pop();
-                var phiType = phi.TypeOf();
-                if (!value.TypeOf().Equals(phiType))
-                {
-                    value = LLVM.BuildIntCast(_builder, value, phiType, _registerNamer());
-                } 
-                
+                value = BuildCastIfIncompatible(value, phi.TypeOf());
                 phi.AddIncoming(new[]{value},new []{pred.BlockRef},1);
             }
         }
@@ -91,26 +93,13 @@ public class ControlFlowGraphBuilder
                 if (pred.LocalVariables.ContainsKey(phi.Key))
                 {
                     var value = pred.LocalVariables[phi.Key];
-                    var phiType = phi.Value.TypeOf();
-                    value = BuildCastIfIncompatible(value, phiType);
+                    value = BuildCastIfIncompatible(value, phi.Value.TypeOf());
                     phi.Value.AddIncoming(new[] { value }, new[] { pred.BlockRef }, 1);
 
                 }
                 else // Add arbitrary value (required because of NVVM)
                 {
-                    if (_localVariables[phi.Key].LocalType == typeof(float) ||
-                        _localVariables[phi.Key].LocalType == typeof(double))
-                    {
-                        phi.Value.AddIncoming(new[] { LLVM.ConstReal(phi.Value.TypeOf(), 1.0) }, new[] { pred.BlockRef }, 1);
-                    }
-                    else if (_localVariables[phi.Key].LocalType.IsArray)
-                    {
-                        phi.Value.AddIncoming(new [] {LLVM.ConstPointerNull(phi.Value.TypeOf())}, new[]{pred.BlockRef}, 1);
-                    }
-                    else
-                    {
-                        phi.Value.AddIncoming(new[] { LLVM.ConstInt(phi.Value.TypeOf(), 1, false) }, new[] { pred.BlockRef }, 1);
-                    }
+                    phi.Value.AddIncoming(new[]{GetArbitraryValue(phi.Value)}, new[]{pred.BlockRef},1);
                 }
             }
         }
@@ -122,13 +111,12 @@ public class ControlFlowGraphBuilder
                 if (pred.Parameters.ContainsKey(phi.Key))
                 {
                     var value = pred.Parameters[phi.Key];
-                    var phiType = phi.Value.TypeOf();
-                    value = BuildCastIfIncompatible(value, phiType);
+                    value = BuildCastIfIncompatible(value, phi.Value.TypeOf());
                     phi.Value.AddIncoming(new[] { value }, new[] { pred.BlockRef }, 1);
                 }
                 else
                 {
-                    throw new Exception("Parameter did not exist in all predecessors. This makes no sense");
+                    throw new Exception("Parameter did not exist in all predecessors.");
                 }
             }
         }
@@ -153,29 +141,29 @@ public class ControlFlowGraphBuilder
             }
         }
         
-        //Restore local variables 
-        for (int i = 0; i < _localVariables.Count; i++)
-        {
-            if (!CurrentBlock.LocalVariables.ContainsKey(i))
-            {
-                var phi = LLVM.BuildPhi(_builder, _localVariables[i].LocalType.ToLLVMType(), _registerNamer());
-                
-                CurrentBlock.LocalVariables.Add(i, phi);
-                CurrentBlock.RestoredLocals.Add(i, phi);
-            }
-        }
+        BuildPhisForValues(_localVariables.Count, CurrentBlock.LocalVariables, CurrentBlock.RestoredLocals, _localVariables
+            .Select(v => v.LocalType.ToLLVMType())
+            .ToArray());
 
-        for (int i = 0; i < _parameterInfos.Count; i++)
+        BuildPhisForValues(_parameterInfos.Count, CurrentBlock.Parameters, CurrentBlock.RestoredParameters, _parameterInfos
+            .Select(p => p.ParameterType.ToLLVMType())
+            .ToArray());
+    }
+
+    private void BuildPhisForValues(int amountOfValues, Dictionary<int, LLVMValueRef> values,
+        Dictionary<int, LLVMValueRef> restoredValues, LLVMTypeRef[] phiTypes)
+    {
+        for (int i = 0; i < amountOfValues; i++)
         {
-            if (!CurrentBlock.Parameters.ContainsKey(i))
+            if (!values.ContainsKey(i))
             {
-                var phi = LLVM.BuildPhi(_builder, _parameterInfos[i].ParameterType.ToLLVMType(), _registerNamer());
-                CurrentBlock.Parameters.Add(i, phi);
-                CurrentBlock.RestoredParameters.Add(i, phi);
+                var phi = LLVM.BuildPhi(_builder, phiTypes[i], _registerNamer());
+                values.Add(i, phi);
+                restoredValues.Add(i, phi);
             }
         }
     }
-
+    
     private LLVMValueRef BuildCastIfIncompatible(LLVMValueRef value, LLVMTypeRef typeToCompare)
     {
         if (!value.TypeOf().Equals(typeToCompare) && (value.TypeOf().Equals(LLVMTypeRef.FloatType()) || value.TypeOf().Equals(LLVMTypeRef.DoubleType())))
@@ -191,5 +179,17 @@ public class ControlFlowGraphBuilder
         }
 
         return value;
+    }
+
+    private LLVMValueRef GetArbitraryValue(LLVMValueRef value)
+    {
+        if (value.TypeOf().ToNativeType() == typeof(float) ||
+            value.TypeOf().ToNativeType() == typeof(double))
+            return LLVM.ConstReal(value.TypeOf(), 1.0); 
+
+        if (value.TypeOf().ToNativeType().IsArray)
+            return LLVM.ConstPointerNull(value.TypeOf());
+
+        return LLVM.ConstInt(value.TypeOf(), 1, false);
     }
 }
