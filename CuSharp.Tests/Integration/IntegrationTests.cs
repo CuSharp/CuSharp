@@ -440,42 +440,42 @@ public class IntegrationTests
     [Fact]
     public void TestArrayReassign()
     {
-        var result = RunStandardizedTest(MethodsToCompile.ArrayReassign, new[] {42}, new[] {1337}, 666);
+        var result = RunStandardizedTestInt(MethodsToCompile.ArrayReassign, new[] {42}, new[] {1337}, 666);
         Assert.Equal(666, result.a[0]);
     }
 
     [Fact]
     public void TestArrayReassignBranchedC()
     {
-        var result = RunStandardizedTest(MethodsToCompile.ArrayReassignIfBranchedC, new[] {42}, new[] {1337}, 101);
+        var result = RunStandardizedTestInt(MethodsToCompile.ArrayReassignIfBranchedC, new[] {42}, new[] {1337}, 101);
         Assert.Equal(102, result.a[0]);
     }
     
     [Fact]
     public void TestArrayReassignBranchedC2()
     {
-        var result = RunStandardizedTest(MethodsToCompile.ArrayReassignIfBranchedC, new[] {42}, new[] {1337}, 99);
+        var result = RunStandardizedTestInt(MethodsToCompile.ArrayReassignIfBranchedC, new[] {42}, new[] {1337}, 99);
         Assert.Equal(101, result.a[0]);
     }
 
     [Fact]
     public void TestBranchedArrayReassign()
     {
-        var result = RunStandardizedTest(MethodsToCompile.BranchedArrayReassign, new[] {42}, new[] {1337}, 101);
+        var result = RunStandardizedTestInt(MethodsToCompile.BranchedArrayReassign, new[] {42}, new[] {1337}, 101);
         Assert.Equal(101, result.a[0]);
     }
 
     [Fact]
     public void TestBranchedArrayReassign2()
     {
-        var result = RunStandardizedTest(MethodsToCompile.BranchedArrayReassign, new[] {42}, new[] {1337}, 99);
+        var result = RunStandardizedTestInt(MethodsToCompile.BranchedArrayReassign, new[] {42}, new[] {1337}, 99);
         Assert.Equal(42, result.a[0]);
     }
 
     [Fact]
     public void TestLocalArrayReassign()
     {
-        var result = RunStandardizedTest(MethodsToCompile.LocalArrayVariables, new[] {42}, new[] {1337}, 101);
+        var result = RunStandardizedTestInt(MethodsToCompile.LocalArrayVariables, new[] {42}, new[] {1337}, 101);
         Assert.Equal(42, result.a[0]);
         Assert.Equal(101, result.b[0]);
     }
@@ -483,7 +483,7 @@ public class IntegrationTests
     [Fact]
     public void TestLocalArrayReassign2()
     {
-        var result = RunStandardizedTest(MethodsToCompile.LocalArrayVariables, new[] {42}, new[] {1337}, 99);
+        var result = RunStandardizedTestInt(MethodsToCompile.LocalArrayVariables, new[] {42}, new[] {1337}, 99);
         Assert.Equal(99, result.a[0]);
         Assert.Equal(1337, result.b[0]);
     }
@@ -491,7 +491,7 @@ public class IntegrationTests
     [Fact]
     public void TestAssignLocalVarToArg()
     {
-        var result = RunStandardizedTest(MethodsToCompile.AssignLocalVariableToArg, new[] {42}, new[] {1337}, 101);
+        var result = RunStandardizedTestInt(MethodsToCompile.AssignLocalVariableToArg, new[] {42}, new[] {1337}, 101);
         Assert.Equal(101, result.a[0]);
         Assert.Equal(1337, result.b[0]);
     }
@@ -499,12 +499,12 @@ public class IntegrationTests
     [Fact]
     public void TestAssignLocalVarToArg2()
     {
-        var result = RunStandardizedTest(MethodsToCompile.AssignLocalVariableToArg, new[] {42}, new[] {1337}, 99);
+        var result = RunStandardizedTestInt(MethodsToCompile.AssignLocalVariableToArg, new[] {42}, new[] {1337}, 99);
         Assert.Equal(42, result.a[0]);
         Assert.Equal(99, result.b[0]);
     }
     
-    private (int[] a, int[] b) RunStandardizedTest(Action<int[],int[], int> methodToRun, int[] arrayA, int[] arrayB, int scalar)
+    private (int[] a, int[] b) RunStandardizedTestInt(Action<int[],int[], int> methodToRun, int[] arrayA, int[] arrayB, int scalar)
     {
         var dev = global::CuSharp.CuSharp.GetDefaultDevice();
         var devA = dev.Copy(arrayA);

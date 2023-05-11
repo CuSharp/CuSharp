@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Collections;
+using System.Reflection;
 using System.Runtime.InteropServices.JavaScript;
 using LLVMSharp;
 
@@ -57,13 +58,6 @@ public class ControlFlowGraphBuilder
         CurrentBlock = BlockList[position];
     }
 
-    public void SaveCurrentStack(Stack<LLVMValueRef> currentStack)
-    {
-        while (currentStack.Any())
-        {
-            CurrentBlock.SavedStack.Push(currentStack.Pop());
-        }
-    }
     public void PatchBlockGraph()
     {
         PatchBlockGraph(_entryBlockNode);
@@ -75,11 +69,13 @@ public class ControlFlowGraphBuilder
         startNode.Visited = true;
 
         //restore stack
-        foreach (var phi in startNode.RestoredStack)
+        foreach (var pred in startNode.Predecessors)
         {
-            foreach (var pred in startNode.Predecessors)
+            var stackImage = new Stack<LLVMValueRef>(new Stack<LLVMValueRef>(pred.VirtualRegisterStack));
+            
+            foreach (var phi in startNode.RestoredStack)
             {
-                var value = pred.SavedStack.Pop();
+                var value = stackImage.Pop();
                 value = BuildCastIfIncompatible(value, phi.TypeOf());
                 phi.AddIncoming(new[]{value},new []{pred.BlockRef},1);
             }
@@ -127,16 +123,16 @@ public class ControlFlowGraphBuilder
         }
     }
     
-    public void BuildPhis(Stack<LLVMValueRef> virtualRegisterStack)
+    public void BuildPhis()
     {
         //Restore stack
         if (CurrentBlock.Predecessors.Any()) //one predecessor must already exist to restore stack
         {
-            var savedStackList = CurrentBlock.Predecessors.First().SavedStack.ToArray();
-            for (int i = CurrentBlock.Predecessors.First().SavedStack.Count() -1; i > -1; i--) //predecessors must all contain same size of saved stack
+            var savedStackList = CurrentBlock.Predecessors.First().VirtualRegisterStack.Reverse().ToArray();
+            for (int i = 0; i < CurrentBlock.Predecessors.First().VirtualRegisterStack.Count(); i++) //predecessors must all contain same size of saved stack
             {
                 var phi = LLVM.BuildPhi(_builder, savedStackList[i].TypeOf(), _registerNamer());
-                virtualRegisterStack.Push(phi);
+                CurrentBlock.VirtualRegisterStack.Push(phi);
                 CurrentBlock.RestoredStack.Push(phi);
             }
         }

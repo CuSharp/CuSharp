@@ -15,7 +15,7 @@ public class BlockNode
     public Dictionary<int, LLVMValueRef> RestoredLocals { get; set; } = new(); //Per Local-Index
     public bool Visited { get; set; } = false;
     
-    public Stack<LLVMValueRef> SavedStack { get; set; } = new();
+    public Stack<LLVMValueRef> VirtualRegisterStack { get; set; } = new();
     public Stack<LLVMValueRef> RestoredStack { get; set; } = new();
 
     public void AddSuccessors(params BlockNode[] nodes)

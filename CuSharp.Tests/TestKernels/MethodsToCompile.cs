@@ -718,5 +718,4 @@ public class MethodsToCompile
             b[0] = a[0];
         }
     }
-    
 }

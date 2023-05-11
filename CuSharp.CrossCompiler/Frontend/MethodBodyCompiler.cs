@@ -12,7 +12,7 @@ public class MethodBodyCompiler
     private readonly LLVMBuilderRef _builder;
     private readonly FunctionsDto _functionsDto;
     private readonly FunctionGenerator? _functionGenerator;
-    private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
+    //private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
     private readonly MemoryStream _stream;
     //private readonly Dictionary<LLVMValueRef, int> _arrayParamToLengthIndex = new(); //TODO CHECK IF POSSIBLE
 
@@ -65,9 +65,9 @@ public class MethodBodyCompiler
 
             if (_cfg.PositionIsBlockStart(_stream.Position))
             {
-                _cfg.SaveCurrentStack(_virtualRegisterStack);
+                //_cfg.SaveCurrentStack(_cfg.CurrentBlock.VirtualRegisterStack);
                 _cfg.SwitchBlock(_stream.Position, _builder);
-                _cfg.BuildPhis(_virtualRegisterStack);
+                _cfg.BuildPhis();
             }
 
             opCodes.Add(CompileNextOpCode());
@@ -560,8 +560,8 @@ public class MethodBodyCompiler
 
     private void CompileAdd()
     {
-        var param2 = _virtualRegisterStack.Pop();
-        var param1 = _virtualRegisterStack.Pop();
+        var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         LLVMValueRef result;
 
         if (AreParamsCompatibleAndInt(param1, param2))
@@ -577,13 +577,13 @@ public class MethodBodyCompiler
             throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
         }
 
-        _virtualRegisterStack.Push(result);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
     }
 
     private void CompileSub()
     {
-        var param2 = _virtualRegisterStack.Pop();
-        var param1 = _virtualRegisterStack.Pop();
+        var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         LLVMValueRef result;
 
         if (AreParamsCompatibleAndInt(param1, param2))
@@ -599,13 +599,13 @@ public class MethodBodyCompiler
             throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
         }
 
-        _virtualRegisterStack.Push(result);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
     }
 
     private void CompileMul()
     {
-        var param2 = _virtualRegisterStack.Pop();
-        var param1 = _virtualRegisterStack.Pop();
+        var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         LLVMValueRef result;
 
         if (AreParamsCompatibleAndInt(param1, param2))
@@ -621,13 +621,13 @@ public class MethodBodyCompiler
             throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
         }
 
-        _virtualRegisterStack.Push(result);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
     }
 
     private void CompileDiv()
     {
-        var param2 = _virtualRegisterStack.Pop();
-        var param1 = _virtualRegisterStack.Pop();
+        var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         LLVMValueRef result;
         
         if (AreParamsCompatibleAndInt(param1, param2))
@@ -643,13 +643,13 @@ public class MethodBodyCompiler
             throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
         }
 
-        _virtualRegisterStack.Push(result);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
     }
 
     private void CompileRem()
     {
-        var param2 = _virtualRegisterStack.Pop();
-        var param1 = _virtualRegisterStack.Pop();
+        var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         LLVMValueRef result;
 
         if (AreParamsCompatibleAndInt(param1, param2))
@@ -665,14 +665,14 @@ public class MethodBodyCompiler
             throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
         }
 
-        _virtualRegisterStack.Push(result);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
     }
 
     private void CompileDup()
     {
-        var value = _virtualRegisterStack.Pop();
-        _virtualRegisterStack.Push(value);
-        _virtualRegisterStack.Push(value);
+        var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
     }
 
     #endregion
@@ -694,14 +694,14 @@ public class MethodBodyCompiler
 
     private void CompileBrTrue(int operand)
     {
-        var predicate = _virtualRegisterStack.Pop();
+        var predicate = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
 
         BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicate);
     }
 
     private void CompileBrFalse(int operand)
     {
-        var predicate = _virtualRegisterStack.Pop();
+        var predicate = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
 
         var predicateNegated = LLVM.BuildNot(_builder, predicate, GetVirtualRegisterName());
         
@@ -775,33 +775,33 @@ public class MethodBodyCompiler
 
     private void CompileClt()
     {
-        var value2 = _virtualRegisterStack.Pop();
-        var value1 = _virtualRegisterStack.Pop();
+        var value2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var value1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         value2 = CastValue2IfIncompatibleInts(value1, value2);
         LLVMValueRef result =
             BuildComparison(LLVMIntPredicate.LLVMIntSLT, LLVMRealPredicate.LLVMRealOLT, value1, value2);
-        _virtualRegisterStack.Push(result);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
     }
 
     private void CompileCgt()
     {
 
-        var value2 = _virtualRegisterStack.Pop();
-        var value1 = _virtualRegisterStack.Pop();
+        var value2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var value1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         value2 = CastValue2IfIncompatibleInts(value1, value2);
         LLVMValueRef result =
             BuildComparison(LLVMIntPredicate.LLVMIntSGT, LLVMRealPredicate.LLVMRealOGT, value1, value2);
-        _virtualRegisterStack.Push(result);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
     }
 
     private void CompileCeq()
     {
-        var value2 = _virtualRegisterStack.Pop();
-        var value1 = _virtualRegisterStack.Pop();
+        var value2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var value1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         value2 = CastValue2IfIncompatibleInts(value1, value2);
         LLVMValueRef result =
             BuildComparison(LLVMIntPredicate.LLVMIntEQ, LLVMRealPredicate.LLVMRealOEQ, value1, value2);
-        _virtualRegisterStack.Push(result);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
     }
 
     private LLVMValueRef CastValue2IfIncompatibleInts(LLVMValueRef value1, LLVMValueRef value2)
@@ -835,14 +835,14 @@ public class MethodBodyCompiler
 
     private void CompileNewarr(Type operand)
     {
-        var elementCount = _virtualRegisterStack.Pop();
+        var elementCount = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var len = LLVM.ConstIntGetZExtValue(elementCount);
 
         var type = LLVM.ArrayType(operand.ToLLVMType(), (uint) len);
         var arr = LLVM.AddGlobalInAddressSpace(Module, type, GetGlobalVariableName(), 3);
         arr.SetLinkage(LLVMLinkage.LLVMInternalLinkage);
         arr.SetInitializer(LLVM.GetUndef(type));
-        _virtualRegisterStack.Push(arr);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(arr);
     }
     #endregion
 
@@ -851,43 +851,43 @@ public class MethodBodyCompiler
     private void CompileLdarg(int operand)
     {
         var param = _cfg.CurrentBlock.Parameters[operand];//= LLVM.GetParam(_functionsDto.Function, (uint)index);
-        _virtualRegisterStack.Push(param);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(param);
     }
 
     private void CompileLdcInt(int operand)
     {
         var reference = LLVM.ConstInt(LLVMTypeRef.Int32Type(), (ulong)operand, true);
-        _virtualRegisterStack.Push(reference);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(reference);
     }
 
     private void CompileLdcLong(long operand)
     {
         var reference = LLVM.ConstInt(LLVMTypeRef.Int64Type(), (ulong)operand, true);
-        _virtualRegisterStack.Push(reference);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(reference);
     }
 
     private void CompileLdcFloat(float operand)
     {
         var reference = LLVM.ConstReal(LLVMTypeRef.FloatType(), operand);
-        _virtualRegisterStack.Push(reference);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(reference);
     }
 
     private void CompileLdcDouble(double operand)
     {
         var reference = LLVM.ConstReal(LLVMTypeRef.DoubleType(), operand);
-        _virtualRegisterStack.Push(reference);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(reference);
     }
 
     private void CompileLdloc(int operand)
     {
         var param = _cfg.CurrentBlock.LocalVariables[operand];
-        _virtualRegisterStack.Push(param);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(param);
     }
 
     private void CompileLdelem()
     {
-        var index = _virtualRegisterStack.Pop();
-        var array = _virtualRegisterStack.Pop();
+        var index = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var array = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         LLVMValueRef[] indices;
         
         if (array.TypeOf().GetElementType().TypeKind == LLVMTypeKind.LLVMArrayTypeKind) //needs dual index: one to deref array, one to deref element in array
@@ -901,15 +901,15 @@ public class MethodBodyCompiler
 
         var elementPtr = LLVM.BuildGEP(_builder, array, indices, GetVirtualRegisterName());
         var value = LLVM.BuildLoad(_builder, elementPtr, GetVirtualRegisterName());
-        _virtualRegisterStack.Push(value);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
     }
 
     private void CompileLdelema()
     {
-        var index = _virtualRegisterStack.Pop();
-        var array = _virtualRegisterStack.Pop();
+        var index = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var array = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var elementPtr = LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
-        _virtualRegisterStack.Push(elementPtr);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(elementPtr);
     }
 
     private void CompileLdfld(int operand)
@@ -931,7 +931,7 @@ public class MethodBodyCompiler
 
             var externalFunctionToCall = _functionsDto.ExternalFunctions.First(func => func.Item1 == fullQualifiedFieldName);
             var call = LLVM.BuildCall(_builder, externalFunctionToCall.Item2, Array.Empty<LLVMValueRef>(), GetVirtualRegisterName());
-            _virtualRegisterStack.Push(call);
+            _cfg.CurrentBlock.VirtualRegisterStack.Push(call);
         }
         else
         {
@@ -944,9 +944,9 @@ public class MethodBodyCompiler
 
     private void CompileLdind()
     {
-        var elementPtr = _virtualRegisterStack.Pop();
+        var elementPtr = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var value = LLVM.BuildLoad(_builder, elementPtr, GetVirtualRegisterName());
-        _virtualRegisterStack.Push(value);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
     }
 
     /*private void CompileLdlen() //TODO: test for constant arrays declared in kernel
@@ -972,22 +972,22 @@ public class MethodBodyCompiler
 
     private void CompileStarg(int index)
     {
-        var value = _virtualRegisterStack.Pop();
+        var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         _cfg.CurrentBlock.Parameters[index] = value;
     }
 
     private void CompileStdind()
     {
-        var value = _virtualRegisterStack.Pop();
-        var elementPtr = _virtualRegisterStack.Pop();
+        var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var elementPtr = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         LLVM.BuildStore(_builder, value, elementPtr);
     }
 
     private void CompileStelem()
     {
-        var value = _virtualRegisterStack.Pop();
-        var index = _virtualRegisterStack.Pop();
-        var array = _virtualRegisterStack.Pop();
+        var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var index = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var array = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         LLVMValueRef[] indices;
 
         if (array.TypeOf().GetElementType().TypeKind == LLVMTypeKind.LLVMArrayTypeKind) //needs two indexes: one to deref array, one to deref element in array
@@ -1005,7 +1005,7 @@ public class MethodBodyCompiler
 
     private void CompileStloc(int operand)
     {
-        var param = _virtualRegisterStack.Pop();
+        var param = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         if (_cfg.CurrentBlock.LocalVariables.ContainsKey(operand))
         {
             _cfg.CurrentBlock.LocalVariables[operand] = param;
@@ -1070,7 +1070,7 @@ public class MethodBodyCompiler
             
             for (var i = parameters.Length - 1; i >= 0; i--)
             {
-                var param = _virtualRegisterStack.Pop();
+                var param = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
                 args[i] = param;
             }
 
@@ -1082,20 +1082,20 @@ public class MethodBodyCompiler
             {
                 var call = LLVM.BuildCall(_builder, function, args, GetVirtualRegisterName());
                 
-                _virtualRegisterStack.Push(call);
+                _cfg.CurrentBlock.VirtualRegisterStack.Push(call);
             }
         }
     }
 
     private void CompileReturn()
     {
-        if (_virtualRegisterStack.Count == 0)
+        if (_cfg.CurrentBlock.VirtualRegisterStack.Count == 0)
         {
             LLVM.BuildRetVoid(_builder);
         }
         else
         {
-            var returnValue = _virtualRegisterStack.Pop();
+            var returnValue = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
             LLVM.BuildRet(_builder, returnValue);
         }
     }
@@ -1106,7 +1106,7 @@ public class MethodBodyCompiler
 
     private void BuildICast(LLVMTypeRef targetType)
     {
-        var value = _virtualRegisterStack.Pop(); //Assumes Signed int or Floating-Point value
+        var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop(); //Assumes Signed int or Floating-Point value
         
         if (IsDecimal(value))
         {
@@ -1120,7 +1120,7 @@ public class MethodBodyCompiler
             }
             value = LLVM.BuildIntCast(_builder, value, targetType, GetVirtualRegisterName());
         }
-        _virtualRegisterStack.Push(value);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
     }
     private void CompileConvI() { CompileConvI4(); }
 
@@ -1145,15 +1145,15 @@ public class MethodBodyCompiler
 
     private void CompileConvRUn()
     {
-        var value = _virtualRegisterStack.Pop(); //Assumes: Unsigned int type
+        var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop(); //Assumes: Unsigned int type
         var converted = LLVM.BuildUIToFP(_builder, value, LLVMTypeRef.FloatType(), GetVirtualRegisterName());
-        _virtualRegisterStack.Push(converted);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(converted);
     }
 
 
     private void BuildRCast(LLVMTypeRef targetType)
     {
-        var value = _virtualRegisterStack.Pop(); //assumes signed int or floating point
+        var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop(); //assumes signed int or floating point
         if (IsDecimal(value))
         {
             value = LLVM.BuildFPCast(_builder, value, targetType, GetVirtualRegisterName());
@@ -1162,7 +1162,7 @@ public class MethodBodyCompiler
         {
             value = LLVM.BuildSIToFP(_builder, value, targetType, GetVirtualRegisterName());
         }
-        _virtualRegisterStack.Push(value);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
     }
     
     private void CompileConvR4()
@@ -1178,9 +1178,9 @@ public class MethodBodyCompiler
 
     private void BuildUCast(LLVMTypeRef targetType)
     {
-        var value = _virtualRegisterStack.Pop(); //Assumes: unsigned value
+        var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop(); //Assumes: unsigned value
         value = LLVM.BuildIntCast(_builder, value, targetType, GetVirtualRegisterName());
-        _virtualRegisterStack.Push(value);
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
     }
 
     private void CompileConvU()
@@ -1223,8 +1223,8 @@ public class MethodBodyCompiler
 
     private LLVMValueRef BuildPredicateFromStack(LLVMIntPredicate intPredicate, LLVMRealPredicate realPredicate)
     {
-        var value2 = _virtualRegisterStack.Pop();
-        var value1 = _virtualRegisterStack.Pop();
+        var value2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var value1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
 
         return BuildComparison(intPredicate, realPredicate, value1, value2);
     }
