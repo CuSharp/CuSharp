@@ -65,7 +65,7 @@ public class ControlFlowGraphBuilder
     public void SwitchBlock(long position)
     {
         var lastInstruction = LLVM.GetLastInstruction(CurrentBlock.BlockRef);
-        if (lastInstruction.Pointer == 0x0 || lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMBr)
+        if (lastInstruction.Pointer == 0x0 || (lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMBr && lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMRet))
         {
             LLVM.BuildBr(_builder, _blockList[position].BlockRef); //Terminator instruction is needed
             _blockList[position].Predecessors.Add(CurrentBlock);

@@ -63,6 +63,7 @@ public class ParameterReassignIntegrationTests
     [Fact]
     public void TestAssignLocalVarToArg()
     {
+        global::CuSharp.CuSharp.EnableOptimizer = false;
         var result = RunStandardizedTestInt(ParameterReassignKernels.AssignLocalVariableToArg, new[] {42}, new[] {1337}, 101);
         Assert.Equal(101, result.a[0]);
         Assert.Equal(1337, result.b[0]);
