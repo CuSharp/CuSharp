@@ -11,7 +11,6 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyLLVM.DebugMode;
 [Trait(TestCategories.TestCategory, TestCategories.UnitDebugOnly)]
 public class LogicalAndDebugLLVM
 {
-    private readonly LLVMRepresentationLoader _llvmLoader = new();
     private readonly TestValidator _validator = new();
 
     [Fact]
@@ -24,10 +23,8 @@ public class LogicalAndDebugLLVM
         var crossCompiler = new KernelCrossCompiler(config);
         var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
-        var expected = string.Empty; // TODO: Load expected output
         var actual = llvmKernel.KernelBuffer;
 
-        //Assert.Equal(expected, actual);
         Assert.True(_validator.KernelIsCorrect(actual, kernelName));
     }
 
@@ -41,10 +38,8 @@ public class LogicalAndDebugLLVM
         var crossCompiler = new KernelCrossCompiler(config);
         var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
-        var expected = string.Empty; // TODO: Load expected output
         var actual = llvmKernel.KernelBuffer;
 
-        //Assert.Equal(expected, actual);
         Assert.True(_validator.KernelIsCorrect(actual, kernelName));
     }
 }
