@@ -4,6 +4,8 @@ using Xunit;
 
 namespace CuSharp.Tests.Integration;
 
+[Collection("Sequential")]
+[Trait(TestCategories.TestCategory, TestCategories.Integration)]
 public class ParameterReassignIntegrationTests
 {
     
