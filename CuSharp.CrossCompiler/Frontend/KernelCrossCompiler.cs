@@ -69,7 +69,7 @@ public class KernelCrossCompiler
         LLVM.AddReassociatePass(passManager);
         LLVM.AddCFGSimplificationPass(passManager);
         LLVM.AddGVNPass(passManager);
-
+        
         LLVM.InitializeFunctionPassManager(passManager);
         LLVM.RunFunctionPassManager(passManager, function);
     }

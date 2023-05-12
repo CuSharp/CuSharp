@@ -5,11 +5,11 @@ namespace CuSharp.PerformanceEvaluation;
 public static class Kernels
 {
     
-    public static void IntMatrixMultiplication(int[] a, int[] b, int[] c, int matrixWidth)
+    public static void IntMatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth)
     {
         var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
         var col = KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X;
-        int result = 0;
+        double result = 0;
         if (row < matrixWidth && col < matrixWidth)
         {
             for (int i = 0; i < matrixWidth; i++)
@@ -22,17 +22,17 @@ public static class Kernels
         }
     }
 
-    public static void TiledIntMatrixMultiplication(int[] a, int[] b, int[] c, int matrixWidth, int tileWidth, int nofTiles)
+    public static void TiledIntMatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth, int tileWidth, int nofTiles)
     {
         var tx = KernelTools.ThreadIndex.X;
         var ty = KernelTools.ThreadIndex.Y;
         var col = KernelTools.BlockIndex.X * tileWidth + tx;
         var row = KernelTools.BlockIndex.Y * tileWidth + ty;
         
-        var aSub = new int[1024];
-        var bSub = new int[1024];
+        var aSub = new double[1024];
+        var bSub = new double[1024];
 
-        var sum = 0;
+        double sum = 0;
         for (int tile = 0; tile < nofTiles; tile++)
         {
             if (row < matrixWidth && tile * tileWidth + tx < matrixWidth)
@@ -64,7 +64,7 @@ public static class Kernels
             c[row * matrixWidth + col] = sum;
         }
     }
-    public static void IntMatrixMultiplicationSequential(int[] a, int[] b, int[] c, int matrixWidth, int gridDim, int blockDim) {
+    public static void IntMatrixMultiplicationSequential(double[] a, double[] b, double[] c, int matrixWidth, int gridDim, int blockDim) {
         
         for (int row = 0; row < gridDim * blockDim; row++)
         {
@@ -72,7 +72,7 @@ public static class Kernels
             {
                 if (row < matrixWidth && col < matrixWidth)
                 {
-                    int result = 0;
+                    double result = 0;
                     for (int i = 0; i < matrixWidth; i++)
                     {
                         result = result + a[matrixWidth * row + i] * b[i * matrixWidth + col];

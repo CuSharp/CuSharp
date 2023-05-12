@@ -7,7 +7,7 @@ public class Program
     static void Main()
     {
 
-        Test(100,1000, 100, true);
+        Test(1000,2000, 100, false);
     }
 
     static void Test(int min, int max, int step, bool verify)
@@ -35,13 +35,13 @@ public class Program
 
         uint gridDim = (uint) (matrixWidth % 32 == 0 ? matrixWidth / 32 : matrixWidth / 32 + 1);
         uint blockDim = (uint) (matrixWidth > 32 ? 32 : matrixWidth);
-        int[] a = new int [matrixWidth * matrixWidth];
-        int[] b = new int [matrixWidth * matrixWidth];
-        int[] c = new int [matrixWidth * matrixWidth];
-        for (int i = 0; i < matrixWidth * matrixWidth; i++)
+        double[] a = new double [matrixWidth * matrixWidth];
+        double[] b = new double [matrixWidth * matrixWidth];
+        double[] c = new double [matrixWidth * matrixWidth];
+        for (double i = 0.0; i < matrixWidth * matrixWidth; i++)
         {
-            a[i] = i;
-            b[i] = matrixWidth * matrixWidth - i;
+            a[(int) i] = i;
+            b[(int) i] = matrixWidth * matrixWidth - i;
         }
 
 
@@ -53,14 +53,14 @@ public class Program
         var after = CuSharp.CuSharp.CreateEvent();
         
         before.Record();
-        //dev.Launch<int[], int[], int[], int>(Kernels.IntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);
-        dev.Launch<int[],int[],int[],int,int,int>(Kernels.TiledIntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim,1), devA, devB, devC, matrixWidth, 32, (int) (blockDim));
+        //dev.Launch<double[], double[], double[], int>(Kernels.IntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);
+        dev.Launch<double[],double[],double[],int,int,int>(Kernels.TiledIntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim,1), devA, devB, devC, matrixWidth, 32, (int) (blockDim));
         
         after.Record();
         c = dev.Copy(devC);
         if (verify)
         {
-            int[] expectedC = new int[matrixWidth * matrixWidth];
+            double[] expectedC = new double[matrixWidth * matrixWidth];
             Kernels.IntMatrixMultiplicationSequential(a, b, expectedC, matrixWidth, (int) gridDim, (int) blockDim);
             if (!c.SequenceEqual(expectedC))
             {
@@ -70,7 +70,6 @@ public class Program
         devA.Dispose();
         devB.Dispose();
         devC.Dispose();
-        //devWidth.Dispose();
         var result = before.GetDeltaTo(after);
         before.Dispose();
         after.Dispose();
