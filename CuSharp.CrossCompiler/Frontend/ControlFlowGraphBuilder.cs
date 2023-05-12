@@ -25,9 +25,7 @@ public class ControlFlowGraphBuilder
             _entryBlockNode.Parameters.Add(i, LLVM.GetParam(function, (uint) i));
         }
 
-
-        //SwitchBlock(1);
-        //BuildPhisForCurrentBlock();
+        _blockList.Add(0, new BlockNode(){BlockRef = LLVM.AppendBasicBlock(function, NextBlockName)});
     }
 
     private readonly Dictionary<long, BlockNode> _blockList = new(); //contains all blocks except entry
@@ -42,6 +40,11 @@ public class ControlFlowGraphBuilder
     
     public BlockNode GetBlock(long index, LLVMValueRef function)
     {
+
+        if (index == 1) //debug mode: skip nop
+        {
+            index = 0;
+        }
         
         if (_blockList.ContainsKey(index))
         {

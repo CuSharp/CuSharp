@@ -50,7 +50,7 @@ public class MethodBodyCompiler
         
         IList<(ILOpCode, object?)> opCodes = new List<(ILOpCode, object?)>();
         
-        var firstBlock = _cfg.GetBlock(_stream.Position, _functionsDto.Function);
+        //var firstBlock = _cfg.GetBlock(_stream.Position, _functionsDto.Function);
         while (_reader.BaseStream.Position < _reader.BaseStream.Length)
         {
             if (_reader.BaseStream.Position == _reader.BaseStream.Length)
