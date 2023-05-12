@@ -53,8 +53,8 @@ public class Program
         var after = CuSharp.CuSharp.CreateEvent();
         
         before.Record();
-        //dev.Launch<double[], double[], double[], int>(Kernels.IntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);
-        dev.Launch<double[],double[],double[],int,int,int>(Kernels.TiledIntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim,1), devA, devB, devC, matrixWidth, 32, (int) (blockDim));
+        dev.Launch<double[], double[], double[], int>(Kernels.IntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);
+        //dev.Launch<double[],double[],double[],int,int,int>(Kernels.TiledIntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim,1), devA, devB, devC, matrixWidth, 32, (int) (blockDim));
         
         after.Record();
         c = dev.Copy(devC);

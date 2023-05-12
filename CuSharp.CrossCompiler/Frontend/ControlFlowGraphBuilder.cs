@@ -7,55 +7,69 @@ namespace CuSharp.CudaCompiler.Frontend;
 
 public class ControlFlowGraphBuilder
 {
-    public ControlFlowGraphBuilder(BlockNode entryBlockNode, IList<LocalVariableInfo> localVariableInfos, IList<ParameterInfo> parameterInfos, LLVMBuilderRef builder, Func<string> RegisterNamer)
+    public ControlFlowGraphBuilder(LLVMValueRef function, IList<LocalVariableInfo> localVariableInfos, IList<ParameterInfo> parameterInfos, LLVMBuilderRef builder, Func<string> RegisterNamer)
     {
-        _entryBlockNode = entryBlockNode;
-        CurrentBlock = entryBlockNode;
+
+        _entryBlockNode = new BlockNode() {BlockRef = LLVM.AppendBasicBlock(function, "entry")};
         _localVariables = localVariableInfos;
         _builder = builder;
         _registerNamer = RegisterNamer;
         _parameterInfos = parameterInfos;
+        
+        
+        CurrentBlock = _entryBlockNode;
+        LLVM.PositionBuilderAtEnd(builder, _entryBlockNode.BlockRef);
+        
+        for (int i = 0; i < parameterInfos.Count; i++)
+        {
+            _entryBlockNode.Parameters.Add(i, LLVM.GetParam(function, (uint) i));
+        }
+
+
+        //SwitchBlock(1);
+        //BuildPhisForCurrentBlock();
     }
 
-    private readonly Dictionary<long, BlockNode> BlockList = new(); //contains all blocks except entry
+    private readonly Dictionary<long, BlockNode> _blockList = new(); //contains all blocks except entry
     private readonly BlockNode _entryBlockNode;
     public BlockNode CurrentBlock;
     private readonly IList<LocalVariableInfo> _localVariables;
     private readonly IList<ParameterInfo> _parameterInfos;
     private readonly LLVMBuilderRef _builder;
     private readonly Func<string> _registerNamer;
-    private int BlockCounter => BlockList.Count;
+    private int BlockCounter => _blockList.Count;
     private string NextBlockName => $"block{BlockCounter}";
     
     public BlockNode GetBlock(long index, LLVMValueRef function)
     {
-        if (BlockList.ContainsKey(index))
+        
+        if (_blockList.ContainsKey(index))
         {
-            return BlockList[index];
+            return _blockList[index];
         }
 
         var block = LLVM.AppendBasicBlock(function, NextBlockName);
-        BlockList.Add(index, new BlockNode() { BlockRef = block });
-        return BlockList[index];
+        _blockList.Add(index, new BlockNode() { BlockRef = block });   
+        
+        return _blockList[index];
     }
 
     public bool PositionIsBlockStart(long position)
     {
-        return BlockList.ContainsKey(position);
+        return _blockList.ContainsKey(position);
     }
     
-    public void SwitchBlock(long position, LLVMBuilderRef builder)
+    public void SwitchBlock(long position)
     {
         var lastInstruction = LLVM.GetLastInstruction(CurrentBlock.BlockRef);
-        if (lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMBr)
+        if (lastInstruction.Pointer == 0x0 || lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMBr)
         {
-            LLVM.BuildBr(builder, BlockList[position].BlockRef); //Terminator instruction is needed!
-
-            BlockList[position].Predecessors.Add(CurrentBlock);
-            CurrentBlock.Successors.Add(BlockList[position]);
+            LLVM.BuildBr(_builder, _blockList[position].BlockRef); //Terminator instruction is needed
+            _blockList[position].Predecessors.Add(CurrentBlock);
+            CurrentBlock.Successors.Add(_blockList[position]);
         }
-        LLVM.PositionBuilderAtEnd(builder, BlockList[position].BlockRef);
-        CurrentBlock = BlockList[position];
+        LLVM.PositionBuilderAtEnd(_builder, _blockList[position].BlockRef);
+        CurrentBlock = _blockList[position];
     }
 
     public void PatchBlockGraph()
@@ -123,29 +137,34 @@ public class ControlFlowGraphBuilder
         }
     }
     
-    public void BuildPhis()
+    public void BuildPhisForCurrentBlock()
+    {
+        BuildPhis(CurrentBlock);
+    }
+
+    private void BuildPhis(BlockNode block)
     {
         //Restore stack
-        if (CurrentBlock.Predecessors.Any()) //one predecessor must already exist to restore stack
+        if (block.Predecessors.Any()) //one predecessor must already exist to restore stack
         {
-            var savedStackList = CurrentBlock.Predecessors.First().VirtualRegisterStack.Reverse().ToArray();
-            for (int i = 0; i < CurrentBlock.Predecessors.First().VirtualRegisterStack.Count(); i++) //predecessors must all contain same size of saved stack
+            var savedStackList = block.Predecessors.First().VirtualRegisterStack.Reverse().ToArray();
+            for (int i = 0; i < block.Predecessors.First().VirtualRegisterStack.Count(); i++) //predecessors must all contain same size of saved stack
             {
                 var phi = LLVM.BuildPhi(_builder, savedStackList[i].TypeOf(), _registerNamer());
-                CurrentBlock.VirtualRegisterStack.Push(phi);
-                CurrentBlock.RestoredStack.Push(phi);
+                block.VirtualRegisterStack.Push(phi);
+                block.RestoredStack.Push(phi);
             }
         }
         
-        BuildPhisForValues(_localVariables.Count, CurrentBlock.LocalVariables, CurrentBlock.RestoredLocals, _localVariables
+        BuildPhisForValues(_localVariables.Count, block.LocalVariables, block.RestoredLocals, _localVariables
             .Select(v => v.LocalType.ToLLVMType())
             .ToArray());
 
-        BuildPhisForValues(_parameterInfos.Count, CurrentBlock.Parameters, CurrentBlock.RestoredParameters, _parameterInfos
+        BuildPhisForValues(_parameterInfos.Count, block.Parameters, block.RestoredParameters, _parameterInfos
             .Select(p => p.ParameterType.ToLLVMType())
             .ToArray());
     }
-
+    
     private void BuildPhisForValues(int amountOfValues, Dictionary<int, LLVMValueRef> values,
         Dictionary<int, LLVMValueRef> restoredValues, LLVMTypeRef[] phiTypes)
     {

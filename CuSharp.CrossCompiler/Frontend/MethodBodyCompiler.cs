@@ -45,17 +45,12 @@ public class MethodBodyCompiler
     public IEnumerable<(ILOpCode OpCode, object? Operand)> CompileMethodBody()
     {
         //GenerateArrayLengthIndexTable(); TODO CHECK IF POSSIBLE
-
-        var entryBlock = LLVM.AppendBasicBlock(_functionsDto.Function, "entry");
-        LLVM.PositionBuilderAtEnd(_builder, entryBlock);
         
-        _cfg = new ControlFlowGraphBuilder(new BlockNode {BlockRef = entryBlock}, _inputKernel.LocalVariables, _inputKernel.ParameterInfos, _builder, GetVirtualRegisterName);
-        for (int i = 0; i < _inputKernel.ParameterInfos.Length; i++)
-        {
-            _cfg.CurrentBlock.Parameters.Add(i, LLVM.GetParam(_functionsDto.Function, (uint) i));
-        }
+        _cfg = new ControlFlowGraphBuilder(_functionsDto.Function, _inputKernel.LocalVariables, _inputKernel.ParameterInfos, _builder, GetVirtualRegisterName);
         
         IList<(ILOpCode, object?)> opCodes = new List<(ILOpCode, object?)>();
+        
+        var firstBlock = _cfg.GetBlock(_stream.Position, _functionsDto.Function);
         while (_reader.BaseStream.Position < _reader.BaseStream.Length)
         {
             if (_reader.BaseStream.Position == _reader.BaseStream.Length)
@@ -63,11 +58,11 @@ public class MethodBodyCompiler
                 throw new ArgumentOutOfRangeException("Unexpected end of method body.");
             }
 
+            
             if (_cfg.PositionIsBlockStart(_stream.Position))
             {
-                //_cfg.SaveCurrentStack(_cfg.CurrentBlock.VirtualRegisterStack);
-                _cfg.SwitchBlock(_stream.Position, _builder);
-                _cfg.BuildPhis();
+                _cfg.SwitchBlock(_stream.Position);
+                _cfg.BuildPhisForCurrentBlock();
             }
 
             opCodes.Add(CompileNextOpCode());
