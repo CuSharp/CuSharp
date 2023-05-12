@@ -46,11 +46,10 @@ public class MethodBodyCompiler
     {
         //GenerateArrayLengthIndexTable(); TODO CHECK IF POSSIBLE
         
-        _cfg = new ControlFlowGraphBuilder(_functionsDto.Function, _inputKernel.LocalVariables, _inputKernel.ParameterInfos, _builder, GetVirtualRegisterName);
+        _cfg = new ControlFlowGraphBuilder(_functionsDto.Function, _inputKernel, _builder, GetVirtualRegisterName);
         
         IList<(ILOpCode, object?)> opCodes = new List<(ILOpCode, object?)>();
         
-        //var firstBlock = _cfg.GetBlock(_stream.Position, _functionsDto.Function);
         while (_reader.BaseStream.Position < _reader.BaseStream.Length)
         {
             if (_reader.BaseStream.Position == _reader.BaseStream.Length)
@@ -58,12 +57,7 @@ public class MethodBodyCompiler
                 throw new ArgumentOutOfRangeException("Unexpected end of method body.");
             }
 
-            
-            if (_cfg.PositionIsBlockStart(_stream.Position))
-            {
-                _cfg.SwitchBlock(_stream.Position);
-                _cfg.BuildPhisForCurrentBlock();
-            }
+            _cfg.UpdateBlocks(_stream.Position);
 
             opCodes.Add(CompileNextOpCode());
         }
