@@ -12,7 +12,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyOpCode.ReleaseMode;
 
 [Collection("Sequential")]
 [Trait(TestCategories.TestCategory, TestCategories.UnitReleaseOnly)]
-public class LogicalOperatorReleaseOpCode
+public class LogicalOperatorReleaseOpCodeTests
 {
     [Fact]
     public void ScalarInt_LogicalAnd_OpCodes()

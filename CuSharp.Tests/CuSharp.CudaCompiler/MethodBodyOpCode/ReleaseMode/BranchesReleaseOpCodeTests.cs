@@ -12,7 +12,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyOpCode.ReleaseMode;
 
 [Collection("Sequential")]
 [Trait(TestCategories.TestCategory, TestCategories.UnitReleaseOnly)]
-public class BranchesReleaseOpCode
+public class BranchesReleaseOpCodeTests
 {
     [Fact]
     public void ScalarInt_BranchesWithInt32Target_OpCode()

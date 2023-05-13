@@ -12,7 +12,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyOpCode.DebugMode;
 
 [Collection("Sequential")]
 [Trait(TestCategories.TestCategory, TestCategories.UnitDebugOnly)]
-public class ControlFlowDebugOpCode
+public class ControlFlowDebugOpCodeTests
 {
     [Fact]
     public void ScalarInt_Switch_OpCode()

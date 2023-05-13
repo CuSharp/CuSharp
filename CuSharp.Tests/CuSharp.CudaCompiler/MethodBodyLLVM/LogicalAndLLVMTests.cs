@@ -11,7 +11,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyLLVM;
 // Other Output in Debug and Release Mode. Therefore, Marked with both Traits
 [Trait(TestCategories.TestCategory, TestCategories.UnitDebugOnly)]
 [Trait(TestCategories.TestCategory, TestCategories.UnitReleaseOnly)]
-public class LogicalAndLLVM
+public class LogicalAndLLVMTests
 {
     private readonly TestValidator _validator = new();
 

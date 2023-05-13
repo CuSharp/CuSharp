@@ -12,7 +12,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyOpCode.DebugMode;
 
 [Collection("Sequential")]
 [Trait(TestCategories.TestCategory, TestCategories.UnitDebugOnly)]
-public class CallDebugOpCode
+public class CallDebugOpCodeTests
 {
     // TODO: Fix
     //[Fact]

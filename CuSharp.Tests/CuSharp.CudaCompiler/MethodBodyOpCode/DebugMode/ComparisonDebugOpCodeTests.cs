@@ -12,7 +12,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyOpCode.DebugMode;
 
 [Collection("Sequential")]
 [Trait(TestCategories.TestCategory, TestCategories.UnitDebugOnly)]
-public class ComparisonDebugOpCode
+public class ComparisonDebugOpCodeTests
 {
     [Fact]
     public void ScalarInt_LessThan_OpCode()

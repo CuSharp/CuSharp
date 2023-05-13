@@ -13,7 +13,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyOpCode;
 
 [Collection("Sequential")]
 [Trait(TestCategories.TestCategory, TestCategories.Unit)]
-public class ArithmeticOperatorOpCode
+public class ArithmeticOperatorOpCodeTests
 {
     #region Addition
 

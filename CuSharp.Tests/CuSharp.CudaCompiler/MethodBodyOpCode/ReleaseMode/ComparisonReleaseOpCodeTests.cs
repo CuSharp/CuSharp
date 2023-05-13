@@ -12,7 +12,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyOpCode.ReleaseMode;
 
 [Collection("Sequential")]
 [Trait(TestCategories.TestCategory, TestCategories.UnitReleaseOnly)]
-public class ComparisonReleaseOpCode
+public class ComparisonReleaseOpCodeTests
 {
     [Fact]
     public void ScalarInt_LessThan_OpCode()

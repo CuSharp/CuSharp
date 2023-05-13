@@ -9,7 +9,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyOpCode;
 
 [Collection("Sequential")]
 [Trait(TestCategories.TestCategory, TestCategories.Unit)]
-public class CallOpCode
+public class CallOpCodeTests
 {
     [Fact]
     public void TestNotSupportedNonStaticCall()

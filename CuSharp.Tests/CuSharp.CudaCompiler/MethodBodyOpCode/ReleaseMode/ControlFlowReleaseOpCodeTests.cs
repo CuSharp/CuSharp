@@ -12,7 +12,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyOpCode.ReleaseMode;
 
 [Collection("Sequential")]
 [Trait(TestCategories.TestCategory, TestCategories.UnitReleaseOnly)]
-public class ControlFlowReleaseOpCode
+public class ControlFlowReleaseOpCodeTests
 {
     [Fact]
     public void ScalarInt_Switch_OpCode()

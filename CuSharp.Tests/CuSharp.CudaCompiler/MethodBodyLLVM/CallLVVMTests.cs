@@ -9,7 +9,7 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyLLVM
 {
     [Collection("Sequential")]
     [Trait(TestCategories.TestCategory, TestCategories.Unit)]
-    public class CallLVVM
+    public class CallLVVMTests
     {
         private readonly LLVMRepresentationLoader _llvmLoader = new();
         private readonly TestValidator _validator = new();
