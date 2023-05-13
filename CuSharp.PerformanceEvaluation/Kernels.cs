@@ -1,10 +1,11 @@
-﻿using CuSharp.Kernel;
+﻿using CuSharp.CudaCompiler.Frontend;
+using CuSharp.Kernel;
 
 namespace CuSharp.PerformanceEvaluation;
 
 public static class Kernels
 {
-    
+    [Kernel(ArrayMemoryLocation.NVVM_SHARED)]
     public static void IntMatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth)
     {
         var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
@@ -22,6 +23,7 @@ public static class Kernels
         }
     }
 
+    [Kernel(ArrayMemoryLocation.NVVM_SHARED)]
     public static void TiledIntMatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth, int tileWidth, int nofTiles)
     {
         var tx = KernelTools.ThreadIndex.X;
@@ -64,6 +66,7 @@ public static class Kernels
             c[row * matrixWidth + col] = sum;
         }
     }
+
     public static void IntMatrixMultiplicationSequential(double[] a, double[] b, double[] c, int matrixWidth, int gridDim, int blockDim) {
         
         for (int row = 0; row < gridDim * blockDim; row++)
@@ -84,9 +87,9 @@ public static class Kernels
         }
     }
 
+    [Kernel(ArrayMemoryLocation.NVVM_SHARED)]
     public static void MandelBrot(float[] light,  int maxIterations, int N, float zoom, float deltaX, float deltaY)
     {
-        
         var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
         var col = KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X;
 
@@ -107,6 +110,5 @@ public static class Kernels
        
             light[row * N + col] = iteration;     
         }
-        
     }
 }

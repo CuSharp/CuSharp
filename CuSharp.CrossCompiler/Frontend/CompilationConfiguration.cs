@@ -2,11 +2,22 @@
 
 namespace CuSharp.CudaCompiler.Frontend;
 
+/// <summary>
+/// Array Memory Location, Mapped to NVVM IR Address Space: https://docs.nvidia.com/cuda/nvvm-ir-spec/#address-spaces
+/// </summary>
+public enum ArrayMemoryLocation
+{
+    NVVM_GLOBAL = 1,
+    NVVM_SHARED = 3,
+    NVVM_LOCAL = 5
+}
+
 public class CompilationConfiguration
 {
     public string DataLayout { get; private init; } = "";
     public string Target { get; private init; } = "";
     public string KernelName { get; set; }
+    public ArrayMemoryLocation ArrayMemoryLocation { get; set; } = ArrayMemoryLocation.NVVM_GLOBAL;
 
     public Action<LLVMModuleRef, LLVMValueRef>[] DeclareAnnotations { get; set; } = 
         Array.Empty<Action<LLVMModuleRef, LLVMValueRef>>();

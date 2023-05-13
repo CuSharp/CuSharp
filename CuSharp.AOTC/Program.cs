@@ -3,6 +3,7 @@
 using System.Reflection;
 using CuSharp.CudaCompiler;
 using CuSharp.CudaCompiler.Backend;
+using CuSharp.CudaCompiler.Frontend;
 using CuSharp.CudaCompiler.Kernels;
 using CuSharp.Kernel;
 
@@ -33,6 +34,13 @@ public class AOTC
         foreach (var method in methods)
         {
             Console.Write($"Compiling\t{KernelHelpers.GetMethodIdentity(method)}:\t");
+
+            var nnvmConfiguration = CompilationConfiguration.NvvmConfiguration;
+            var attributes = method.GetCustomAttributes(typeof(KernelAttribute)).ToList();
+
+            if (attributes is { Count: 1 })
+                nnvmConfiguration.ArrayMemoryLocation = ((KernelAttribute)attributes[0]).ArrayMemoryLocation;
+
             var ptxKernel = compiler.Compile(method.Name, method);
             WriteFile(outPath, method, ptxKernel.KernelBuffer);
             Console.WriteLine("Done");

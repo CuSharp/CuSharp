@@ -33,8 +33,14 @@ public class KernelCrossCompiler
         foreach (var current in functionGenerator.AllFunctionsToCompile())
         {
             functionsDto.Function = current.llvmFunction;
-            new MethodBodyCompiler(current.msilFunction, _builder, functionsDto, functionGenerator){Module = _module}.CompileMethodBody(); //TODO change module input   
-            if(optimize) RunOptimization(current.llvmFunction);
+            new MethodBodyCompiler(current.msilFunction, _builder, functionsDto, functionGenerator)
+                {
+                    Module = _module,
+                    ArrayMemoryLocation = _config.ArrayMemoryLocation
+                }
+                .CompileMethodBody(); //TODO change module input
+
+            if (optimize) RunOptimization(current.llvmFunction);
         }
 
         //CompileOtherMethods(functionGenerator, functionsDto);

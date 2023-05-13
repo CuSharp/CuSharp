@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using CuSharp.CudaCompiler;
+using CuSharp.CudaCompiler.Frontend;
 using CuSharp.CudaCompiler.Kernels;
+using CuSharp.Kernel;
 using ManagedCuda;
 using ManagedCuda.VectorTypes;
 
@@ -18,7 +20,6 @@ internal class MethodLauncher
         _aotKernelFolder = aotKernelFolder;
         _cudaDeviceContext = cudaDeviceContext;
         _compiler = compiler;
-
     }
     
     internal void CompileAndLaunch(MethodInfo method, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize,
@@ -79,8 +80,14 @@ internal class MethodLauncher
     private CudaKernel GetJITCompiledKernel(MethodInfo method, string kernelName, (uint, uint, uint) gridSize,
         (uint, uint, uint) blockSize)
     {
-            var ptxKernel = _compiler.Compile(kernelName, method);
-            return _cudaDeviceContext.LoadKernelPTX(ptxKernel.KernelBuffer, kernelName);   
+        var nnvmConfiguration = CompilationConfiguration.NvvmConfiguration;
+        var attributes = method.GetCustomAttributes(typeof(KernelAttribute)).ToList();
+        
+        if (attributes is { Count: 1 })
+            nnvmConfiguration.ArrayMemoryLocation = ((KernelAttribute)attributes[0]).ArrayMemoryLocation;
+
+        var ptxKernel = _compiler.Compile(kernelName, method, nnvmConfiguration);
+        return _cudaDeviceContext.LoadKernelPTX(ptxKernel.KernelBuffer, kernelName);   
     }
 
     private void SetGridDimensions(CudaKernel kernel, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize)
