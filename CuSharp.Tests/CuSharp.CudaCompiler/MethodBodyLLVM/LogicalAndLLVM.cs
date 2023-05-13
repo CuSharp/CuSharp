@@ -5,41 +5,55 @@ using Xunit;
 using static CuSharp.Tests.TestHelper.MethodInfoLoader;
 using static CuSharp.Tests.TestHelper.MethodsToCompile;
 
-namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyLLVM.DebugMode;
+namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyLLVM;
 
 [Collection("Sequential")]
+// Other Output in Debug and Release Mode. Therefore, Marked with both Traits
 [Trait(TestCategories.TestCategory, TestCategories.UnitDebugOnly)]
-public class LogicalAndDebugLLVM
+[Trait(TestCategories.TestCategory, TestCategories.UnitReleaseOnly)]
+public class LogicalAndLLVM
 {
     private readonly TestValidator _validator = new();
 
-    [Fact]
-    public void ScalarInt_LogicalAnd_LLVM()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ScalarInt_LogicalAnd_LLVM(bool enableOptimizer)
     {
+        // Arrange
+        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(LogicalAnd);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = kernelName;
         var crossCompiler = new KernelCrossCompiler(config);
-        var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
+        // Act
+        var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
         var actual = llvmKernel.KernelBuffer;
 
+        // Assert
         Assert.True(_validator.KernelIsCorrect(actual, kernelName));
     }
 
-    [Fact]
-    public void ScalarInt_LogicalOr_LLVM()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ScalarInt_LogicalOr_LLVM(bool enableOptimizer)
     {
+        // Arrange
+        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(LogicalOr);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = kernelName;
         var crossCompiler = new KernelCrossCompiler(config);
-        var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
 
+        // Act
+        var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
         var actual = llvmKernel.KernelBuffer;
 
+        // Assert
         Assert.True(_validator.KernelIsCorrect(actual, kernelName));
     }
 }

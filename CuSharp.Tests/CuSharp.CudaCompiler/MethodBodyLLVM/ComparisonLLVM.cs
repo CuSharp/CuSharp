@@ -5,18 +5,23 @@ using Xunit;
 using static CuSharp.Tests.TestHelper.MethodInfoLoader;
 using static CuSharp.Tests.TestHelper.MethodsToCompile;
 
-namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyLLVM.DebugMode;
+namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyLLVM;
 
 [Collection("Sequential")]
+// Other Output in Debug and Release Mode. Therefore, Marked with both Traits
 [Trait(TestCategories.TestCategory, TestCategories.UnitDebugOnly)]
-public class ComparisonDebugLLVM
+[Trait(TestCategories.TestCategory, TestCategories.UnitReleaseOnly)]
+public class ComparisonLLVM
 {
     private readonly TestValidator _validator = new();
 
-    [Fact]
-    public void ScalarInt_LessThan_LLVM()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ScalarInt_LessThan_LLVM(bool enableOptimizer)
     {
         // Arrange
+        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(LessThan);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -31,10 +36,13 @@ public class ComparisonDebugLLVM
         Assert.True(_validator.KernelIsCorrect(actual, kernelName));
     }
 
-    [Fact]
-    public void ScalarInt_LessThanOrEquals_LLVM()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ScalarInt_LessThanOrEquals_LLVM(bool enableOptimizer)
     {
         // Arrange
+        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(LessThanOrEquals);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -49,10 +57,13 @@ public class ComparisonDebugLLVM
         Assert.True(_validator.KernelIsCorrect(actual, kernelName));
     }
 
-    [Fact]
-    public void ScalarInt_GreaterThan_LLVM()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ScalarInt_GreaterThan_LLVM(bool enableOptimizer)
     {
         // Arrange
+        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(GreaterThan);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -67,10 +78,13 @@ public class ComparisonDebugLLVM
         Assert.True(_validator.KernelIsCorrect(actual, kernelName));
     }
 
-    [Fact]
-    public void ScalarInt_GreaterThanOrEquals_LLVM()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ScalarInt_GreaterThanOrEquals_LLVM(bool enableOptimizer)
     {
         // Arrange
+        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(GreaterThanOrEquals);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -85,10 +99,13 @@ public class ComparisonDebugLLVM
         Assert.True(_validator.KernelIsCorrect(actual, kernelName));
     }
 
-    [Fact]
-    public void ScalarInt_EqualsTo_LLVM()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ScalarInt_EqualsTo_LLVM(bool enableOptimizer)
     {
         // Arrange
+        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(EqualsTo);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -103,10 +120,13 @@ public class ComparisonDebugLLVM
         Assert.True(_validator.KernelIsCorrect(actual, kernelName));
     }
 
-    [Fact]
-    public void ScalarInt_NotEqualsTo_LLVM()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void ScalarInt_NotEqualsTo_LLVM(bool enableOptimizer)
     {
         // Arrange
+        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(NotEqualsTo);
         var config = CompilationConfiguration.NvvmConfiguration;
