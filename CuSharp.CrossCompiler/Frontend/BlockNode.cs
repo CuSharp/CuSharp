@@ -28,6 +28,14 @@ public class BlockNode
     
     public void BuildPhis(MSILKernel _inputKernel, LLVMBuilderRef _builder, Func<string> registerNamer)
     {
+        BuildPhisForValues(Parameters, RestoredParameters, _inputKernel.ParameterInfos
+                    .Select(p => p.ParameterType.ToLLVMType())
+                    .ToArray(), _builder, registerNamer);
+        
+        BuildPhisForValues(LocalVariables, RestoredLocals, _inputKernel.LocalVariables
+            .Select(v => v.LocalType.ToLLVMType())
+            .ToArray(), _builder, registerNamer);
+        
         //Restore stack
         if (Predecessors.Any()) //one predecessor must already exist to restore stack
         {
@@ -40,13 +48,7 @@ public class BlockNode
             }
         }
         
-        BuildPhisForValues(LocalVariables, RestoredLocals, _inputKernel.LocalVariables
-            .Select(v => v.LocalType.ToLLVMType())
-            .ToArray(), _builder, registerNamer);
 
-        BuildPhisForValues(Parameters, RestoredParameters, _inputKernel.ParameterInfos
-            .Select(p => p.ParameterType.ToLLVMType())
-            .ToArray(), _builder, registerNamer);
     }
     
     private void BuildPhisForValues(Dictionary<int, LLVMValueRef> values,

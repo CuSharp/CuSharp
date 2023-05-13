@@ -133,6 +133,9 @@ public class LLVMRepresentationLoader
                + $"{(printCompleteOutput ? outputAfterMethodBody : string.Empty)}"
                + $"define void @{kernelName}({parameters}) {{\n"
                + "entry:\n"
+               + "  br label %block0\n\n"
+               + "block0:                                           ; preds = %entry\n"
+               + GetBlock0Phis(types)
                + $"{methodBody}\n"
                + "}\n"
                + $"{(printCompleteOutput ? metaInfos: string.Empty)}";
@@ -205,6 +208,18 @@ public class LLVMRepresentationLoader
 
     #region Method Bodies
 
+    private string GetBlock0Phis(string[] paramTypes)
+    {
+        string str = "";
+        var index = 0;
+        foreach (var type in paramTypes)
+        {
+            str += $"  %reg{index} = phi {type} [ %param{index}, %entry ]\n";
+            index++;
+        }
+
+        return str;
+    }
     private string GetEmptyMethodBody()
     {
         return "  ret void";
