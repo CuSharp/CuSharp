@@ -7,9 +7,9 @@ namespace CuSharp.CudaCompiler.Frontend;
 /// </summary>
 public enum ArrayMemoryLocation
 {
-    NVVM_GLOBAL = 1,
-    NVVM_SHARED = 3,
-    NVVM_LOCAL = 5
+    GLOBAL = 1,
+    SHARED = 3,
+    LOCAL = 5
 }
 
 public class CompilationConfiguration
@@ -17,7 +17,11 @@ public class CompilationConfiguration
     public string DataLayout { get; private init; } = "";
     public string Target { get; private init; } = "";
     public string KernelName { get; set; }
-    public ArrayMemoryLocation ArrayMemoryLocation { get; set; } = ArrayMemoryLocation.NVVM_GLOBAL;
+
+    /// <summary>
+    /// Default Memory Location of Arrays Allocated with 'new ...' inside of a Kernel
+    /// </summary>
+    public ArrayMemoryLocation DefaultArrayMemoryLocation { get; set; } = ArrayMemoryLocation.GLOBAL;
 
     public Action<LLVMModuleRef, LLVMValueRef>[] DeclareAnnotations { get; set; } = 
         Array.Empty<Action<LLVMModuleRef, LLVMValueRef>>();

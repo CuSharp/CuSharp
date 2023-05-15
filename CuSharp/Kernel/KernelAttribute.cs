@@ -5,11 +5,14 @@ namespace CuSharp.Kernel;
 [System.AttributeUsage(System.AttributeTargets.Method)]
 public class KernelAttribute : System.Attribute
 {
+    /// <summary>
+    /// Memory Location of Arrays Allocated with 'new ...' inside of a Kernel
+    /// </summary>
     public ArrayMemoryLocation ArrayMemoryLocation { get; }
 
     public KernelAttribute()
     {
-        ArrayMemoryLocation = ArrayMemoryLocation.NVVM_GLOBAL;
+        ArrayMemoryLocation = ArrayMemoryLocation.GLOBAL;
     }
 
     public KernelAttribute(ArrayMemoryLocation arrayMemoryLocation)

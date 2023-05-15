@@ -84,7 +84,7 @@ internal class MethodLauncher
         var attributes = method.GetCustomAttributes(typeof(KernelAttribute)).ToList();
         
         if (attributes is { Count: 1 })
-            nnvmConfiguration.ArrayMemoryLocation = ((KernelAttribute)attributes[0]).ArrayMemoryLocation;
+            nnvmConfiguration.DefaultArrayMemoryLocation = ((KernelAttribute)attributes[0]).ArrayMemoryLocation;
 
         var ptxKernel = _compiler.Compile(kernelName, method, nnvmConfiguration);
         return _cudaDeviceContext.LoadKernelPTX(ptxKernel.KernelBuffer, kernelName);   

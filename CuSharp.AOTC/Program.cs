@@ -39,7 +39,7 @@ public class AOTC
             var attributes = method.GetCustomAttributes(typeof(KernelAttribute)).ToList();
 
             if (attributes is { Count: 1 })
-                nnvmConfiguration.ArrayMemoryLocation = ((KernelAttribute)attributes[0]).ArrayMemoryLocation;
+                nnvmConfiguration.DefaultArrayMemoryLocation = ((KernelAttribute)attributes[0]).ArrayMemoryLocation;
 
             var ptxKernel = compiler.Compile(method.Name, method);
             WriteFile(outPath, method, ptxKernel.KernelBuffer);

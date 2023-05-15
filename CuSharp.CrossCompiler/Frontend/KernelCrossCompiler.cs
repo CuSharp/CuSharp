@@ -36,7 +36,7 @@ public class KernelCrossCompiler
             new MethodBodyCompiler(current.msilFunction, _builder, functionsDto, functionGenerator)
                 {
                     Module = _module,
-                    ArrayMemoryLocation = _config.ArrayMemoryLocation
+                    ArrayMemoryLocation = _config.DefaultArrayMemoryLocation
                 }
                 .CompileMethodBody(); //TODO change module input
 

@@ -5,7 +5,7 @@ namespace CuSharp.PerformanceEvaluation;
 
 public static class Kernels
 {
-    [Kernel(ArrayMemoryLocation.NVVM_SHARED)]
+    [Kernel(ArrayMemoryLocation.SHARED)]
     public static void IntMatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth)
     {
         var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
@@ -23,7 +23,7 @@ public static class Kernels
         }
     }
 
-    [Kernel(ArrayMemoryLocation.NVVM_SHARED)]
+    [Kernel(ArrayMemoryLocation.SHARED)]
     public static void TiledIntMatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth, int tileWidth, int nofTiles)
     {
         var tx = KernelTools.ThreadIndex.X;
@@ -87,7 +87,7 @@ public static class Kernels
         }
     }
 
-    [Kernel(ArrayMemoryLocation.NVVM_SHARED)]
+    [Kernel(ArrayMemoryLocation.SHARED)]
     public static void MandelBrot(float[] light,  int maxIterations, int N, float zoom, float deltaX, float deltaY)
     {
         var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
