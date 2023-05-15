@@ -6,6 +6,7 @@ using CuSharp.CudaCompiler.Kernels;
 using LibNVVMBinder;
 
 namespace CuSharp.CudaCompiler;
+
 public class CompilationDispatcher
 {
     private readonly Dictionary<string, PTXKernel> _kernelCache;
@@ -18,12 +19,12 @@ public class CompilationDispatcher
         _enableOptimizer = enableOptimizer;
         _disableCaching = disableCaching;
     }
-    public PTXKernel Compile(string kernelName, MethodInfo methodInfo)
+    public PTXKernel Compile(string kernelName, MethodInfo methodInfo, CompilationConfiguration? nvvmConfiguration = null)
     {
         if (!_disableCaching && _kernelCache.TryGetValue(KernelHelpers.GetMethodIdentity(methodInfo), out var ptxKernel)) return ptxKernel;
-
+ 
         var kernel = new MSILKernel(kernelName, methodInfo, true);
-        var nvvmConfiguration = CompilationConfiguration.NvvmConfiguration;
+        nvvmConfiguration ??= CompilationConfiguration.NvvmConfiguration;
         nvvmConfiguration.KernelName = kernelName;
         
         var msilToLlvmCrosscompiler = new KernelCrossCompiler(nvvmConfiguration);
