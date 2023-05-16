@@ -1,4 +1,5 @@
 ﻿using CuSharp.Tests.TestHelper;
+using CuSharp.Tests.TestKernels;
 using Xunit;
 
 namespace CuSharp.Tests.Integration;
@@ -20,6 +21,5 @@ public class RecursionTests
         RecursiveKernels.Fibonacci(expected, n);
         
         Assert.Equal(expected, result);
-        
     }
 }

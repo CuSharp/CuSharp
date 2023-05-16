@@ -415,7 +415,9 @@ public class MethodBodyCompiler
             //case ILOpCode.Newobj: throw new NotSupportedException();
             //case ILOpCode.Not: throw new NotSupportedException();
             //case ILOpCode.Or: throw new NotSupportedException();
-            //case ILOpCode.Pop: throw new NotSupportedException();
+            case ILOpCode.Pop:
+                _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+                break;
             case ILOpCode.Rem:
                 CompileRem();
                 break;
