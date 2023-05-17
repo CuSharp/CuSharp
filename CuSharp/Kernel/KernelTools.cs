@@ -13,7 +13,8 @@ public static class KernelTools
     public static Func<(uint X, uint Y, uint Z)> GetBlockDimensionAction { get; set; } = () => throw new NotSupportedException(ErrorMessage);
 
     public static Action SyncThreads => CallSyncThreadsAction;
-
+    
+    public static Action ThreadFence => CallSyncThreadsAction;
     public static (uint X, uint Y, uint Z) BlockIndex => GetBlockIndexAction();
     
     public static (uint X, uint Y, uint Z) ThreadIndex => GetThreadIndexAction();

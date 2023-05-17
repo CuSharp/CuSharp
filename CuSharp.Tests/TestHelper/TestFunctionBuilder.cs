@@ -39,11 +39,11 @@ namespace CuSharp.Tests.TestHelper
             return LLVM.AddFunction(module, kernelName, LLVM.FunctionType(LLVM.VoidType(), paramType, false));
         }
 
-        private static (string, LLVMValueRef)[] GetExternalFunctions(string kernelName)
+        private static (string, LLVMValueRef, LLVMValueRef[])[] GetExternalFunctions(string kernelName)
         {
             var config = CompilationConfiguration.NvvmConfiguration;
             config.KernelName = kernelName;
-            var externalFunctions = new (string, LLVMValueRef)[config.DeclareExternalFunctions.Length];
+            var externalFunctions = new (string, LLVMValueRef, LLVMValueRef[])[config.DeclareExternalFunctions.Length];
             var module = LLVM.ModuleCreateWithName(config.KernelName + "MODULE");
 
             var counter = 0;

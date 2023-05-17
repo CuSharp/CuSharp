@@ -7,6 +7,12 @@ namespace CuSharp;
 public partial class CuDevice
 {
     
+    public void Launch(Action method, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize)
+    {
+        object[] parameters = {};
+        _launcher.CompileAndLaunch(method.GetMethodInfo(), gridSize, blockSize, parameters);
+    }
+    
     public void Launch<T0>(Action<T0> method, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize, Tensor<T0> param0)
     {
         object[] parameters = {param0};

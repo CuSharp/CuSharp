@@ -1030,7 +1030,7 @@ public class MethodBodyCompiler
         }
         
         var externalFunctionToCall = _functionsDto.ExternalFunctions.First(func => func.Item1 == _nameOfMethodToCall);
-        LLVM.BuildCall(_builder, externalFunctionToCall.Item2, Array.Empty<LLVMValueRef>(), "");
+        LLVM.BuildCall(_builder, externalFunctionToCall.Item2, externalFunctionToCall.Item3, "");
     }
     private void CompileCall(int operand)
     {

@@ -95,9 +95,9 @@ public class KernelCrossCompiler
 
     }
 
-    private (string, LLVMValueRef)[] GenerateDeviceIntrinsicFunctions()
+    private (string, LLVMValueRef, LLVMValueRef[])[] GenerateDeviceIntrinsicFunctions()
     {
-        var externalFunctions = new (string, LLVMValueRef)[_config.DeclareExternalFunctions.Length];
+        var externalFunctions = new (string, LLVMValueRef, LLVMValueRef[])[_config.DeclareExternalFunctions.Length];
         var counter = 0;
         foreach (var declarationGenerator in _config.DeclareExternalFunctions)
         {
