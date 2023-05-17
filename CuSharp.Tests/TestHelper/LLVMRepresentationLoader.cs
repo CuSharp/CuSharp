@@ -115,6 +115,8 @@ public class LLVMRepresentationLoader
                                     + "\n"
                                     + "; Function Attrs: convergent nounwind\n"
                                     + "declare void @llvm.nvvm.barrier0() #1\n"
+                                    + "\n"
+                                    + "declare void @llvm.nvvm.membar(i32)\n"
                                     + "\n";
         var metaInfos = "\n"
                         + "attributes #0 = { nounwind readnone }\n"
