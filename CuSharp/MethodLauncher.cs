@@ -52,13 +52,15 @@ internal class MethodLauncher
         return cudaKernel;
     }
 
+    private const string ValidMethodNameChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$";
     private CudaKernel GetCompiledKernel(MethodInfo method, (uint,uint,uint) gridSize, (uint,uint,uint) blockSize)
     {
+        var kernelName =  new string(method.Name.Select(c => ValidMethodNameChars.Contains(c) ? c : '$').ToArray());
         if (HasPrecompiledKernel(method))
         {
-            return GetPrecompiledKernel(method, method.Name, gridSize, blockSize);
+            return GetPrecompiledKernel(method, kernelName, gridSize, blockSize);
         }
-        return GetJITCompiledKernel(method, method.Name, gridSize, blockSize);
+        return GetJITCompiledKernel(method, kernelName, gridSize, blockSize);
     }
     private bool HasPrecompiledKernel(MethodInfo method)
     {

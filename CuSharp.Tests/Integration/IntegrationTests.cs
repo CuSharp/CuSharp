@@ -442,6 +442,22 @@ public class IntegrationTests
     {
         var dev = global::CuSharp.CuSharp.GetDefaultDevice();
         dev.Launch(MethodsToCompile.ThreadFence, (1,1,1), (1,1,1), dev.Allocate<int>(1));
-        
+    }
+
+    [Fact]
+    public void TestLocalFunction()
+    {
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+
+        static void Kernel(uint[] a)
+        {
+            var idx = KernelTools.ThreadIndex.X;
+            a[idx] = idx;
+        }
+
+        var devA = dev.Allocate<uint>(5);
+        dev.Launch<uint[]>(Kernel, (1,1,1), (5,1,1), devA);
+        var a = dev.Copy(devA);
+        Assert.Equal(new uint[]{0,1,2,3,4}, a);
     }
 }

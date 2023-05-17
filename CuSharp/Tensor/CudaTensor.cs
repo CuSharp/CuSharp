@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+using System.Runtime.InteropServices;
 using ManagedCuda;
 using ManagedCuda.BasicTypes;
 
