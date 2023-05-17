@@ -1,4 +1,5 @@
-﻿using CuSharp.Kernel;
+﻿using CuSharp.CudaCompiler.Frontend;
+using CuSharp.Kernel;
 
 namespace CuSharp.Tests.TestHelper;
 
@@ -616,6 +617,7 @@ public class MethodsToCompile
     }
 
     const int size = 1;
+    [Kernel(ArrayMemoryLocation.SHARED)]
     public static void SharedMemoryTestKernel(int[] a, int b)
     {
         
@@ -661,5 +663,19 @@ public class MethodsToCompile
     {
         KernelTools.GlobalThreadFence();
         KernelTools.SystemThreadFence();
+    }
+    
+    [Kernel]
+    public static void MultiDimKernel(int[,] a, int b)
+    {
+        a[0, 0] = b;
+    }
+
+    [Kernel]
+    public static void MultiDimArrayAddition(int[,] a, int[,] b)
+    {
+        var x = KernelTools.ThreadIndex.X;
+        var y = KernelTools.ThreadIndex.Y;
+        a[x, y] += b[x, y];
     }
 }

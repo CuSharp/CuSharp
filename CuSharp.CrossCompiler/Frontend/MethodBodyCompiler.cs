@@ -412,7 +412,10 @@ public class MethodBodyCompiler
             //case ILOpCode.Mul_ovf: throw new NotSupportedException();
             //case ILOpCode.Mul_ovf_un: throw new NotSupportedException();
             //case ILOpCode.Neg: throw new NotSupportedException();
-            //case ILOpCode.Newobj: throw new NotSupportedException();
+            case ILOpCode.Newobj:
+                operand = _reader.ReadInt32();
+                CompileNewobj((int) operand);
+                break;
             //case ILOpCode.Not: throw new NotSupportedException();
             //case ILOpCode.Or: throw new NotSupportedException();
             case ILOpCode.Pop:
@@ -848,6 +851,32 @@ public class MethodBodyCompiler
         arr.SetInitializer(LLVM.GetUndef(type));
         _cfg.CurrentBlock.VirtualRegisterStack.Push(arr);
     }
+    
+    private void CompileNewobj(int operand) //TODO Test
+    {
+        if (operand < 0)
+        {
+            throw new BadImageFormatException($"Invalid metadata token");
+        }
+        
+        var ctor = _inputKernel.MemberInfoModule.ResolveMethod(operand);
+
+        if (!ctor.DeclaringType.IsPrimitive)
+        {
+            throw new NotSupportedException("Unsupported use of the \"new\" keyword");
+        }
+
+        var sizeY = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var sizeX = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var lenY = LLVM.ConstIntGetZExtValue(sizeY);
+        var lenX = LLVM.ConstIntGetZExtValue(sizeX);
+        var type = LLVM.ArrayType(LLVM.ArrayType(ctor.DeclaringType.ToLLVMType(), (uint) lenY), (uint) lenX);
+
+        var arr = LLVM.AddGlobalInAddressSpace(Module, type, GetGlobalVariableName(), (uint) ArrayMemoryLocation);
+        arr.SetLinkage(LLVMLinkage.LLVMInternalLinkage);
+        arr.SetInitializer(LLVM.GetUndef(type));
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(arr);
+    }
     #endregion
 
     #region Loads
@@ -1046,52 +1075,92 @@ public class MethodBodyCompiler
         _nameOfMethodToCall = $"{method?.DeclaringType?.FullName}.{method?.Name}";
         var isIntrinsicFunction =
             _functionsDto.ExternalFunctions.Any(func => func.Item1.StartsWith(_nameOfMethodToCall));
-
-        if (!isIntrinsicFunction)
+        if (!method.IsStatic && method.DeclaringType.GetElementType().IsPrimitive)
         {
-            if (_functionGenerator == null)
-            {
-                throw new ArgumentNullException("FunctionGenerator is required to compile calls, but it is null.");
-            }
-
-            var methodInfo = method as MethodInfo;
-            var kernelToCall = new MSILKernel(methodInfo!.Name, methodInfo, false);
-            var function = _functionGenerator.GetOrDeclareFunction(kernelToCall);
-
-            var parameters = methodInfo.GetParameters().ToArray();
-
-            LLVMValueRef[] args;
-            /*if (parameters.Any(p => p.ParameterType.IsArray)) //TODO: Remove if this is part of the array-length feature
-            {
-                args = new LLVMValueRef[parameters.Length + 1];
-                args[parameters.Length] = LLVM.GetLastParam(_functionsDto.Function);
-            }
-            else
-            {
-                args = new LLVMValueRef[parameters.Length];
-            }*/
-            
-            args = new LLVMValueRef[parameters.Length];
-            
-            for (var i = parameters.Length - 1; i >= 0; i--)
-            {
-                var param = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-                args[i] = param;
-            }
-
-            if (methodInfo.ReturnType == typeof(void))
-            {
-                LLVM.BuildCall(_builder, function, args, String.Empty);
-            }
-            else
-            {
-                var call = LLVM.BuildCall(_builder, function, args, GetVirtualRegisterName());
-                
-                _cfg.CurrentBlock.VirtualRegisterStack.Push(call);
-            }
+            BuildMultiDimArrayCall(method.Name);
+        } 
+        else if (!isIntrinsicFunction)
+        {
+            BuildNvvmIntrinsicFunctionCall((MethodInfo) method);
         }
     }
 
+    private void BuildMultiDimArrayCall(string methodName)
+    {
+        if (methodName == "Address")
+        {
+            var indexY = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+            var indexX = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+            var arr = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+            var row = LLVM.BuildGEP(_builder, arr, new[] {indexX}, GetVirtualRegisterName());
+            var vec = LLVM.BuildLoad(_builder, row, GetVirtualRegisterName());
+            var elemPtr = LLVM.BuildGEP(_builder, vec, new[] {indexY}, GetVirtualRegisterName()); 
+            _cfg.CurrentBlock.VirtualRegisterStack.Push(elemPtr);
+        }
+        else if (methodName == "Set")
+        {
+            var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+            var indexY = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+            var indexX = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+            var arr = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+
+            var row = LLVM.BuildGEP(_builder, arr, new[] {indexX}, GetVirtualRegisterName());
+            var vec = LLVM.BuildLoad(_builder, row, GetVirtualRegisterName());
+            var col = LLVM.BuildGEP(_builder, vec, new[] {indexY}, GetVirtualRegisterName());
+
+            LLVM.BuildStore(_builder, value, col);
+        } 
+        else if (methodName == "Get")
+        {
+            var indexY = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+            var indexX = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+            var arr = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+
+            var row = LLVM.BuildGEP(_builder, arr, new[] {indexX}, GetVirtualRegisterName());
+            var vec = LLVM.BuildLoad(_builder, row, GetVirtualRegisterName());
+            var col = LLVM.BuildGEP(_builder, vec, new[] {indexY}, GetVirtualRegisterName());
+            var elem = LLVM.BuildLoad(_builder, col, GetVirtualRegisterName());
+            _cfg.CurrentBlock.VirtualRegisterStack.Push(elem);
+        }
+        else
+        {
+            throw new NotSupportedException("Unsupported Methodcall");
+        }
+    }
+
+    private void BuildNvvmIntrinsicFunctionCall(MethodInfo methodInfo)
+    {
+        if (_functionGenerator == null)
+        {
+            throw new ArgumentNullException("FunctionGenerator is required to compile calls, but it is null.");
+        }
+
+        var kernelToCall = new MSILKernel(methodInfo!.Name, methodInfo, false);
+        var function = _functionGenerator.GetOrDeclareFunction(kernelToCall);
+
+        var parameters = methodInfo.GetParameters().ToArray();
+
+        LLVMValueRef[] args;
+        
+        args = new LLVMValueRef[parameters.Length];
+        
+        for (var i = parameters.Length - 1; i >= 0; i--)
+        {
+            var param = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+            args[i] = param;
+        }
+
+        if (methodInfo.ReturnType == typeof(void))
+        {
+            LLVM.BuildCall(_builder, function, args, String.Empty);
+        }
+        else
+        {
+            var call = LLVM.BuildCall(_builder, function, args, GetVirtualRegisterName());
+            
+            _cfg.CurrentBlock.VirtualRegisterStack.Push(call);
+        }
+    }
     private void CompileReturn()
     {
         if (_cfg.CurrentBlock.VirtualRegisterStack.Count == 0)

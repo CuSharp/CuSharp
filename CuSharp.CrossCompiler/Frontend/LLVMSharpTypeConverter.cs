@@ -15,7 +15,8 @@ public static class LLVMSharpTypeConverter
         if (type == typeof(float)) return LLVMTypeRef.FloatType();
         if (type == typeof(double)) return LLVMTypeRef.DoubleType();
         if (type == typeof(uint)) return LLVMTypeRef.Int32Type();
-        if (type.IsArray) return LLVMTypeRef.PointerType(type.GetElementType().ToLLVMType(), 0);
+        if (type.IsSZArray) return LLVMTypeRef.PointerType(type.GetElementType().ToLLVMType(), 0);
+        if (type.IsArray) return LLVMTypeRef.PointerType(LLVMTypeRef.PointerType(type.GetElementType().ToLLVMType(), 0), 0);
         throw new NotSupportedException($"Parameter type '{type}' is unsupported");
     }
 

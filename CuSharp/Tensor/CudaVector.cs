@@ -4,9 +4,9 @@ using ManagedCuda;
 using ManagedCuda.BasicTypes;
 
 namespace CuSharp;
-internal class CudaTensor<T> : Tensor<T[]> where T : struct
+internal class CudaVector<T> : Tensor<T[]> where T : struct
 {
-    internal CudaTensor(int size)
+    internal CudaVector(int size)
     {
         var devVar = new CudaDeviceVariable<T>(size);
         DevicePointer = devVar.DevicePointer;
@@ -14,7 +14,7 @@ internal class CudaTensor<T> : Tensor<T[]> where T : struct
         Length = size;
     }
     
-    internal CudaTensor(T[] value) 
+    internal CudaVector(T[] value) 
     {
         CudaDeviceVariable<T> devVar = value;
         DevicePointer = devVar.DevicePointer;
@@ -24,7 +24,7 @@ internal class CudaTensor<T> : Tensor<T[]> where T : struct
 
     internal object DeviceVariable { get; private set; }
 
-    internal CUdeviceptr DevicePointer { get; private set; }
+    internal CUdeviceptr DevicePointer { get; private set; } 
     
     internal int Length { get; private set; }
     

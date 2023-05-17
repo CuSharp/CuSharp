@@ -81,13 +81,19 @@ namespace CuSharp.CudaCompiler.Frontend
             foreach (var paramInfo in msilParameters)
             {
                 LLVMTypeRef type;
-                if (!paramInfo.ParameterType.IsArray)
+                if (paramInfo.ParameterType.IsSZArray)
                 {
-                    type = paramInfo.ParameterType.ToLLVMType();
+                    type = LLVMTypeRef.PointerType(paramInfo.ParameterType.GetElementType().ToLLVMType(), 0);
+                }
+                else if (paramInfo.ParameterType.IsArray) //MultiDimArray [,]
+                {
+                    type = LLVMTypeRef.PointerType(
+                        LLVMTypeRef.PointerType(paramInfo.ParameterType.GetElementType().ToLLVMType(),0)
+                        ,0);
                 }
                 else 
                 {
-                    type = LLVMTypeRef.PointerType(paramInfo.ParameterType.GetElementType().ToLLVMType(), 0);
+                    type = paramInfo.ParameterType.ToLLVMType();
                 }
 
                 paramsListBuilder.Add(type);
