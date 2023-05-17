@@ -1,6 +1,6 @@
 ﻿using CuSharp.Kernel;
 
-namespace CuSharp.Tests.TestHelper;
+namespace CuSharp.Tests.TestKernels;
 
 public class RecursiveKernels
 {
