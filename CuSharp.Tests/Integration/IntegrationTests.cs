@@ -436,4 +436,12 @@ public class IntegrationTests
         var c = dev.Copy(devC);
         Assert.Equal(3, c[0]);
     }
+
+    [Fact]
+    public void TestMembar()
+    {
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        dev.Launch(MethodsToCompile.ThreadFence, (1,1,1), (1,1,1), dev.Allocate<int>(1));
+        
+    }
 }

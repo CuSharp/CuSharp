@@ -657,5 +657,9 @@ public class MethodsToCompile
         ArrayAdditionNested(a,b,c);
     }
 
-
+    public static void ThreadFence(int[] a)
+    {
+        KernelTools.GlobalThreadFence();
+        KernelTools.SystemThreadFence();
+    }
 }

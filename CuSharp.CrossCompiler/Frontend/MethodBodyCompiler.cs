@@ -1026,10 +1026,11 @@ public class MethodBodyCompiler
 
     private void CompileCallvirt(int operand)
     {
-        if (_nameOfMethodToCall != "CuSharp.Kernel.KernelTools.get_SyncThreads")
+        if (_functionsDto.ExternalFunctions.All(e => e.Item1 != _nameOfMethodToCall))
         {
             throw new Exception("Cannot call external virtual functions");
         }
+        
         
         var externalFunctionToCall = _functionsDto.ExternalFunctions.First(func => func.Item1 == _nameOfMethodToCall);
         LLVM.BuildCall(_builder, externalFunctionToCall.Item2, externalFunctionToCall.Item3, "");

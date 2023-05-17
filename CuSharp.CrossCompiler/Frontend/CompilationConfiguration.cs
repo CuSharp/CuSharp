@@ -62,69 +62,76 @@ public class CompilationConfiguration
             {
                 return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item1", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ctaid.x",
-                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), new LLVMValueRef[0]);
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
             (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_BlockDimension.Item1", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ntid.x",
-                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), new LLVMValueRef[0]);
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
             (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_ThreadIndex.Item1", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.tid.x",
-                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), new LLVMValueRef[0]);
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
 
             (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item2", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ctaid.y",
-                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), new LLVMValueRef[0]);
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
             (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_BlockDimension.Item2", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ntid.y",
-                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), new LLVMValueRef[0]);
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
             (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_ThreadIndex.Item2", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.tid.y",
-                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), new LLVMValueRef[0]);
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
 
             (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item3", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ctaid.z",
-                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), new LLVMValueRef[0]);
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
             (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_BlockDimension.Item3", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ntid.z",
-                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), new LLVMValueRef[0]);
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
             (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_ThreadIndex.Item3", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.tid.z",
-                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), new LLVMValueRef[0]);
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
 
             (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_SyncThreads", LLVM.AddFunction(moduleRef, "llvm.nvvm.barrier0",
-                    LLVM.FunctionType(LLVMTypeRef.VoidType(), new LLVMTypeRef[] { }, false)), new LLVMValueRef[0]);
+                    LLVM.FunctionType(LLVMTypeRef.VoidType(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
             
             (moduleRef) =>
-            {
-                return ("CuSharp.Kernel.KernelTools.get_ThreadFence", LLVM.AddFunction(moduleRef, "llvm.nvvm.membar",
-                    LLVM.FunctionType(LLVMTypeRef.VoidType(), new LLVMTypeRef[] {LLVMTypeRef.Int32Type()}, false)), new LLVMValueRef[]{LLVM.ConstInt(LLVMTypeRef.Int32Type(), 0, false)});
+            { //DEPRECATED, replace with membar(i32 opt) (currently impossible because unsupported by assembler
+                var function = LLVM.AddFunction(moduleRef, "llvm.nvvm.membar.gl",
+                    LLVM.FunctionType(LLVMTypeRef.VoidType(), new LLVMTypeRef[] {}, false));
+                return ("CuSharp.Kernel.KernelTools.get_GlobalThreadFence", function, new LLVMValueRef[]{});
+            },
+            (moduleRef) =>
+            { //DEPRECATED, replace with membar(i32 opt) (currently impossible because unsupported by assembler
+                var function = LLVM.AddFunction(moduleRef, "llvm.nvvm.membar.sys",
+                    LLVM.FunctionType(LLVMTypeRef.VoidType(), new LLVMTypeRef[] {}, false));
+                return ("CuSharp.Kernel.KernelTools.get_SystemThreadFence", function, new LLVMValueRef[]{});
             }
         }
     };
