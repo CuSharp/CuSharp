@@ -678,4 +678,13 @@ public class MethodsToCompile
         var y = KernelTools.ThreadIndex.Y;
         a[x, y] += b[x, y];
     }
+
+    public static void MultiDimLocalArrayTest(int[,] a, int[,] b)
+    {
+        var x = KernelTools.ThreadIndex.X;
+        var y = KernelTools.ThreadIndex.Y;
+        int[,] arr = new int[3, 3];
+        arr[x, y] = a[y, x];
+        b[y, x] = arr[x, y];
+    }
 }

@@ -494,4 +494,17 @@ public class IntegrationTests
         var expected = new [,] {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}};
         Assert.Equal(expected, a);
     }
+
+    [Fact]
+    public void TestMultiDimLocalArrayArrayAdditionKernel()
+    {
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var a = new int[,] {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
+        var b = new int[,] {{9, 8, 7}, {6, 5, 4}, {3, 2, 1}};
+        var devA = dev.Copy(a);
+        var devB = dev.Copy(b);
+        dev.Launch(MethodsToCompile.MultiDimLocalArrayTest, (1, 1, 1), (3, 3, 1), devA, devB);
+        b = dev.Copy(devB);
+        Assert.Equal(a, b);
+    }
 }
