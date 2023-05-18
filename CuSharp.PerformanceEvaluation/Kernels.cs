@@ -6,7 +6,26 @@ namespace CuSharp.PerformanceEvaluation;
 public static class Kernels
 {
     [Kernel(ArrayMemoryLocation.SHARED)]
-    public static void IntMatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth)
+    public static void MultiDimMatrixMultiplication(double[,] a, double[,] b, double[,] c, int matrixWidth)
+    {
+        var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
+        var col = KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X;
+        double result = 0;
+        if (row < matrixWidth && col < matrixWidth)
+        {
+            for (int i = 0; i < matrixWidth; i++)
+            {
+                //KernelTools.SyncThreads();
+                result += a[i,col] * b[row,i];
+            }
+
+            c[row,col] = result;
+        }
+    }
+
+    
+    [Kernel(ArrayMemoryLocation.SHARED)]
+    public static void MatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth)
     {
         var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
         var col = KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X;
@@ -22,7 +41,6 @@ public static class Kernels
             c[row * matrixWidth + col] = result;
         }
     }
-
     [Kernel(ArrayMemoryLocation.SHARED)]
     public static void TiledIntMatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth, int tileWidth, int nofTiles)
     {
