@@ -53,4 +53,17 @@ public class OperatorIntegrationTests
         return a;
     }
     
+    [Fact]
+    public void TestNot()
+    {
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        bool[] a = new bool[] {false, false};
+        bool b = true;
+        var devA = dev.Copy(a);
+        var devB = dev.CreateScalar(b);
+        dev.Launch(MethodsToCompile.NotTest, (1, 1, 1), (1, 1, 1), devA, devB);
+        a = dev.Copy(devA);
+        Assert.True(a[0]);
+        Assert.True(!a[1]);
+    }
 }
