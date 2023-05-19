@@ -515,7 +515,9 @@ public class MethodBodyCompiler
             //case ILOpCode.Ldsfld: throw new NotSupportedException();
             //case ILOpCode.Ldsflda: throw new NotSupportedException();
             //case ILOpCode.Stsfld: throw new NotSupportedException();
-            //case ILOpCode.Ldtoken: throw new NotSupportedException();
+            /*case ILOpCode.Ldtoken: 
+                _msilTokenStack.Push(_reader.ReadInt32());
+                break;*/
             //case ILOpCode.Ldvirtftn: throw new NotSupportedException();
             //case ILOpCode.Mkrefany: throw new NotSupportedException();
             case ILOpCode.Newarr:
@@ -1086,13 +1088,28 @@ public class MethodBodyCompiler
         }
         catch (Exception e)
         {
-            method = _inputKernel.MethodInfo.Module.ResolveMethod(operand, Type.EmptyTypes, PeekTop2());
+            var genericArguments = _inputKernel.MethodInfo.GetGenericArguments();
+            method = _inputKernel.MethodInfo.Module.ResolveMethod(operand, genericArguments, genericArguments);
         }
         
         _nameOfMethodToCall = $"{method?.DeclaringType?.FullName}.{method?.Name}";
         var isIntrinsicFunction =
             _functionsDto.ExternalFunctions.Any(func => func.Item1.StartsWith(_nameOfMethodToCall));
-        if ((method.DeclaringType.GetElementType() != null && method.DeclaringType.GetElementType()!.IsPrimitive) || method.DeclaringType.Namespace == "System.Numerics")
+        if (_nameOfMethodToCall == "System.Activator.CreateInstance")
+        {
+            var type = ((MethodInfo) method).ReturnType;
+            LLVMValueRef value;
+            if (type == typeof(double) || type == typeof(float))
+            {
+                value = LLVM.ConstReal(type.ToLLVMType(), 0);
+            }
+            else
+            {
+                value = LLVM.ConstInt(type.ToLLVMType(), 0, false);
+            }
+            _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
+        }
+        else if ((method.DeclaringType.GetElementType() != null && method.DeclaringType.GetElementType()!.IsPrimitive) || method.DeclaringType.Namespace == "System.Numerics")
         {
             BuildPrimitiveInstanceCall(method.Name);
         } 

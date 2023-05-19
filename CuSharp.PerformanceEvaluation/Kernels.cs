@@ -1,4 +1,5 @@
-﻿using CuSharp.CudaCompiler.Frontend;
+﻿using System.Numerics;
+using CuSharp.CudaCompiler.Frontend;
 using CuSharp.Kernel;
 
 namespace CuSharp.PerformanceEvaluation;
@@ -25,11 +26,11 @@ public static class Kernels
 
     
     [Kernel(ArrayMemoryLocation.SHARED)]
-    public static void MatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth)
+    public static void MatrixMultiplication<T>(T[] a, T[] b, T[] c, int matrixWidth) where T : INumber<T>, new()
     {
         var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
         var col = KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X;
-        double result = 0;
+        T result = new T(); 
         if (row < matrixWidth && col < matrixWidth)
         {
             for (int i = 0; i < matrixWidth; i++)
