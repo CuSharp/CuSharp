@@ -1,4 +1,5 @@
-﻿using CuSharp.CudaCompiler.Frontend;
+﻿using System.Numerics;
+using CuSharp.CudaCompiler.Frontend;
 using CuSharp.Kernel;
 
 namespace CuSharp.Tests.TestHelper;
@@ -644,4 +645,22 @@ public class MethodsToCompile
         KernelTools.SystemThreadFence();
     }
 
+    public static void IAmGeneric<T>(T[] a, T[] b) where T : INumber<T>
+    {
+        a[0] += b[0];
+    }
+
+    public static void GenericNewArray<T>(T[] a) where T : INumber<T>
+    {
+        var b = new T[5];
+        b[0] = a[1];
+        a[0] = b[0];
+    }
+
+    public static void GenericMultiDimNewArray<T>(T[,] a) where T : INumber<T>
+    {
+        var b = new T[5,6];
+        b[0, 0] = a[0, 1];
+        a[0, 0] = b[0, 0];
+    }
 }

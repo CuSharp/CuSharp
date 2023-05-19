@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Net;
+using System.Reflection;
 using System.Reflection.Metadata;
 
 using LLVMSharp;
@@ -519,8 +520,7 @@ public class MethodBodyCompiler
             //case ILOpCode.Mkrefany: throw new NotSupportedException();
             case ILOpCode.Newarr:
                 var metaDataToken = _reader.ReadInt32(); 
-                operand = _inputKernel.MethodInfo.Module.ResolveType(metaDataToken);
-                CompileNewarr((Type) operand);
+                CompileNewarr(metaDataToken);
                 break;
             //case ILOpCode.Refanytype: throw new NotSupportedException();
             //case ILOpCode.Refanyval: throw new NotSupportedException();
@@ -839,12 +839,23 @@ public class MethodBodyCompiler
         return result;
     }
 
-    private void CompileNewarr(Type operand)
+    private void CompileNewarr(int metaDataToken)
     {
+        Type inputType;
+        try
+        {
+            inputType = _inputKernel.MethodInfo.Module.ResolveType(metaDataToken);
+            
+        }
+        catch (Exception e)
+        {
+            var genericArgs = _inputKernel.MethodInfo.GetGenericArguments();
+            inputType = _inputKernel.MethodInfo.Module.ResolveType(metaDataToken, genericArgs, genericArgs);
+        }
         var elementCount = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var len = LLVM.ConstIntGetZExtValue(elementCount);
 
-        var type = LLVM.ArrayType(operand.ToLLVMType(), (uint) len);
+        var type = LLVM.ArrayType(inputType.ToLLVMType(), (uint) len);
         var arr = LLVM.AddGlobalInAddressSpace(Module, type, GetGlobalVariableName(), (uint)ArrayMemoryLocation);
         arr.SetLinkage(LLVMLinkage.LLVMInternalLinkage);
         arr.SetInitializer(LLVM.GetUndef(type));
@@ -857,10 +868,19 @@ public class MethodBodyCompiler
         {
             throw new BadImageFormatException($"Invalid metadata token");
         }
-        
-        var ctor = _inputKernel.MemberInfoModule.ResolveMethod(operand);
 
-        if (!ctor.DeclaringType.HasElementType || !ctor.DeclaringType.GetElementType().IsPrimitive)
+        MethodBase ctor;
+        try
+        {
+            ctor = _inputKernel.MemberInfoModule.ResolveMethod(operand)!;
+        }
+        catch (Exception e)
+        {
+            var genericArgs = _inputKernel.MethodInfo.GetGenericArguments();
+            ctor = _inputKernel.MemberInfoModule.ResolveMethod(operand, genericArgs, genericArgs)!;
+        }
+
+        if (!ctor.DeclaringType!.HasElementType || !ctor.DeclaringType.GetElementType()!.IsPrimitive)
         {
             throw new NotSupportedException("Unsupported use of the \"new\" keyword");
         }
@@ -1059,13 +1079,22 @@ public class MethodBodyCompiler
             throw new BadImageFormatException($"Invalid metadata token");
         }
 
-        var method = _inputKernel.MemberInfoModule.ResolveMethod(operand);
+        MethodBase? method;
+        try
+        {
+            method = _inputKernel.MemberInfoModule.ResolveMethod(operand);
+        }
+        catch (Exception e)
+        {
+            method = _inputKernel.MethodInfo.Module.ResolveMethod(operand, Type.EmptyTypes, PeekTop2());
+        }
+        
         _nameOfMethodToCall = $"{method?.DeclaringType?.FullName}.{method?.Name}";
         var isIntrinsicFunction =
             _functionsDto.ExternalFunctions.Any(func => func.Item1.StartsWith(_nameOfMethodToCall));
-        if (!method.IsStatic && method.DeclaringType.GetElementType().IsPrimitive)
+        if ((method.DeclaringType.GetElementType() != null && method.DeclaringType.GetElementType()!.IsPrimitive) || method.DeclaringType.Namespace == "System.Numerics")
         {
-            BuildMultiDimArrayCall(method.Name);
+            BuildPrimitiveInstanceCall(method.Name);
         } 
         else if (!isIntrinsicFunction)
         {
@@ -1073,6 +1102,59 @@ public class MethodBodyCompiler
         }
     }
 
+    private void BuildPrimitiveInstanceCall(string methodName)
+    {
+        switch (methodName)
+        {
+            case "op_Addition":
+                CompileAdd();
+                break;
+            case "op_Subtraction":
+                CompileSub();
+                break;
+            case "op_Multiply":
+                CompileMul();
+                break;
+            case "op_Division":
+                CompileDiv();
+                break;
+            case "op_Modulus":
+                CompileRem();
+                break;
+            case "Address":
+            {
+                var arrayAccess = PopMultiDimArrayAccess();
+                var elemPtr = BuildNestedGEP(arrayAccess.array, arrayAccess.indexX, arrayAccess.indexY);
+                _cfg.CurrentBlock.VirtualRegisterStack.Push(elemPtr);
+                break;
+            }
+            case "Set":
+            {
+                var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+                var arrayAccess = PopMultiDimArrayAccess();
+                var col = BuildNestedGEP(arrayAccess.array, arrayAccess.indexX, arrayAccess.indexY);
+                LLVM.BuildStore(_builder, value, col);
+                break;
+            }
+            case "Get":
+            {
+                var arrayAccess = PopMultiDimArrayAccess();
+                var col = BuildNestedGEP(arrayAccess.array, arrayAccess.indexX, arrayAccess.indexY);
+                var elem = LLVM.BuildLoad(_builder, col, GetVirtualRegisterName());
+                _cfg.CurrentBlock.VirtualRegisterStack.Push(elem);
+                break;
+            }
+            default:
+                throw new NotSupportedException("Unsupported Methodcall");
+        }
+    }
+    private Type[] PeekTop2()
+    {
+        var first = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var second = _cfg.CurrentBlock.VirtualRegisterStack.Peek();
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(first);
+        return new[] {first.TypeOf().ToNativeType(), second.TypeOf().ToNativeType()};
+    }
     
     private void CompileReturn()
     {
@@ -1199,37 +1281,7 @@ public class MethodBodyCompiler
 
     #region Private Helpers
 
-    private void BuildMultiDimArrayCall(string methodName)
-    {
-        switch (methodName)
-        {
-            case "Address":
-            {
-                var arrayAccess = PopMultiDimArrayAccess();
-                var elemPtr = BuildNestedGEP(arrayAccess.array, arrayAccess.indexX, arrayAccess.indexY);
-                _cfg.CurrentBlock.VirtualRegisterStack.Push(elemPtr);
-                break;
-            }
-            case "Set":
-            {
-                var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-                var arrayAccess = PopMultiDimArrayAccess();
-                var col = BuildNestedGEP(arrayAccess.array, arrayAccess.indexX, arrayAccess.indexY);
-                LLVM.BuildStore(_builder, value, col);
-                break;
-            }
-            case "Get":
-            {
-                var arrayAccess = PopMultiDimArrayAccess();
-                var col = BuildNestedGEP(arrayAccess.array, arrayAccess.indexX, arrayAccess.indexY);
-                var elem = LLVM.BuildLoad(_builder, col, GetVirtualRegisterName());
-                _cfg.CurrentBlock.VirtualRegisterStack.Push(elem);
-                break;
-            }
-            default:
-                throw new NotSupportedException("Unsupported Methodcall");
-        }
-    }
+
 
     private LLVMValueRef BuildGEP(LLVMValueRef array, LLVMValueRef offset)
     {
