@@ -36,4 +36,14 @@ public class TypeTestKernels
     {
         a[0] = a[0] && b[0];
     }
+    
+    public static void SignedIntOverflow(int[] a)
+    {
+        a[0]++;
+    }
+    
+    public static void UnsignedIntOverflow(uint[] a)
+    {
+        a[0]++;
+    }
 }

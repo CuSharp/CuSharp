@@ -12,7 +12,6 @@ public class MethodBodyCompiler
     private readonly LLVMBuilderRef _builder;
     private readonly FunctionsDto _functionsDto;
     private readonly FunctionGenerator? _functionGenerator;
-    //private readonly Stack<LLVMValueRef> _virtualRegisterStack = new();
     private readonly MemoryStream _stream;
     //private readonly Dictionary<LLVMValueRef, int> _arrayParamToLengthIndex = new(); //TODO CHECK IF POSSIBLE
 
@@ -813,7 +812,7 @@ public class MethodBodyCompiler
 
     private LLVMValueRef CastValue2IfIncompatibleInts(LLVMValueRef value1, LLVMValueRef value2)
     {
-        if(value2.TypeOf().ToNativeType() != value1.TypeOf().ToNativeType()) //TODO: Test extensively
+        if(value2.TypeOf().ToNativeType() != value1.TypeOf().ToNativeType()) 
                     value2 = LLVM.BuildIntCast(_builder, value2, value1.TypeOf(), GetVirtualRegisterName());
         return value2;
     }
@@ -852,7 +851,7 @@ public class MethodBodyCompiler
         _cfg.CurrentBlock.VirtualRegisterStack.Push(arr);
     }
     
-    private void CompileNewobj(int operand) //TODO Test
+    private void CompileNewobj(int operand) 
     {
         if (operand < 0)
         {
@@ -973,21 +972,19 @@ public class MethodBodyCompiler
         _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
     }
 
-    /*private void CompileLdlen() //TODO: test for constant arrays declared in kernel
+/*    private void CompileLdlen() 
     {
-        var array = _virtualRegisterStack.Pop();
-        LLVMValueRef lengthReference;
-        if (array.IsConstant())
+        var array = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        array = LLVM.BuildLoad(_builder, array, GetVirtualRegisterName());
+        if (true)
         {
             var length = LLVM.GetArrayLength(array.TypeOf());
-            lengthReference = LLVM.ConstInt(LLVMTypeRef.Int32Type(), length, false);
+            var lengthReference = LLVM.ConstInt(LLVMTypeRef.Int32Type(), length, false);
+            _cfg.CurrentBlock.VirtualRegisterStack.Push(lengthReference);
         } else
         {
-            var index = _arrayParamToLengthIndex[array];
-            var elementPtr = LLVM.BuildGEP(_builder, LLVM.GetLastParam(_functionsDto.Function), new[] { LLVM.ConstInt(LLVMTypeRef.Int32Type(), (uint) index, false) }, GetVirtualRegisterName());
-            lengthReference = LLVM.BuildLoad(_builder, elementPtr, GetVirtualRegisterName());
+            throw new NotSupportedException("<array>.Length is only supported for locally allocated arrays");
         }
-        _virtualRegisterStack.Push(lengthReference);
     }*/
 
     #endregion
@@ -1204,38 +1201,33 @@ public class MethodBodyCompiler
 
     private void BuildMultiDimArrayCall(string methodName)
     {
-        if (methodName == "Address")
+        switch (methodName)
         {
-            var indexY = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-            var indexX = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-            var arr = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-            
-            var elemPtr = BuildNestedGEP(arr, indexX, indexY);
-            _cfg.CurrentBlock.VirtualRegisterStack.Push(elemPtr);
-        }
-        else if (methodName == "Set")
-        {
-            var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-            var indexY = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-            var indexX = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-            var arr = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-
-            var col = BuildNestedGEP(arr, indexX, indexY);
-            LLVM.BuildStore(_builder, value, col);
-        } 
-        else if (methodName == "Get")
-        {
-            var indexY = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-            var indexX = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-            var arr = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-
-            var col = BuildNestedGEP(arr, indexX, indexY);
-            var elem = LLVM.BuildLoad(_builder, col, GetVirtualRegisterName());
-            _cfg.CurrentBlock.VirtualRegisterStack.Push(elem);
-        }
-        else
-        {
-            throw new NotSupportedException("Unsupported Methodcall");
+            case "Address":
+            {
+                var arrayAccess = PopMultiDimArrayAccess();
+                var elemPtr = BuildNestedGEP(arrayAccess.array, arrayAccess.indexX, arrayAccess.indexY);
+                _cfg.CurrentBlock.VirtualRegisterStack.Push(elemPtr);
+                break;
+            }
+            case "Set":
+            {
+                var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+                var arrayAccess = PopMultiDimArrayAccess();
+                var col = BuildNestedGEP(arrayAccess.array, arrayAccess.indexX, arrayAccess.indexY);
+                LLVM.BuildStore(_builder, value, col);
+                break;
+            }
+            case "Get":
+            {
+                var arrayAccess = PopMultiDimArrayAccess();
+                var col = BuildNestedGEP(arrayAccess.array, arrayAccess.indexX, arrayAccess.indexY);
+                var elem = LLVM.BuildLoad(_builder, col, GetVirtualRegisterName());
+                _cfg.CurrentBlock.VirtualRegisterStack.Push(elem);
+                break;
+            }
+            default:
+                throw new NotSupportedException("Unsupported Methodcall");
         }
     }
 
@@ -1263,6 +1255,15 @@ public class MethodBodyCompiler
         }
         return BuildGEP(vec, offsetY);
     }
+    
+    private (LLVMValueRef indexX, LLVMValueRef indexY, LLVMValueRef array) PopMultiDimArrayAccess()
+    {
+        var indexY = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var indexX = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var arr = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        return (indexX, indexY, arr);
+    }
+    
     private void BuildNvvmIntrinsicFunctionCall(MethodInfo methodInfo)
     {
         if (_functionGenerator == null)

@@ -61,7 +61,7 @@ public class OperatorIntegrationTests
         bool b = true;
         var devA = dev.Copy(a);
         var devB = dev.CreateScalar(b);
-        dev.Launch(MethodsToCompile.NotTest, (1, 1, 1), (1, 1, 1), devA, devB);
+        dev.Launch(OperatorTestKernels.NotTest, (1, 1, 1), (1, 1, 1), devA, devB);
         a = dev.Copy(devA);
         Assert.True(a[0]);
         Assert.True(!a[1]);

@@ -15,7 +15,7 @@ public class MultiDimArrayTests
         var dev = global::CuSharp.CuSharp.GetDefaultDevice();
         var a = new int[,] {{5}};
         var devA = dev.Copy(a);
-        dev.Launch<int[,], int>(MethodsToCompile.MultiDimKernel, (1,1,1),(1,1,1), devA, 42);
+        dev.Launch<int[,], int>(MultiDimArrayKernels.MultiDimKernel, (1,1,1),(1,1,1), devA, 42);
         a = dev.Copy(devA);
         Assert.Equal(42, a[0,0]);
     }
@@ -28,7 +28,7 @@ public class MultiDimArrayTests
         var b = new int[,] {{9, 8, 7}, {6, 5, 4}, {3, 2, 1}};
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
-        dev.Launch(MethodsToCompile.MultiDimArrayAddition, (1,1,1),(3,3,1), devA, devB);
+        dev.Launch(MultiDimArrayKernels.MultiDimArrayAddition, (1,1,1),(3,3,1), devA, devB);
         a = dev.Copy(devA);
         var expected = new [,] {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}};
         Assert.Equal(expected, a);
@@ -42,7 +42,7 @@ public class MultiDimArrayTests
         var b = new int[,] {{9, 8, 7}, {6, 5, 4}, {3, 2, 1}};
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
-        dev.Launch(MethodsToCompile.MultiDimLocalArrayTest, (1, 1, 1), (3, 3, 1), devA, devB);
+        dev.Launch(MultiDimArrayKernels.MultiDimLocalArrayTest, (1, 1, 1), (3, 3, 1), devA, devB);
         b = dev.Copy(devB);
         Assert.Equal(a, b);
     }
@@ -84,7 +84,7 @@ public class MultiDimArrayTests
         var devB = dev.Copy(b);
         var devC = dev.Copy(c);
 
-        dev.Launch(MethodsToCompile.MultiDimMatrixMultiplication, (1, 1, 1), ((uint) matrixWidth, (uint) matrixWidth, 1), devA, devB, devC);
+        dev.Launch(MultiDimArrayKernels.MultiDimMatrixMultiplication, (1, 1, 1), ((uint) matrixWidth, (uint) matrixWidth, 1), devA, devB, devC);
         c = dev.Copy(devC);
 
         Assert.Equal(expected, c);

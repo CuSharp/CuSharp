@@ -598,17 +598,6 @@ public class MethodsToCompile
         }
     }
 
-    public static void ArrayLengthAttribute(int[] a, int b)
-    {
-        b = a.Length;
-    }
-
-    public static void NotTest(bool[] a, bool b)
-    {
-        a[0] = b;
-        a[1] = !b;
-    }
-    
     public static void Newarr(int[] b)
     {
         int[] a = new int[500];
@@ -629,16 +618,6 @@ public class MethodsToCompile
         a[0] = b;
     }
 
-    public static void SignedIntOverflow(int[] a)
-    {
-        a[0]++;
-    }
-    
-    public static void UnsignedIntOverflow(uint[] a)
-    {
-        a[0]++;
-    }
-    
     public static void TestScalars(int[] a, int b)
     {
         a[0] = b;
@@ -664,40 +643,5 @@ public class MethodsToCompile
         KernelTools.GlobalThreadFence();
         KernelTools.SystemThreadFence();
     }
-    
-    [Kernel]
-    public static void MultiDimKernel(int[,] a, int b)
-    {
-        a[0, 0] = b;
-    }
 
-    [Kernel]
-    public static void MultiDimArrayAddition(int[,] a, int[,] b)
-    {
-        var x = KernelTools.ThreadIndex.X;
-        var y = KernelTools.ThreadIndex.Y;
-        a[x, y] += b[x, y];
-    }
-
-    public static void MultiDimLocalArrayTest(int[,] a, int[,] b)
-    {
-        var x = KernelTools.ThreadIndex.X;
-        var y = KernelTools.ThreadIndex.Y;
-        int[,] arr = new int[3, 3];
-        arr[x, y] = a[y, x];
-        b[y, x] = arr[x, y];
-    }
-
-    public static void MultiDimMatrixMultiplication(int[,] a, int[,] b, int[,] c)
-    {
-        var x = KernelTools.ThreadIndex.X;
-        var y = KernelTools.ThreadIndex.Y;
-        int sum = 0;
-        for (int i = 0; i < KernelTools.BlockDimension.X; i++)
-        {
-            sum += a[i,y] * b[x,i];
-        }
-
-        c[x, y] = sum;
-    }
 }

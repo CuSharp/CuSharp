@@ -22,4 +22,9 @@ public class OperatorTestKernels
     {
         a[0] %= b[0];
     }
+    public static void NotTest(bool[] a, bool b)
+    {
+        a[0] = b;
+        a[1] = !b;
+    }
 }

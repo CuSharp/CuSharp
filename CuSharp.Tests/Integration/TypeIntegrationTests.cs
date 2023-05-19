@@ -87,7 +87,7 @@ public class TypeIntegrationTests
         var dev = global::CuSharp.CuSharp.GetDefaultDevice();
         var a = new int[] {Int32.MaxValue};
         var devA = dev.Copy(a);
-        dev.Launch(MethodsToCompile.SignedIntOverflow, (1,1,1), (1,1,1), devA);
+        dev.Launch(TypeTestKernels.SignedIntOverflow, (1,1,1), (1,1,1), devA);
         a = dev.Copy(devA);
         Assert.Equal(Int32.MinValue, a[0]);
     }
@@ -98,7 +98,7 @@ public class TypeIntegrationTests
         var dev = global::CuSharp.CuSharp.GetDefaultDevice();
         var a = new uint[] {UInt32.MaxValue};
         var devA = dev.Copy(a);
-        dev.Launch(MethodsToCompile.UnsignedIntOverflow, (1,1,1), (1,1,1), devA);
+        dev.Launch(TypeTestKernels.UnsignedIntOverflow, (1,1,1), (1,1,1), devA);
         a = dev.Copy(devA);
         Assert.Equal(UInt32.MinValue, a[0]);
     }
