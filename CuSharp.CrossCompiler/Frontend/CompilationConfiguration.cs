@@ -122,13 +122,13 @@ public class CompilationConfiguration
             },
             
             (moduleRef) =>
-            { //DEPRECATED, replace with membar(i32 opt) (currently impossible because unsupported by assembler
+            { //DEPRECATED, replace with membar(i32 opt) (currently impossible because unsupported by assembler https://github.com/llvm/llvm-project/issues/61330
                 var function = LLVM.AddFunction(moduleRef, "llvm.nvvm.membar.gl",
                     LLVM.FunctionType(LLVMTypeRef.VoidType(), new LLVMTypeRef[] {}, false));
                 return ("CuSharp.Kernel.KernelTools.get_GlobalThreadFence", function, new LLVMValueRef[]{});
             },
             (moduleRef) =>
-            { //DEPRECATED, replace with membar(i32 opt) (currently impossible because unsupported by assembler
+            { //DEPRECATED, replace with membar(i32 opt) (currently impossible because unsupported by assembler https://github.com/llvm/llvm-project/issues/61330
                 var function = LLVM.AddFunction(moduleRef, "llvm.nvvm.membar.sys",
                     LLVM.FunctionType(LLVMTypeRef.VoidType(), new LLVMTypeRef[] {}, false));
                 return ("CuSharp.Kernel.KernelTools.get_SystemThreadFence", function, new LLVMValueRef[]{});
