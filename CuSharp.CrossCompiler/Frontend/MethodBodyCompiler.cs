@@ -973,10 +973,7 @@ public class MethodBodyCompiler
         {
             var fieldName = _inputKernel.MemberInfoModule.ResolveField(operand)?.Name;
             var fullQualifiedFieldName = $"{_nameOfMethodToCall}.{fieldName}";
-
-            var externalFunctionToCall = _functionsDto.ExternalFunctions.First(func => func.Item1 == fullQualifiedFieldName);
-            var call = LLVM.BuildCall(_builder, externalFunctionToCall.Item2, Array.Empty<LLVMValueRef>(), GetVirtualRegisterName());
-            _cfg.CurrentBlock.VirtualRegisterStack.Push(call);
+            BuildExternalFunctionCall(fullQualifiedFieldName);
         }
         else
         {
@@ -1107,6 +1104,17 @@ public class MethodBodyCompiler
         {
             BuildNvvmIntrinsicFunctionCall((MethodInfo) method);
         }
+        else if (isIntrinsicFunction && _nameOfMethodToCall == "CuSharp.Kernel.KernelTools.get_WarpSize")
+        {
+            BuildExternalFunctionCall(_nameOfMethodToCall);
+        }
+    }
+
+    private void BuildExternalFunctionCall(string fullQualifiedName)
+    {
+        var externalFunctionToCall = _functionsDto.ExternalFunctions.First(func => func.Item1 == fullQualifiedName);
+        var call = LLVM.BuildCall(_builder, externalFunctionToCall.Item2, Array.Empty<LLVMValueRef>(), GetVirtualRegisterName());
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(call);
     }
 
     private void BuildCreateInstanceCall(MethodInfo method)
