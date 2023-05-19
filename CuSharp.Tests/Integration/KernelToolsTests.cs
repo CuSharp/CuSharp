@@ -24,6 +24,7 @@ public class KernelToolsTests
         // Act
         dev.Launch(KernelToolsKernels.GetBlockDimensions, (1, 1, 1), (blockDimX, blockDimY, blockDimZ), devBlockDims);
         blockDims = dev.Copy(devBlockDims);
+        devBlockDims.Dispose();
 
         // Assert
         Assert.Equal(expectedBlockDims, blockDims);
@@ -44,6 +45,7 @@ public class KernelToolsTests
         // Act
         dev.Launch(KernelToolsKernels.GetGridDimensions, (gridDimX, gridDimY, gridDimZ), (1, 1, 1), devBlockDims);
         blockDims = dev.Copy(devBlockDims);
+        devBlockDims.Dispose();
 
         // Assert
         Assert.Equal(expectedBlockDims, blockDims);
@@ -61,6 +63,7 @@ public class KernelToolsTests
         // Act
         dev.Launch(KernelToolsKernels.GetWarpSize, (1, 1, 1), (1, 1, 1), devWarpSize);
         warpSize= dev.Copy(devWarpSize);
+        devWarpSize.Dispose();
 
         // Assert
         Assert.Equal(expectedWarpSize, warpSize);
