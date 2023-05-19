@@ -1095,7 +1095,7 @@ public class MethodBodyCompiler
         _nameOfMethodToCall = $"{method?.DeclaringType?.FullName}.{method?.Name}";
         var isIntrinsicFunction =
             _functionsDto.ExternalFunctions.Any(func => func.Item1.StartsWith(_nameOfMethodToCall));
-        if (_nameOfMethodToCall == "System.Activator.CreateInstance")
+        if (_nameOfMethodToCall == "System.Activator.CreateInstance") //Happens when new T()
         {
             BuildCreateInstanceCall((MethodInfo) method);
         }
@@ -1111,7 +1111,7 @@ public class MethodBodyCompiler
 
     private void BuildCreateInstanceCall(MethodInfo method)
     {
-        var type = ((MethodInfo) method).ReturnType;
+        var type = method.ReturnType;
         LLVMValueRef value;
         if (type == typeof(double) || type == typeof(float))
         {
@@ -1168,13 +1168,6 @@ public class MethodBodyCompiler
             default:
                 throw new NotSupportedException("Unsupported Methodcall");
         }
-    }
-    private Type[] PeekTop2()
-    {
-        var first = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-        var second = _cfg.CurrentBlock.VirtualRegisterStack.Peek();
-        _cfg.CurrentBlock.VirtualRegisterStack.Push(first);
-        return new[] {first.TypeOf().ToNativeType(), second.TypeOf().ToNativeType()};
     }
     
     private void CompileReturn()
