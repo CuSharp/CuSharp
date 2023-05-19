@@ -1097,17 +1097,7 @@ public class MethodBodyCompiler
             _functionsDto.ExternalFunctions.Any(func => func.Item1.StartsWith(_nameOfMethodToCall));
         if (_nameOfMethodToCall == "System.Activator.CreateInstance")
         {
-            var type = ((MethodInfo) method).ReturnType;
-            LLVMValueRef value;
-            if (type == typeof(double) || type == typeof(float))
-            {
-                value = LLVM.ConstReal(type.ToLLVMType(), 0);
-            }
-            else
-            {
-                value = LLVM.ConstInt(type.ToLLVMType(), 0, false);
-            }
-            _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
+            BuildCreateInstanceCall((MethodInfo) method);
         }
         else if ((method.DeclaringType.GetElementType() != null && method.DeclaringType.GetElementType()!.IsPrimitive) || method.DeclaringType.Namespace == "System.Numerics")
         {
@@ -1119,6 +1109,20 @@ public class MethodBodyCompiler
         }
     }
 
+    private void BuildCreateInstanceCall(MethodInfo method)
+    {
+        var type = ((MethodInfo) method).ReturnType;
+        LLVMValueRef value;
+        if (type == typeof(double) || type == typeof(float))
+        {
+            value = LLVM.ConstReal(type.ToLLVMType(), 0);
+        }
+        else
+        {
+            value = LLVM.ConstInt(type.ToLLVMType(), 0, false);
+        }
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
+    }
     private void BuildPrimitiveInstanceCall(string methodName)
     {
         switch (methodName)

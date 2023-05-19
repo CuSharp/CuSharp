@@ -43,17 +43,17 @@ public static class Kernels
         }
     }
     [Kernel(ArrayMemoryLocation.SHARED)]
-    public static void TiledIntMatrixMultiplication(double[] a, double[] b, double[] c, int matrixWidth, int tileWidth, int nofTiles)
+    public static void TiledIntMatrixMultiplication<T>(T[] a, T[] b, T[] c, int matrixWidth, int tileWidth, int nofTiles) where T : INumber<T>, new()
     {
         var tx = KernelTools.ThreadIndex.X;
         var ty = KernelTools.ThreadIndex.Y;
         var col = KernelTools.BlockIndex.X * tileWidth + tx;
         var row = KernelTools.BlockIndex.Y * tileWidth + ty;
         
-        var aSub = new double[1024];
-        var bSub = new double[1024];
+        var aSub = new T[1024];
+        var bSub = new T[1024];
 
-        double sum = 0;
+        T sum = new T();
         for (int tile = 0; tile < nofTiles; tile++)
         {
             if (row < matrixWidth && tile * tileWidth + tx < matrixWidth)
