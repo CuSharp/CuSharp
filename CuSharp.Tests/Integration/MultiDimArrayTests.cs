@@ -88,5 +88,26 @@ public class MultiDimArrayTests
         c = dev.Copy(devC);
 
         Assert.Equal(expected, c);
-    } 
+    }
+
+    [Fact]
+    public void TestAssignLocalToParam()
+    {
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var a = dev.Allocate<int>(1, 1);
+        dev.Launch(MultiDimArrayKernels.MultiDimArrayAssignToParam, (1,1,1), (1,1,1), a);
+        //Sucess if no exception
+    }
+
+    [Fact]
+    public void TestAssignParamToLocal()
+    {
+        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var a = new int[1, 1];
+        a[0, 0] = 42;
+        var devA = dev.Copy(a);
+        dev.Launch(MultiDimArrayKernels.MultiDimArrayAssignToLocal, (1,1,1), (1,1,1), devA);
+        a = dev.Copy(devA);
+        Assert.Equal(1337, a[0,0]);
+    }
 }

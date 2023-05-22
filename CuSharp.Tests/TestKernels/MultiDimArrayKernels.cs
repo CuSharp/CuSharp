@@ -40,5 +40,15 @@ public class MultiDimArrayKernels
         c[x, y] = sum;
     }
 
+    public static void MultiDimArrayAssignToParam(int[,] a)
+    {
+        var x = new int[1, 1];
+        a = x;
+    }
     
+    public static void MultiDimArrayAssignToLocal(int[,] a)
+    {
+        var x = a;
+        a[0, 0] = 1337;
+    }
 }
