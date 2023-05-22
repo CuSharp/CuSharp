@@ -60,6 +60,12 @@ public class CompilationConfiguration
         {
             (LLVMModuleRef moduleRef) =>
             {
+                return ("CuSharp.Kernel.KernelTools.get_GridDimension.Item1", LLVM.AddFunction(moduleRef,
+                    "llvm.nvvm.read.ptx.sreg.nctaid.x",
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
+            },
+            (moduleRef) =>
+            {
                 return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item1", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ctaid.x",
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
@@ -77,6 +83,12 @@ public class CompilationConfiguration
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
 
+            (moduleRef) =>
+            {
+                return ("CuSharp.Kernel.KernelTools.get_GridDimension.Item2", LLVM.AddFunction(moduleRef,
+                    "llvm.nvvm.read.ptx.sreg.nctaid.y",
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
+            },
             (moduleRef) =>
             {
                 return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item2", LLVM.AddFunction(moduleRef,
@@ -98,6 +110,12 @@ public class CompilationConfiguration
 
             (moduleRef) =>
             {
+                return ("CuSharp.Kernel.KernelTools.get_GridDimension.Item3", LLVM.AddFunction(moduleRef,
+                    "llvm.nvvm.read.ptx.sreg.nctaid.z",
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
+            },
+            (moduleRef) =>
+            {
                 return ("CuSharp.Kernel.KernelTools.get_BlockIndex.Item3", LLVM.AddFunction(moduleRef,
                     "llvm.nvvm.read.ptx.sreg.ctaid.z",
                     LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
@@ -117,10 +135,15 @@ public class CompilationConfiguration
 
             (moduleRef) =>
             {
+                return ("CuSharp.Kernel.KernelTools.get_WarpSize", LLVM.AddFunction(moduleRef, "llvm.nvvm.read.ptx.sreg.warpsize",
+                    LLVM.FunctionType(LLVMTypeRef.Int32Type(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
+            },
+
+            (moduleRef) =>
+            {
                 return ("CuSharp.Kernel.KernelTools.get_SyncThreads", LLVM.AddFunction(moduleRef, "llvm.nvvm.barrier0",
                     LLVM.FunctionType(LLVMTypeRef.VoidType(), new LLVMTypeRef[] { }, false)), Array.Empty<LLVMValueRef>());
             },
-            
             (moduleRef) =>
             { //DEPRECATED, replace with membar(i32 opt) (currently impossible because unsupported by assembler https://github.com/llvm/llvm-project/issues/61330
                 var function = LLVM.AddFunction(moduleRef, "llvm.nvvm.membar.gl",
