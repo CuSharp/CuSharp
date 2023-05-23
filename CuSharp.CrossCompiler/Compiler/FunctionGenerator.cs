@@ -9,7 +9,7 @@ namespace CuSharp.CudaCompiler.Frontend
         private readonly LLVMModuleRef _module;
         private readonly LLVMBuilderRef _builder;
 
-        public List<(MSILKernel msilFunction, LLVMValueRef llvmFunction)> FunctionsToBuild { get; set;  } = new(); //todo -> change to private queue
+        private List<(MSILKernel msilFunction, LLVMValueRef llvmFunction)> FunctionsToBuild { get; } = new(); 
         
         public FunctionGenerator(LLVMModuleRef module, LLVMBuilderRef builder)
         {
@@ -67,13 +67,6 @@ namespace CuSharp.CudaCompiler.Frontend
             return function;
         }*/
 
-        [Obsolete]
-        public void AppendFunction(LLVMValueRef function) //TODO REMOVE, only here for the tests
-        {
-            var entryBlock = LLVM.AppendBasicBlock(function, "entry");
-            LLVM.PositionBuilderAtEnd(_builder, entryBlock);
-        }
-
         private static LLVMTypeRef[] GenerateLLVMParameters(ParameterInfo[] msilParameters)
         {
             
@@ -98,12 +91,6 @@ namespace CuSharp.CudaCompiler.Frontend
 
                 paramsListBuilder.Add(type);
             }
-
-            /*if (paramsListBuilder.Any() || //TODO REMOVE 
-                inputKernel.ParameterInfos.Any(p => p.ParameterType.IsArray))
-            {
-                paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); // Array length list
-            }*/
 
             return paramsListBuilder.ToArray();
         }

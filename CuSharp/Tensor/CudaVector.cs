@@ -11,7 +11,6 @@ internal class CudaVector<T> : Tensor<T[]> where T : struct
         var devVar = new CudaDeviceVariable<T>(size);
         DevicePointer = devVar.DevicePointer;
         DeviceVariable = devVar;
-        Length = size;
     }
     
     internal CudaVector(T[] value) 
@@ -19,14 +18,11 @@ internal class CudaVector<T> : Tensor<T[]> where T : struct
         CudaDeviceVariable<T> devVar = value;
         DevicePointer = devVar.DevicePointer;
         DeviceVariable = devVar;
-        Length = value.Length;
     }
 
     internal object DeviceVariable { get; private set; }
 
     internal CUdeviceptr DevicePointer { get; private set; } 
-    
-    internal int Length { get; private set; }
     
     public override void Dispose()
     {

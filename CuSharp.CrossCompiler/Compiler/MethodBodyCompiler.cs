@@ -14,7 +14,6 @@ public class MethodBodyCompiler
     private readonly FunctionsDto _functionsDto;
     private readonly FunctionGenerator? _functionGenerator;
     private readonly MemoryStream _stream;
-    //private readonly Dictionary<LLVMValueRef, int> _arrayParamToLengthIndex = new(); //TODO CHECK IF POSSIBLE
 
     private long _virtualRegisterCounter;
     private long _globalVariableCounter;
@@ -35,19 +34,8 @@ public class MethodBodyCompiler
         _reader = new BinaryReader(_stream);
     }
 
-    /*private void GenerateArrayLengthIndexTable() TODO CHECK IF POSSIBLE
-    {
-        var parameters = _functionsDto.Function.GetParams();
-        for (int i = 0; i < parameters.Length-1; i++)
-        {
-            _arrayParamToLengthIndex.Add(parameters[i], i);
-        }
-    }*/
-
     public IEnumerable<(ILOpCode OpCode, object? Operand)> CompileMethodBody()
     {
-        //GenerateArrayLengthIndexTable(); TODO CHECK IF POSSIBLE
-        
         _cfg = new ControlFlowGraphBuilder(_functionsDto.Function, _inputKernel, _builder, GetVirtualRegisterName);
         
         IList<(ILOpCode, object?)> opCodes = new List<(ILOpCode, object?)>();

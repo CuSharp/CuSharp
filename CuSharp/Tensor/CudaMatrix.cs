@@ -17,13 +17,12 @@ internal class CudaMatrix<T> : Tensor<T[,]> where T : struct
         }
 
         MatrixDeviceVariable = vectorPointers;
-        Length = sizeX * sizeY;
     }
     
     internal CudaMatrix(T[,] value)
     {
         var flatVector = new T[value.Length];
-        Buffer.BlockCopy(value,0,flatVector,0, value.Length * Marshal.SizeOf(typeof(T))); //TODO: Check if more efficient way
+        Buffer.BlockCopy(value,0,flatVector,0, value.Length * Marshal.SizeOf(typeof(T))); 
         FlatDeviceVariable = flatVector;
 
         
@@ -35,17 +34,14 @@ internal class CudaMatrix<T> : Tensor<T[,]> where T : struct
 
         MatrixDeviceVariable = vectorPointers;
         DevicePointer = MatrixDeviceVariable.DevicePointer;
-        Length = value.Length;
     }
 
     internal CudaDeviceVariable<T> FlatDeviceVariable { get; private set; }
 
     internal CudaDeviceVariable<SizeT> MatrixDeviceVariable { get; private set; }
 
-    internal CUdeviceptr DevicePointer { get; private set; } 
-    
-    internal int Length { get; private set; } //TODO Remove?
-    
+    internal CUdeviceptr DevicePointer { get; private set; }
+
     public override void Dispose()
     {
         (FlatDeviceVariable as IDisposable).Dispose();

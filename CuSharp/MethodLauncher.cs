@@ -31,8 +31,7 @@ internal class MethodLauncher
         var castParams = parameters
             .Select(p => p.GetType()
                              .GetProperty("DevicePointer", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(p) ?? 
-                            p.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).GetValue(p))
-            .Append(devLengths.DevicePointer) //TODO REMOVE IF NO LENGTHS ATTRIBUTE WAS IMPLEMENTED
+                            p.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(p))
             .ToArray();
         cudaKernel.Run(castParams);
     }

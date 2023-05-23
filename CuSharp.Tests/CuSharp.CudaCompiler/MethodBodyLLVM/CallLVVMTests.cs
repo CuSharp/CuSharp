@@ -48,24 +48,6 @@ namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyLLVM
             Assert.True(_validator.KernelIsCorrect(actual, kernelName));
         }
 
-        // TODO: Remove (ldlen)
-        //[Fact]
-        //public void ArrayInt_CallIntArrayMethodWithKernelTools_LLVM()
-        //{
-        //    var kernelName = MethodBase.GetCurrentMethod()!.Name;
-        //    var method = GetMethodInfo<int[]>(CallIntArrayMethodWithKernelTools);
-        //    var config = CompilationConfiguration.NvvmConfiguration;
-        //    config.KernelName = kernelName;
-        //    var crossCompiler = new KernelCrossCompiler(config);
-        //    var llvmKernel = crossCompiler.Compile(new MSILKernel(kernelName, method));
-
-        //    var expected = string.Empty; // TODO: Load expected output
-        //    var actual = llvmKernel.KernelBuffer;
-
-        //    //Assert.Equal(expected, actual);
-        //    Assert.True(_validator.KernelIsCorrect(actual, kernelName));
-        //}
-
         [Fact]
         public void ArrayInt_CallIntReturnArrayWithKernelTools_LLVM()
         {

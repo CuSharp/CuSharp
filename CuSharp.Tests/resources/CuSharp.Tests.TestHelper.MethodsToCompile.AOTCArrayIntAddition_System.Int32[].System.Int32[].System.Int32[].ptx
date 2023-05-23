@@ -10,13 +10,12 @@
 .target sm_52
 .address_size 64
 
-	// .globl	ArrayIntAddition
+	// .globl	AOTCArrayIntAddition
 
 .visible .entry AOTCArrayIntAddition(
 	.param .u64 ArrayIntAddition_param_0,
 	.param .u64 ArrayIntAddition_param_1,
-	.param .u64 ArrayIntAddition_param_2,
-	.param .u64 ArrayIntAddition_param_3
+	.param .u64 ArrayIntAddition_param_2
 )
 {
 	.reg .b32 	%r<4>;
