@@ -1,7 +1,10 @@
+
+![logo_crop](https://github.com/dotnet4GPU/CuSharp/assets/36261505/f9f16dc4-15a6-41bb-8b97-9629fd8e6910)  
+  
+A GPU Compute Framework for .NET  
+  
 [![CuSharp-Build](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-build.yml/badge.svg)](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-build.yml)
 [![CuSharp-Test](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-test.yml/badge.svg)](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-test.yml)
-![logo_crop](https://github.com/dotnet4GPU/CuSharp/assets/36261505/f9f16dc4-15a6-41bb-8b97-9629fd8e6910)
-A GPU Compute Framework for .NET
 # Examples
 ## Add two int arrays
 ```C#
