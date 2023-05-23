@@ -4,6 +4,30 @@
 ![logo](https://github.com/dotnet4GPU/CuSharp/assets/36261505/37298b8a-ef9a-44c0-a019-2bff7fc8fe73)  
 
 A GPU Compute Framework for .NET
+# Examples
+## Add two int arrays
+```C#
+[Kernel]
+static void IntAdditionKernel (int [] a , int [] b , int [] result)
+{
+  int index = KernelTools.BlockIndex.X * KernelTools.BlockDimensions.X + KernelTools.ThreadIndex.X;
+  result[index] = a[index] + b[index];
+}
+
+public void Launch()
+{
+  var device = CuSharp.GetDefaultDevice();
+
+  var arrayA = new int [] {1 ,2 ,3};
+  var arrayB = new int [] {4 ,5 ,6};
+  var deviceArrayA = device.Copy(arrayA);
+  var deviceArrayB = device.Copy(arrayB);
+  var deviceResultArray = device.Allocate(3);
+  
+  device.Launch(IntAdditionKernel, (1, 1, 1), (3, 1, 1), deviceArrayA, deviceArrayB, deviceResultArray);
+  var arrayResult = device.Copy(deviceResultArray);
+}
+```
 
 # Dependencies
 - ![CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
