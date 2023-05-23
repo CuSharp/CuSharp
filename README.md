@@ -9,7 +9,7 @@ A GPU Compute Framework for .NET
 ## Add two int arrays
 ```C#
 [Kernel]
-static void IntAdditionKernel (int [] a , int [] b , int [] result)
+static void IntAdditionKernel (int[] a , int[] b , int[] result)
 {
   int index = KernelTools.BlockIndex.X * KernelTools.BlockDimensions.X + KernelTools.ThreadIndex.X;
   result[index] = a[index] + b[index];
@@ -24,8 +24,9 @@ public void Launch()
   var deviceArrayA = device.Copy(arrayA);
   var deviceArrayB = device.Copy(arrayB);
   var deviceResultArray = device.Allocate(3);
-  
-  device.Launch(IntAdditionKernel, (1, 1, 1), (3, 1, 1), deviceArrayA, deviceArrayB, deviceResultArray);
+  var gridDimensions = (1,1,1);
+  var blockDimensions = (3,1,1);
+  device.Launch(IntAdditionKernel, gridDimensions, blockDimensions, deviceArrayA, deviceArrayB, deviceResultArray);
   var arrayResult = device.Copy(deviceResultArray);
 }
 ```
