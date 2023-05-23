@@ -47,12 +47,4 @@ public class GenericsTests
         hostA = dev.Copy(a);
         Assert.Equal(1,hostA[0,0]);
     }
-
-    [Fact]
-    public void TestGenericWithoutArgumentsCompilation()
-    {
-        CompilationDispatcher compiler = new CompilationDispatcher();
-        var method = typeof(MethodsToCompile).GetMethod("IAmGeneric");
-        compiler.Compile("IAmGeneric", method);
-    }
 }

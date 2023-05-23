@@ -259,28 +259,28 @@ public class MethodBodyCompiler
             case ILOpCode.Conv_r_un: 
                 CompileConvRUn();
                 break;
-            case ILOpCode.Conv_ovf_i1: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_i2: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_i4: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_i8: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_u1: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_u2: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_u4: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_u8: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_i1: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_i2: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_i4: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_i8: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_u1: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_u2: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_u4: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_u8: throw new NotSupportedException();
             case ILOpCode.Conv_ovf_i: 
                 CompileConvI();
                 break;
-            case ILOpCode.Conv_ovf_u: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_i1_un: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_i2_un: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_i4_un: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_i8_un: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_u1_un: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_u2_un: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_u4_un: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_u8_un: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_i_un: throw new NotSupportedException();
-            case ILOpCode.Conv_ovf_u_un: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_u: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_i1_un: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_i2_un: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_i4_un: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_i8_un: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_u1_un: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_u2_un: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_u4_un: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_u8_un: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_i_un: throw new NotSupportedException();
+            //case ILOpCode.Conv_ovf_u_un: throw new NotSupportedException();
             //case ILOpCode.Cpblk: throw new NotSupportedException();
             case ILOpCode.Div:
                 CompileDiv();
