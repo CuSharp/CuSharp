@@ -19,6 +19,11 @@ public class AOTC
 
         string dllPath = args[0];
         string outputPath = args[1];
+
+        if (!Directory.Exists(outputPath))
+        {
+            Directory.CreateDirectory(outputPath);
+        }
         
         CompileAll(dllPath, outputPath);
     }
