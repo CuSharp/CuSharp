@@ -20,7 +20,7 @@ internal class CudaVector<T> : Tensor<T[]> where T : struct
         DeviceVariable = devVar;
     }
 
-    internal object DeviceVariable { get; private set; }
+    internal CudaDeviceVariable<T> DeviceVariable { get; private set; }
 
     internal CUdeviceptr DevicePointer { get; private set; } 
     

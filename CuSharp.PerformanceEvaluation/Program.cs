@@ -18,11 +18,11 @@ public class Program
 
         for (int i = min; i <= max; i += step)
         {
-            Launch(i, dev, verify);
+            LaunchMultiDim(i, dev, verify);
             double result = 0;
             for (int j = 0; j < 10; j++)
             {
-                result += Launch(i, dev, verify);
+                result += LaunchMultiDim(i, dev, verify);
             }
 
             result /= 10;
@@ -54,8 +54,8 @@ public class Program
         var after = CuSharp.CuSharp.CreateEvent();
         
         before.Record();
-        //dev.Launch<double[], double[], double[], int>(Kernels.MatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);
-        dev.Launch<double[],double[],double[],int,int,int>(Kernels.TiledIntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim,1), devA, devB, devC, matrixWidth, 32, (int) (blockDim));
+        dev.Launch<double[], double[], double[], int>(Kernels.MatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);
+        //dev.Launch<double[],double[],double[],int,int,int>(Kernels.TiledIntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim,1), devA, devB, devC, matrixWidth, 32, (int) (blockDim));
         
         after.Record();
         c = dev.Copy(devC);
