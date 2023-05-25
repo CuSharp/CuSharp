@@ -408,7 +408,9 @@ public class MethodBodyCompiler
                 operand = _reader.ReadInt32();
                 CompileNewobj((int) operand);
                 break;
-            //case ILOpCode.Not: throw new NotSupportedException();
+            case ILOpCode.Not:
+                CompileNot();
+                break;
             case ILOpCode.Or:
                 CompileOr();
                 break;
@@ -710,6 +712,23 @@ public class MethodBodyCompiler
         else
         {
             throw new ArgumentException($"Type {param} cannot be negotiated");
+        }
+
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
+    }
+
+    private void CompileNot()
+    {
+        var param = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (param.TypeOf().TypeKind == LLVMTypeKind.LLVMIntegerTypeKind)
+        {
+            result = LLVM.BuildNot(_builder, param, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param} is not a boolean");
         }
 
         _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
