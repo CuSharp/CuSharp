@@ -80,7 +80,9 @@ public class MethodBodyCompiler
                 break;
             //case ILOpCode.Add_ovf: throw new NotSupportedException();
             //case ILOpCode.Add_ovf_un: throw new NotSupportedException();
-            //case ILOpCode.And: throw new NotSupportedException();
+            case ILOpCode.And:
+                CompileAnd();
+                break;
             //case ILOpCode.Arglist: throw new NotSupportedException();
             case ILOpCode.Beq:
                 operand = _reader.ReadInt32();
@@ -399,13 +401,17 @@ public class MethodBodyCompiler
                 break;
             //case ILOpCode.Mul_ovf: throw new NotSupportedException();
             //case ILOpCode.Mul_ovf_un: throw new NotSupportedException();
-            //case ILOpCode.Neg: throw new NotSupportedException();
+            case ILOpCode.Neg:
+                CompileNeg();
+                break;
             case ILOpCode.Newobj:
                 operand = _reader.ReadInt32();
                 CompileNewobj((int) operand);
                 break;
             //case ILOpCode.Not: throw new NotSupportedException();
-            //case ILOpCode.Or: throw new NotSupportedException();
+            case ILOpCode.Or:
+                CompileOr();
+                break;
             case ILOpCode.Pop:
                 _cfg.CurrentBlock.VirtualRegisterStack.Pop();
                 break;
@@ -416,9 +422,15 @@ public class MethodBodyCompiler
             case ILOpCode.Ret:
                 CompileReturn();
                 break;
-            //case ILOpCode.Shl: throw new NotSupportedException();
-            //case ILOpCode.Shr: throw new NotSupportedException();
-            //case ILOpCode.Shr_un: throw new NotSupportedException();
+            case ILOpCode.Shl:
+                CompileShl();
+                break;
+            case ILOpCode.Shr:
+                CompileShr();
+                break;
+            case ILOpCode.Shr_un:
+                CompileShrUn();
+                break;
             case ILOpCode.Starg:
                 operand = _reader.ReadInt16();
                 CompileStarg((ushort)operand);
@@ -463,7 +475,9 @@ public class MethodBodyCompiler
             //case ILOpCode.Sub_ovf: throw new NotSupportedException();
             //case ILOpCode.Sub_ovf_un: throw new NotSupportedException();
             //case ILOpCode.Switch: throw new NotSupportedException();
-            //case ILOpCode.Xor: throw new NotSupportedException();
+            case ILOpCode.Xor:
+                CompileXor();
+                break;
             //case ILOpCode.Box: throw new NotSupportedException();
             //case ILOpCode.Castclass: throw new NotSupportedException();
             //case ILOpCode.Cpobj: throw new NotSupportedException();
@@ -659,6 +673,136 @@ public class MethodBodyCompiler
         var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
         _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
+    }
+
+    private void CompileAnd()
+    {
+        var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        LLVMValueRef result;
+        
+        if (AreParamsCompatibleAndInt(param1, param2))
+        {
+            result = LLVM.BuildAnd(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
+        }
+
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
+    }
+
+    private void CompileNeg()
+    {
+        var param = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (param.TypeOf().TypeKind == LLVMTypeKind.LLVMIntegerTypeKind)
+        {
+            result = LLVM.BuildNeg(_builder, param, GetVirtualRegisterName());
+        }
+        else if (param.TypeOf().TypeKind == LLVMTypeKind.LLVMFloatTypeKind ||
+                 param.TypeOf().TypeKind == LLVMTypeKind.LLVMDoubleTypeKind)
+        {
+            result = LLVM.BuildFNeg(_builder, param, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param} cannot be negotiated");
+        }
+
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
+    }
+
+    private void CompileOr()
+    {
+        var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (AreParamsCompatibleAndInt(param1, param2))
+        {
+            result = LLVM.BuildOr(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
+        }
+
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
+    }
+
+    private void CompileShl()
+    {
+        var shiftAmount = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (param.TypeOf().TypeKind == LLVMTypeKind.LLVMIntegerTypeKind)
+        {
+            result = LLVM.BuildShl(_builder, param, shiftAmount, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param} cannot be shifted");
+        }
+
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
+    }
+
+    private void CompileShr()
+    {
+        var shiftAmount = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (param.TypeOf().TypeKind == LLVMTypeKind.LLVMIntegerTypeKind)
+        {
+            result = LLVM.BuildAShr(_builder, param, shiftAmount, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param} cannot be shifted");
+        }
+
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
+    }
+
+    private void CompileShrUn()
+    {
+        var shiftAmount = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (param.TypeOf().TypeKind == LLVMTypeKind.LLVMIntegerTypeKind)
+        {
+            result = LLVM.BuildLShr(_builder, param, shiftAmount, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param} cannot be shifted");
+        }
+
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
+    }
+
+    private void CompileXor()
+    {
+        var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (AreParamsCompatibleAndInt(param1, param2))
+        {
+            result = LLVM.BuildXor(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
+        }
+
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
     }
 
     #endregion
