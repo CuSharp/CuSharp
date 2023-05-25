@@ -48,6 +48,6 @@ public void Launch()
 ```
 
 # Dependencies
-- ![CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
-- ![LLVMSharp](https://github.com/dotnet/LLVMSharp)
-- ![ManagedCUDA](https://github.com/kunzmi/managedCuda)
+- [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
+- [LLVMSharp](https://github.com/dotnet/LLVMSharp)
+- [ManagedCUDA](https://github.com/kunzmi/managedCuda)
