@@ -1185,6 +1185,11 @@ public class MethodBodyCompiler
         { 
             indices = new[] {LLVM.ConstInt(LLVM.Int32Type(), 0, false), index};
         }
+        else if (array.TypeOf().ToNativeType() == typeof(bool[]) && index.TypeOf().ToNativeType() != typeof(bool))
+        {
+            value = LLVM.BuildTrunc(_builder, value, LLVMTypeRef.Int1Type(), GetVirtualRegisterName());
+            indices = new[] { index };
+        }
         else
         {
             indices = new[] {index};
