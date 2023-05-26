@@ -14,8 +14,8 @@ public class MandelbrotGenerator
         int maxIterations = 1000;
         var mandelbrot = new float[size];
 
-        CuSharp.EnableOptimizer = true;
-        var dev = CuSharp.GetDefaultDevice();
+        Cu.EnableOptimizer = true;
+        var dev = Cu.GetDefaultDevice();
 
         var devMandelbrot = dev.Copy(mandelbrot);
         

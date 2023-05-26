@@ -39,7 +39,7 @@ public class LaunchTests
     {
         if (enableOptimizer != null)
         {
-            global::CuSharp.CuSharp.EnableOptimizer = (bool) enableOptimizer;
+            global::CuSharp.Cu.EnableOptimizer = (bool) enableOptimizer;
         }
 
         uint gridDim = (uint) (matrixWidth % 32 == 0 ? matrixWidth / 32 : matrixWidth / 32 + 1);
@@ -53,14 +53,14 @@ public class LaunchTests
             b[i] = matrixWidth * matrixWidth - i;
         }
 
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
         var devC = dev.Copy(c);
         var devWidth = dev.CreateScalar(matrixWidth);
 
-        var before = global::CuSharp.CuSharp.CreateEvent();
-        var after = global::CuSharp.CuSharp.CreateEvent();
+        var before = global::CuSharp.Cu.CreateEvent();
+        var after = global::CuSharp.Cu.CreateEvent();
 
         before.Record();
         dev.Launch(MethodsToCompile.IntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB,
@@ -82,7 +82,7 @@ public class LaunchTests
     public void TestLaunchKernelMultipleTimes()
     {
         // Arrange
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         int matrixWidth = 100;
         uint gridDim = (uint) (matrixWidth % 32 == 0 ? matrixWidth / 32 : matrixWidth / 32 + 1);
         uint blockDim = (uint) (matrixWidth > 32 ? 32 : matrixWidth);
@@ -122,7 +122,7 @@ public class LaunchTests
     public void TestLaunchDifferentKernels()
     {
         // Arrange
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         int[] a = {1, 2, 3};
         int[] b = {4, 5, 6};
         int[] c1 = new int[3];
@@ -152,8 +152,8 @@ public class LaunchTests
     [Fact]
     public void TestAOTC() 
     {
-        global::CuSharp.CuSharp.AotKernelFolder = "./resources";
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        global::CuSharp.Cu.AotKernelFolder = "./resources";
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         var a = new int[] {1};
         var b = new int[] {2};
 

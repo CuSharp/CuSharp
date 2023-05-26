@@ -38,8 +38,8 @@ public class Image : INotifyPropertyChanged
         int maxIterations = 1000;
         var mandelbrot = new double[size];
         
-        CuSharp.EnableOptimizer = true;
-        var dev = CuSharp.GetDefaultDevice();
+        Cu.EnableOptimizer = true;
+        var dev = Cu.GetDefaultDevice();
 
         var devMandelbrot = dev.Copy(mandelbrot);
         

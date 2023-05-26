@@ -14,7 +14,7 @@ public class GenericsTests
     [Fact]
     public void TestGeneric()
     {
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         int[] a = new int[] {42};
         int[] b = new int[] {1337};
 
@@ -29,7 +29,7 @@ public class GenericsTests
     [Fact]
     public void TestGenericNewArr()
     {
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         var a = new int[] {0, 1, 2, 3, 4};
         var devA = dev.Copy(a);
         dev.Launch(MethodsToCompile.GenericNewArray, (1,1,1), (1,1,1), devA);
@@ -40,7 +40,7 @@ public class GenericsTests
     [Fact]
     public void TestGenericMultiDimNewArr()
     {
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         var hostA = new [,] {{0, 1, 2, 3, 4}};
         var a = dev.Copy(hostA);
         dev.Launch(MethodsToCompile.GenericMultiDimNewArray, (1,1,1), (1,1,1), a);

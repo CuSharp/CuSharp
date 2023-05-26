@@ -21,7 +21,7 @@ public class ComparisonLLVMTests
     public void ScalarInt_LessThan_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(LessThan);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -42,7 +42,7 @@ public class ComparisonLLVMTests
     public void ScalarInt_LessThanOrEquals_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(LessThanOrEquals);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -63,7 +63,7 @@ public class ComparisonLLVMTests
     public void ScalarInt_GreaterThan_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(GreaterThan);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -84,7 +84,7 @@ public class ComparisonLLVMTests
     public void ScalarInt_GreaterThanOrEquals_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(GreaterThanOrEquals);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -105,7 +105,7 @@ public class ComparisonLLVMTests
     public void ScalarInt_EqualsTo_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(EqualsTo);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -126,7 +126,7 @@ public class ComparisonLLVMTests
     public void ScalarInt_NotEqualsTo_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(NotEqualsTo);
         var config = CompilationConfiguration.NvvmConfiguration;

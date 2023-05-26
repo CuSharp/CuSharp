@@ -13,10 +13,11 @@ internal class CudaMatrix<T> : Tensor<T[,]> where T : struct
         var vectorPointers = new SizeT [sizeX];
         for (int i = 0; i < vectorPointers.Length; i++)
         {
-            vectorPointers[i] = i * sizeY * Marshal.SizeOf(typeof(T));
+            vectorPointers[i] = FlatDeviceVariable.DevicePointer.Pointer + i * sizeY * Marshal.SizeOf(typeof(T));
         }
 
         MatrixDeviceVariable = vectorPointers;
+        DevicePointer = MatrixDeviceVariable.DevicePointer;
     }
     
     internal CudaMatrix(T[,] value)

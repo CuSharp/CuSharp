@@ -21,7 +21,7 @@ public class ControlFlowLLVMTests
     public void ScalarInt_Switch_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(Switch);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -42,7 +42,7 @@ public class ControlFlowLLVMTests
     public void ScalarInt_While_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(While);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -63,7 +63,7 @@ public class ControlFlowLLVMTests
     public void ScalarInt_DoWhile_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(DoWhile);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -84,7 +84,7 @@ public class ControlFlowLLVMTests
     public void ScalarInt_For_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(For);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -105,7 +105,7 @@ public class ControlFlowLLVMTests
     public void ScalarInt_WhileWithContinue_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(WhileWithContinue);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -126,7 +126,7 @@ public class ControlFlowLLVMTests
     public void ScalarInt_WhileWithBreak_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(WhileWithBreak);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -147,7 +147,7 @@ public class ControlFlowLLVMTests
     public void ScalarInt_Goto_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(Goto);
         var config = CompilationConfiguration.NvvmConfiguration;

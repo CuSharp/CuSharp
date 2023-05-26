@@ -157,6 +157,9 @@ public class ControlFlowGraphBuilder
             value = LLVM.BuildFPCast(_builder, value, typeToCompare, _registerNamer());
         } else if (!value.TypeOf().Equals(typeToCompare) && typeToCompare.TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
         {
+            var zero = LLVM.ConstInt(LLVMTypeRef.Int32Type(), 0, false);
+            //value = LLVM.BuildInBoundsGEP(_builder, value, new[] { zero, zero, zero}, _registerNamer());
+            //value = LLVM.BuildAddrSpaceCast(_builder, value, typeToCompare, _registerNamer());
             value = LLVM.BuildPointerCast(_builder, value, typeToCompare, _registerNamer());
         }
         else if (!value.TypeOf().Equals(typeToCompare))

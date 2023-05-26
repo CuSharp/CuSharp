@@ -3,14 +3,15 @@ using CuSharp.Event;
 using ManagedCuda;
 
 namespace CuSharp;
-public static class CuSharp
+
+public static class Cu
 {
 
     internal const string PathNotSet = "/../";
     public static bool EnableOptimizer { get; set; }
     public static string? AotKernelFolder { get; set; } = PathNotSet;
 
-    static CuSharp()
+    static Cu()
     {
         #if DEBUG
             EnableOptimizer = false;

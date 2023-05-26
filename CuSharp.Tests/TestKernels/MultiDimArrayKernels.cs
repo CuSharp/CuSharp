@@ -51,4 +51,25 @@ public class MultiDimArrayKernels
         var x = a;
         a[0, 0] = 1337;
     }
+
+    public static void VeryNestedArrayAccess(int[,] a, int[,] c)
+    {
+        int[,] b = new int[5, 5];
+        if (a[0, 0] == 42)
+        {
+            b[0,0] = a[0,0];
+        }
+        c[0, 0] = b[0, 0];
+    }
+    
+    public static void VeryNestedArrayAccess2(int[] a, int[] c)
+    {
+        var b = new int[5];
+        if (a[0] == 42)
+        {
+            b[0] = a[0];
+        }
+
+        c[0] = b[0];
+    }
 }

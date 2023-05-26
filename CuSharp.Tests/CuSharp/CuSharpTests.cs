@@ -13,21 +13,21 @@ public class CuSharpTests
     [Fact]
     public void TestInvalidDeviceIdThrows()
     {
-        Assert.Throws<ArgumentException>( () => global::CuSharp.CuSharp.GetDeviceById(int.MaxValue) );
+        Assert.Throws<ArgumentException>( () => global::CuSharp.Cu.GetDeviceById(int.MaxValue) );
     }
 
     [Fact]
     public void TestDefaultDeviceIsZero()
     {
-        Assert.Equal(global::CuSharp.CuSharp.GetDeviceById(0).ToString(), global::CuSharp.CuSharp.GetDefaultDevice().ToString());
+        Assert.Equal(global::CuSharp.Cu.GetDeviceById(0).ToString(), global::CuSharp.Cu.GetDefaultDevice().ToString());
     }
 
     [Fact]
     public void TestTimerIsZero()
     {
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice(); //done just to initialize
-        var first = global::CuSharp.CuSharp.CreateEvent();
-        var second = global::CuSharp.CuSharp.CreateEvent();
+        var dev = global::CuSharp.Cu.GetDefaultDevice(); //done just to initialize
+        var first = global::CuSharp.Cu.CreateEvent();
+        var second = global::CuSharp.Cu.CreateEvent();
         first.Record();
         second.Record();
         var time = first.GetDeltaTo(second);
@@ -37,8 +37,8 @@ public class CuSharpTests
     [Fact]
     public void TestGetDeviceList()
     {
-        var defaultDevice = global::CuSharp.CuSharp.GetDefaultDevice().ToString();
-        var deviceEnumerator = global::CuSharp.CuSharp.GetDeviceList();
+        var defaultDevice = global::CuSharp.Cu.GetDefaultDevice().ToString();
+        var deviceEnumerator = global::CuSharp.Cu.GetDeviceList();
         IList<(int, string)> devices = new List<(int, string)>();
 
         while (deviceEnumerator.MoveNext())

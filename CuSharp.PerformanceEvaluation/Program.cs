@@ -13,8 +13,8 @@ public class Program
 
     static void Test(int min, int max, int step, bool verify)
     {
-        CuSharp.CuSharp.EnableOptimizer = true;
-        var dev = CuSharp.CuSharp.GetDefaultDevice();
+        CuSharp.Cu.EnableOptimizer = true;
+        var dev = CuSharp.Cu.GetDefaultDevice();
 
         for (int i = min; i <= max; i += step)
         {
@@ -50,8 +50,8 @@ public class Program
         var devB = dev.Copy(b);
         var devC = dev.Copy(c);
         //var devWidth = dev.Copy(matrixWidth);
-        var before = CuSharp.CuSharp.CreateEvent();
-        var after = CuSharp.CuSharp.CreateEvent();
+        var before = CuSharp.Cu.CreateEvent();
+        var after = CuSharp.Cu.CreateEvent();
         
         before.Record();
         dev.Launch<double[], double[], double[], int>(Kernels.MatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);
@@ -98,8 +98,8 @@ public class Program
         var devB = dev.Copy(b);
         var devC = dev.Copy(c);
         //var devWidth = dev.Copy(matrixWidth);
-        var before = CuSharp.CuSharp.CreateEvent();
-        var after = CuSharp.CuSharp.CreateEvent();
+        var before = CuSharp.Cu.CreateEvent();
+        var after = CuSharp.Cu.CreateEvent();
         
         before.Record();
         dev.Launch<double[,], double[,], double[,], int>(Kernels.MultiDimMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);

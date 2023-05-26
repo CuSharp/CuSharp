@@ -45,7 +45,7 @@ public class OperatorIntegrationTests
 
     private float[] RunFloatArrayTest(Action<float[], float[]> kernel, float[] a, float[] b)
     {
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
         dev.Launch(kernel, (1,1,1), (1,1,1), devA, devB);
@@ -56,7 +56,7 @@ public class OperatorIntegrationTests
     [Fact]
     public void TestNot()
     {
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         bool[] a = new bool[] {false, false};
         bool b = true;
         var devA = dev.Copy(a);

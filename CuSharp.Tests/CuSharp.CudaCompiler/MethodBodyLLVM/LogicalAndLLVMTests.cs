@@ -21,7 +21,7 @@ public class LogicalAndLLVMTests
     public void ScalarInt_LogicalAnd_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(LogicalAnd);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -42,7 +42,7 @@ public class LogicalAndLLVMTests
     public void ScalarInt_LogicalOr_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.CuSharp.EnableOptimizer = enableOptimizer;
+        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(LogicalOr);
         var config = CompilationConfiguration.NvvmConfiguration;

@@ -16,7 +16,7 @@ public class KernelToolsTests
     public void GetBlockDimensions_Integration(uint blockDimX, uint blockDimY, uint blockDimZ)
     {
         // Arrange
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         var blockDims = new uint[3];
         var expectedBlockDims = new [] { blockDimX, blockDimY, blockDimZ };
         var devBlockDims = dev.Copy(blockDims);
@@ -37,7 +37,7 @@ public class KernelToolsTests
     public void GetGridDimensions_Integration(uint gridDimX, uint gridDimY, uint gridDimZ)
     {
         // Arrange
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         var blockDims = new uint[3];
         var expectedBlockDims = new[] { gridDimX, gridDimY, gridDimZ };
         var devBlockDims = dev.Copy(blockDims);
@@ -55,7 +55,7 @@ public class KernelToolsTests
     public void GetWarpSize_Integration()
     {
         // Arrange
-        var dev = global::CuSharp.CuSharp.GetDefaultDevice();
+        var dev = global::CuSharp.Cu.GetDefaultDevice();
         var warpSize = new uint[1];
         var expectedWarpSize = new uint[] { 32 };
         var devWarpSize = dev.Copy(warpSize);

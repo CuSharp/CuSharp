@@ -12,7 +12,7 @@ public partial class CuDevice : IDisposable
     private readonly CudaContext _cudaDeviceContext;
     private readonly MethodLauncher _launcher;
     
-    internal CuDevice(int deviceId = 0, CompilationDispatcher? compiler = null, string aotKernelFolder = CuSharp.PathNotSet)
+    internal CuDevice(int deviceId = 0, CompilationDispatcher? compiler = null, string aotKernelFolder = Cu.PathNotSet)
     {
         _cudaDeviceContext = new CudaContext(deviceId);
         _launcher = new MethodLauncher(aotKernelFolder, compiler, _cudaDeviceContext);

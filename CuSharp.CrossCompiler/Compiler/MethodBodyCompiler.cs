@@ -941,7 +941,7 @@ public class MethodBodyCompiler
     {
         var index = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var array = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-        var elementPtr = LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
+        var elementPtr = BuildGEP(array, index);//LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
         _cfg.CurrentBlock.VirtualRegisterStack.Push(elementPtr);
     }
 
@@ -1016,19 +1016,9 @@ public class MethodBodyCompiler
         var value = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var index = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var array = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-        LLVMValueRef[] indices;
 
-        if (array.TypeOf().GetElementType().TypeKind == LLVMTypeKind.LLVMArrayTypeKind) //needs two indexes: one to deref array, one to deref element in array
-        { 
-            indices = new[] {LLVM.ConstInt(LLVM.Int32Type(), 0, false), index};
-        }
-        else
-        {
-            indices = new[] {index};
-        }
-        var elementPtr = LLVM.BuildGEP(_builder, array, indices, GetVirtualRegisterName());
+        var elementPtr = BuildGEP(array, index);
         LLVM.BuildStore(_builder, value, elementPtr);    
-        
     }
 
     private void CompileStloc(int operand)
