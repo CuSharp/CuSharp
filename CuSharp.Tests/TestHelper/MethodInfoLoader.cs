@@ -44,5 +44,10 @@ namespace CuSharp.Tests.TestHelper
         {
             return fn.Method;
         }
+
+        public static MethodInfo GetMethodInfo<T0, T1, T2>(Action<T0, T1, T2> fn)
+        {
+            return fn.Method;
+        }
     }
 }
