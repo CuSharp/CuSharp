@@ -5,6 +5,22 @@ A GPU Compute Framework for .NET
   
 [![CuSharp-Build](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-build.yml/badge.svg)](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-build.yml)
 [![CuSharp-Test](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-test.yml/badge.svg)](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-test.yml)
+
+# The Thesis
+This project was created as a Bachelors-thesis at the University of Applied Sciences of Eastern Switzerland (OST). The main-document of the thesis, describing this project in detail can be found [here (UPDATEME)](TOBEANNOUNCED).
+
+# Project Layout
+- CuSharp: All parts of the frontend of the framework.
+- CuSharp.AOTC: An executable, used to AOT-compile C#-methods to PTX-Kernels
+- CuSharp.CrossCompiler: The crosscompiler compiling MSIL-opcodes to PTX instructions
+- CuSharp.NVVMBinder: Bindings for libNVVM
+- CuSharp.PerformanceEvaluation: Examples used to evaluate the performance of the framework
+- CuSharp.Tests: Unit and integration tests used to test the functionality of the framework
+- CuSharp.MandelbrotExample: An example WPF application, generating mandelbrot-sets, using CuSharp
+
+# Nuget-Packages:
+- To be announced
+
 # Examples
 ## Add two int arrays
 ```C#
@@ -32,6 +48,6 @@ public void Launch()
 ```
 
 # Dependencies
-- ![CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
-- ![LLVMSharp](https://github.com/dotnet/LLVMSharp)
-- ![ManagedCUDA](https://github.com/kunzmi/managedCuda)
+- [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
+- [LLVMSharp](https://github.com/dotnet/LLVMSharp)
+- [ManagedCUDA](https://github.com/kunzmi/managedCuda)
