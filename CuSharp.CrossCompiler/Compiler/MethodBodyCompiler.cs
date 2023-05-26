@@ -202,13 +202,13 @@ public class MethodBodyCompiler
                 CompileCeq();
                 break;
             case ILOpCode.Cgt:
+            case ILOpCode.Cgt_un:
                 CompileCgt();
                 break;
-            //case ILOpCode.Cgt_un: throw new NotSupportedException();
             case ILOpCode.Clt:
+            case ILOpCode.Clt_un:
                 CompileClt();
                 break;
-            //case ILOpCode.Clt_un: throw new NotSupportedException();
             //case ILOpCode.Ckfinite: throw new NotSupportedException();
             case ILOpCode.Conv_i1:
                 CompileConvI1();
@@ -944,7 +944,6 @@ public class MethodBodyCompiler
 
     private void CompileCgt()
     {
-
         var value2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var value1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         value2 = CastValue2IfIncompatibleInts(value1, value2);
