@@ -55,9 +55,9 @@ public class MultiDimArrayKernels
     public static void VeryNestedArrayAccess(int[,] a, int[,] c)
     {
         int[,] b = new int[5, 5];
-            b[0,0] = a[0,0];
-        if (true)
+        if (a[0,0] == 42)
         {
+            b[0,0] = a[0,0];
         }
         c[0, 0] = b[0, 0];
     }

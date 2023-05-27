@@ -1042,15 +1042,28 @@ public class MethodBodyCompiler
         var sizeX = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var lenY = LLVM.ConstIntGetZExtValue(sizeY);
         var lenX = LLVM.ConstIntGetZExtValue(sizeX);
-        var type = LLVM.ArrayType(LLVM.ArrayType(ctor.DeclaringType.GetElementType().ToLLVMType(), (uint) lenY), (uint) lenX);
+        var type = LLVM.ArrayType(ctor.DeclaringType.GetElementType().ToLLVMType(), (uint) (lenY * lenX));
 
         var arr = LLVM.AddGlobalInAddressSpace(Module, type, GetGlobalVariableName(), (uint) ArrayMemoryLocation);
         arr.SetLinkage(LLVMLinkage.LLVMInternalLinkage);
         arr.SetInitializer(LLVM.GetUndef(type));
-        //var ptrType = LLVM.PointerType(LLVM.PointerType(ctor.DeclaringType.GetElementType().ToLLVMType(), (uint) ArrayMemoryLocation), (uint) ArrayMemoryLocation);
-        //arr = LLVM.BuildBitCast(_builder, arr, ptrType, GetVirtualRegisterName());
-        //arr = LLVM.BuildPointerCast(_builder, arr, ptrType, GetVirtualRegisterName());
-        _cfg.CurrentBlock.VirtualRegisterStack.Push(arr);
+
+        var multiType =
+            LLVM.ArrayType(
+                LLVM.PointerType(ctor.DeclaringType.GetElementType().ToLLVMType(), (uint) ArrayMemoryLocation),
+                (uint) lenX);
+        var multiArr = LLVM.AddGlobalInAddressSpace(Module, multiType, GetGlobalVariableName(), (uint) ArrayMemoryLocation);
+
+        for (int i = 0; i < (uint) lenX; i++)
+        {
+            var multiArrIndex = BuildGEP(multiArr, LLVM.ConstInt(LLVMTypeRef.Int32Type(), (ulong) i, false));
+            var arrIndex = BuildGEP(arr, LLVM.ConstInt(LLVMTypeRef.Int32Type(), (ulong) i * lenY, false));
+            arrIndex = LLVM.BuildPointerCast(_builder, arrIndex,
+                LLVM.PointerType(ctor.DeclaringType.GetElementType().ToLLVMType(), (uint) ArrayMemoryLocation), GetVirtualRegisterName());
+            LLVM.BuildStore(_builder, arrIndex, multiArrIndex);
+        }
+        
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(multiArr);
     }
     #endregion
 
@@ -1481,7 +1494,7 @@ public class MethodBodyCompiler
     private LLVMValueRef BuildNestedGEP(LLVMValueRef array, LLVMValueRef offsetX, LLVMValueRef offsetY)
     {
         var vec = BuildGEP(array, offsetX);
-        if (array.TypeOf().GetElementType().TypeKind != LLVMTypeKind.LLVMArrayTypeKind)
+        //if (array.TypeOf().GetElementType().TypeKind != LLVMTypeKind.LLVMArrayTypeKind)
         {
             vec = LLVM.BuildLoad(_builder, vec, GetVirtualRegisterName());
         }
