@@ -1184,15 +1184,14 @@ public class MethodBodyCompiler
         var array = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         LLVMValueRef[] indices;
 
-        if (array.TypeOf().GetElementType().TypeKind != LLVMTypeKind.LLVMArrayTypeKind && 
-            array.TypeOf().ToNativeType() == typeof(bool[]) && value.TypeOf().ToNativeType() != typeof(bool))
-        {
-            value = LLVM.BuildTrunc(_builder, value, LLVMTypeRef.Int1Type(), GetVirtualRegisterName());
-        }
-        
         if (array.TypeOf().GetElementType().TypeKind == LLVMTypeKind.LLVMArrayTypeKind) //needs two indexes: one to deref array, one to deref element in array
         { 
             indices = new[] {LLVM.ConstInt(LLVM.Int32Type(), 0, false), index};
+        }
+        else if (array.TypeOf().ToNativeType() == typeof(bool[]) && value.TypeOf().ToNativeType() != typeof(bool))
+        {
+            value = LLVM.BuildTrunc(_builder, value, LLVMTypeRef.Int1Type(), GetVirtualRegisterName());
+            indices = new[] {index};
         }
         else
         {
