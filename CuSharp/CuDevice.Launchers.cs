@@ -40,7 +40,7 @@ public partial class CuDevice
 
     public void Launch<T0,T1,T2,T3,T4>(Action<T0,T1,T2,T3,T4> method, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize, Tensor<T0> param0,Tensor<T1> param1,Tensor<T2> param2,Tensor<T3> param3,Tensor<T4> param4) 
     {
-        object[] parameters = {param0, param1, param3, param4};
+        object[] parameters = {param0, param1, param2, param3, param4};
         _launcher.CompileAndLaunch(method.GetMethodInfo(), gridSize, blockSize, parameters);
     }
 
