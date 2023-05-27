@@ -17,17 +17,11 @@ public class ComparisonTests
         const int b = 54321;
         bool[] result = new bool[1];
         const bool expectedResult = a == b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.EqualsInt, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<int, int, bool[]>(ComparisonKernels.EqualsInt, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -43,17 +37,11 @@ public class ComparisonTests
         const uint b = 54321;
         bool[] result = new bool[1];
         const bool expectedResult = a == b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.EqualsUint, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<uint, uint, bool[]>(ComparisonKernels.EqualsUint, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -69,17 +57,11 @@ public class ComparisonTests
         const float b = 54321.2f;
         bool[] result = new bool[1];
         const bool expectedResult = a == b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.EqualsFloat, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<float, float, bool[]>(ComparisonKernels.EqualsFloat, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -95,17 +77,11 @@ public class ComparisonTests
         const int b = 54321;
         bool[] result = new bool[1];
         const bool expectedResult = a != b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.NotEqualsInt, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<int, int, bool[]>(ComparisonKernels.NotEqualsInt, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -121,17 +97,11 @@ public class ComparisonTests
         const uint b = 54321;
         bool[] result = new bool[1];
         const bool expectedResult = a != b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.NotEqualsUint, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<uint, uint, bool[]>(ComparisonKernels.NotEqualsUint, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -147,17 +117,11 @@ public class ComparisonTests
         const float b = 54321.2f;
         bool[] result = new bool[1];
         const bool expectedResult = a != b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.NotEqualsFloat, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<float, float, bool[]>(ComparisonKernels.NotEqualsFloat, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -173,17 +137,11 @@ public class ComparisonTests
         const int b = 54321;
         bool[] result = new bool[1];
         const bool expectedResult = a > b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.GreaterThanInt, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<int, int, bool[]>(ComparisonKernels.GreaterThanInt, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -199,17 +157,11 @@ public class ComparisonTests
         const uint b = 54321;
         bool[] result = new bool[1];
         const bool expectedResult = a > b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.GreaterThanUint, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<uint, uint, bool[]>(ComparisonKernels.GreaterThanUint, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -225,17 +177,11 @@ public class ComparisonTests
         const float b = 54321.2f;
         bool[] result = new bool[1];
         const bool expectedResult = a > b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.GreaterThanFloat, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<float, float, bool[]>(ComparisonKernels.GreaterThanFloat, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -251,17 +197,11 @@ public class ComparisonTests
         const int b = 54321;
         bool[] result = new bool[1];
         const bool expectedResult = a < b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.LessThanInt, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<int, int, bool[]>(ComparisonKernels.LessThanInt, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -277,17 +217,11 @@ public class ComparisonTests
         const uint b = 54321;
         bool[] result = new bool[1];
         const bool expectedResult = a < b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.LessThanUint, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<uint, uint, bool[]>(ComparisonKernels.LessThanUint, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
@@ -303,17 +237,11 @@ public class ComparisonTests
         const float b = 54321.2f;
         bool[] result = new bool[1];
         const bool expectedResult = a < b;
-
-        var devA = dev.CreateScalar(a);
-        var devB = dev.CreateScalar(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch(ComparisonKernels.LessThanFloat, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<float, float, bool[]>(ComparisonKernels.LessThanFloat, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
-
-        devA.Dispose();
-        devB.Dispose();
         devResult.Dispose();
 
         // Assert
