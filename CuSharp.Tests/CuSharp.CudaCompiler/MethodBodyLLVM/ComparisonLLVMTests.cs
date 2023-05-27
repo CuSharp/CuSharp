@@ -3,7 +3,7 @@ using CuSharp.CudaCompiler.Frontend;
 using CuSharp.Tests.TestHelper;
 using Xunit;
 using static CuSharp.Tests.TestHelper.MethodInfoLoader;
-using static CuSharp.Tests.TestHelper.MethodsToCompile;
+using static CuSharp.Tests.TestKernels.ComparisonKernels;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyLLVM;
 
@@ -21,9 +21,9 @@ public class ComparisonLLVMTests
     public void ScalarInt_LessThan_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
+        Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
-        var method = GetMethodInfo<int>(LessThan);
+        var method = GetMethodInfo<int, int, bool[]>(LessThanInt);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = kernelName;
         var crossCompiler = new KernelCrossCompiler(config);
@@ -42,7 +42,7 @@ public class ComparisonLLVMTests
     public void ScalarInt_LessThanOrEquals_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
+        Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(LessThanOrEquals);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -63,9 +63,9 @@ public class ComparisonLLVMTests
     public void ScalarInt_GreaterThan_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
+        Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
-        var method = GetMethodInfo<int>(GreaterThan);
+        var method = GetMethodInfo<int, int, bool[]>(GreaterThanInt);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = kernelName;
         var crossCompiler = new KernelCrossCompiler(config);
@@ -84,7 +84,7 @@ public class ComparisonLLVMTests
     public void ScalarInt_GreaterThanOrEquals_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
+        Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
         var method = GetMethodInfo<int>(GreaterThanOrEquals);
         var config = CompilationConfiguration.NvvmConfiguration;
@@ -105,9 +105,9 @@ public class ComparisonLLVMTests
     public void ScalarInt_EqualsTo_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
+        Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
-        var method = GetMethodInfo<int>(EqualsTo);
+        var method = GetMethodInfo<int, int, bool[]>(EqualsInt);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = kernelName;
         var crossCompiler = new KernelCrossCompiler(config);
@@ -126,9 +126,9 @@ public class ComparisonLLVMTests
     public void ScalarInt_NotEqualsTo_LLVM(bool enableOptimizer)
     {
         // Arrange
-        global::CuSharp.Cu.EnableOptimizer = enableOptimizer;
+        Cu.EnableOptimizer = enableOptimizer;
         var kernelName = MethodBase.GetCurrentMethod()!.Name;
-        var method = GetMethodInfo<int>(NotEqualsTo);
+        var method = GetMethodInfo<int, int, bool[]>(NotEqualsInt);
         var config = CompilationConfiguration.NvvmConfiguration;
         config.KernelName = kernelName;
         var crossCompiler = new KernelCrossCompiler(config);

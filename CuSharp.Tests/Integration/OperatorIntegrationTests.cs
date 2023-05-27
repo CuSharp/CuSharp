@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices.ComTypes;
 using CuSharp.Tests.TestHelper;
+using CuSharp.Tests.TestKernels;
 using Xunit;
 
 namespace CuSharp.Tests.Integration;
@@ -30,10 +33,54 @@ public class OperatorIntegrationTests
     }
 
     [Fact]
+    public void UintDivisionTest()
+    {
+        // Arrange
+        var dev = Cu.GetDefaultDevice();
+        const uint a = 12345;
+        const uint b = 54321;
+        uint[] result = new uint[1];
+        const uint expectedResult = 12345 / 54321;
+
+        var devA = dev.CreateScalar(a);
+        var devB = dev.CreateScalar(b);
+        var devResult = dev.Copy(result);
+
+        // Act
+        dev.Launch(OperatorTestKernels.UintDivision, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        result = dev.Copy(devResult);
+
+        // Assert
+        Assert.Equal(expectedResult, result[0]);
+    }
+
+    [Fact]
     public void DivisionTest()
     {
         var result = RunFloatArrayTest(OperatorTestKernels.FloatDivision, new float[] {42}, new float[]{2});
         Assert.Equal(21, result[0]);
+    }
+
+    [Fact]
+    public void UintModuloTest()
+    {
+        // Arrange
+        var dev = Cu.GetDefaultDevice();
+        const uint a = 54321;
+        const uint b = 12345;
+        uint[] result = new uint[1];
+        const uint expectedResult = 54321 % 12345;
+
+        var devA = dev.CreateScalar(a);
+        var devB = dev.CreateScalar(b);
+        var devResult = dev.Copy(result);
+
+        // Act
+        dev.Launch(OperatorTestKernels.UintModulo, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        result = dev.Copy(devResult);
+
+        // Assert
+        Assert.Equal(expectedResult, result[0]);
     }
 
     [Fact]

@@ -202,13 +202,13 @@ public class MethodBodyCompiler
                 CompileCeq();
                 break;
             case ILOpCode.Cgt:
+            case ILOpCode.Cgt_un:
                 CompileCgt();
                 break;
-            //case ILOpCode.Cgt_un: throw new NotSupportedException();
             case ILOpCode.Clt:
+            case ILOpCode.Clt_un:
                 CompileClt();
                 break;
-            //case ILOpCode.Clt_un: throw new NotSupportedException();
             //case ILOpCode.Ckfinite: throw new NotSupportedException();
             case ILOpCode.Conv_i1:
                 CompileConvI1();
@@ -275,7 +275,9 @@ public class MethodBodyCompiler
             case ILOpCode.Div:
                 CompileDiv();
                 break;
-            //case ILOpCode.Div_un: throw new NotSupportedException();
+            case ILOpCode.Div_un:
+                CompileDivUn();
+                break;
             case ILOpCode.Dup:
                 CompileDup();
                 break;
@@ -420,7 +422,9 @@ public class MethodBodyCompiler
             case ILOpCode.Rem:
                 CompileRem();
                 break;
-            //case ILOpCode.Rem_un: throw new NotSupportedException();
+            case ILOpCode.Rem_un:
+                CompileRemUn();
+                break;
             case ILOpCode.Ret:
                 CompileReturn();
                 break;
@@ -631,7 +635,7 @@ public class MethodBodyCompiler
         var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         LLVMValueRef result;
-        
+
         if (AreParamsCompatibleAndInt(param1, param2))
         {
             result = LLVM.BuildSDiv(_builder, param1, param2, GetVirtualRegisterName());
@@ -639,6 +643,24 @@ public class MethodBodyCompiler
         else if (AreParamsCompatibleAndDecimal(param1, param2))
         {
             result = LLVM.BuildFDiv(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
+        }
+
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
+    }
+
+    private void CompileDivUn()
+    {
+        var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (AreParamsCompatibleAndInt(param1, param2))
+        {
+            result = LLVM.BuildUDiv(_builder, param1, param2, GetVirtualRegisterName());
         }
         else
         {
@@ -661,6 +683,24 @@ public class MethodBodyCompiler
         else if (AreParamsCompatibleAndDecimal(param1, param2))
         {
             result = LLVM.BuildFRem(_builder, param1, param2, GetVirtualRegisterName());
+        }
+        else
+        {
+            throw new ArgumentException($"Type {param1} and {param2} are not supported or have not the same type");
+        }
+
+        _cfg.CurrentBlock.VirtualRegisterStack.Push(result);
+    }
+
+    private void CompileRemUn()
+    {
+        var param2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        var param1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+        LLVMValueRef result;
+
+        if (AreParamsCompatibleAndInt(param1, param2))
+        {
+            result = LLVM.BuildURem(_builder, param1, param2, GetVirtualRegisterName());
         }
         else
         {
@@ -944,7 +984,6 @@ public class MethodBodyCompiler
 
     private void CompileCgt()
     {
-
         var value2 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var value1 = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         value2 = CastValue2IfIncompatibleInts(value1, value2);
@@ -1589,6 +1628,7 @@ public class MethodBodyCompiler
     {
         return value.TypeOf().ToNativeType() == typeof(double);
     }
+
     private bool AreParamsCompatibleAndInt(LLVMValueRef param1, LLVMValueRef param2)
     {
         return param1.TypeOf().TypeKind == LLVMTypeKind.LLVMIntegerTypeKind &&
