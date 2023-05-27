@@ -117,7 +117,7 @@ public class BasicTests
     [Fact]
     public void TestNewArr()
     {
-        global::CuSharp.Cu.EnableOptimizer = true;
+        Cu.EnableOptimizer = true;
         var dev = global::CuSharp.Cu.GetDefaultDevice();
         var b = new int[] {1, 2, 3, 4, 5};
         var devB = dev.Copy(b);

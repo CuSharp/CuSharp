@@ -46,27 +46,6 @@ namespace CuSharp.CudaCompiler.Frontend
             }
         }
         
-        /*public LLVMValueRef GenerateFunctionAndPositionBuilderAtEntry(MSILKernel inputKernel)
-        {
-
-            var paramTypes = GenerateLLVMParameters(inputKernel.ParameterInfos);
-            var function = LLVM.AddFunction(_module, inputKernel.Name, LLVM.FunctionType(inputKernel.ReturnType.ToLLVMType(), paramTypes, false));
-            
-            LLVM.SetLinkage(function, LLVMLinkage.LLVMExternalLinkage);
-            NameFunctionParameters(function, "param");
-
-            if (inputKernel.IsMainFunction)
-            {
-                AppendFunction(function);
-            }
-            else
-            {
-                FunctionsToBuild.Add((inputKernel, function));
-            }
-
-            return function;
-        }*/
-
         private static LLVMTypeRef[] GenerateLLVMParameters(ParameterInfo[] msilParameters)
         {
             

@@ -114,6 +114,7 @@ public class MultiDimArrayTests
     [Fact]
     public void TestVeryNestedArrays()
     {
+        Cu.EnableOptimizer = false;
         var dev = Cu.GetDefaultDevice();
         var a = new int[5, 5];
         a[0, 0] = 42;
