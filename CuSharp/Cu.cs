@@ -49,7 +49,4 @@ public static class Cu
     {
         return new CudaEventWrapper();
     }
-    
-    private static CudaEvent startEvent;
-
 }

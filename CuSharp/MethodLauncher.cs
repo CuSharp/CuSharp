@@ -22,10 +22,10 @@ internal class MethodLauncher
         _compiler = compiler;
     }
     
-    internal void CompileAndLaunch(MethodInfo method, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize,
+    internal void CompileAndLaunch(MethodInfo method, (uint, uint, uint) gridDimension, (uint, uint, uint) blockDimension,
         params object[] parameters)
     {
-        var cudaKernel = CompileAndGetKernel(method, gridSize, blockSize);
+        var cudaKernel = CompileAndGetKernel(method, gridDimension, blockDimension);
         var lengths = new int [parameters.Length];
         CudaDeviceVariable<int> devLengths = lengths;
         var castParams = parameters
@@ -36,30 +36,30 @@ internal class MethodLauncher
         cudaKernel.Run(castParams);
     }
     
-    private CudaKernel CompileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) gridSize, (uint,uint,uint) blockSize)
+    private CudaKernel CompileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) gridDimension, (uint,uint,uint) blockDimension)
     {
         if (_cache.TryGetValue(KernelHelpers.GetMethodIdentity(methodInfo), out var k))
         {
-            SetGridDimensions(k, gridSize, blockSize);
+            SetGridDimensions(k, gridDimension, blockDimension);
             return k;
         } 
 
-        CudaKernel cudaKernel = GetCompiledKernel(methodInfo, gridSize, blockSize);
+        CudaKernel cudaKernel = GetCompiledKernel(methodInfo, gridDimension, blockDimension);
         
         _cache.Add(KernelHelpers.GetMethodIdentity(methodInfo), cudaKernel);
-        SetGridDimensions(cudaKernel, gridSize, blockSize);
+        SetGridDimensions(cudaKernel, gridDimension, blockDimension);
         return cudaKernel;
     }
 
     private const string ValidMethodNameChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_$";
-    private CudaKernel GetCompiledKernel(MethodInfo method, (uint,uint,uint) gridSize, (uint,uint,uint) blockSize)
+    private CudaKernel GetCompiledKernel(MethodInfo method, (uint,uint,uint) gridDimension, (uint,uint,uint) blockDimension)
     {
         var kernelName =  new string(method.Name.Select(c => ValidMethodNameChars.Contains(c) ? c : '$').ToArray());
         if (HasPrecompiledKernel(method))
         {
-            return GetPrecompiledKernel(method, kernelName, gridSize, blockSize);
+            return GetPrecompiledKernel(method, kernelName, gridDimension, blockDimension);
         }
-        return GetJITCompiledKernel(method, kernelName, gridSize, blockSize);
+        return GetJITCompiledKernel(method, kernelName, gridDimension, blockDimension);
     }
     private bool HasPrecompiledKernel(MethodInfo method)
     {
@@ -71,15 +71,15 @@ internal class MethodLauncher
         return File.Exists($"{_aotKernelFolder}{Path.DirectorySeparatorChar}{fileName}");
     }
 
-    private CudaKernel GetPrecompiledKernel(MethodInfo method,string kernelName, (uint,uint,uint) gridSize, (uint,uint,uint) blockSize) 
+    private CudaKernel GetPrecompiledKernel(MethodInfo method,string kernelName, (uint,uint,uint) gridDimension, (uint,uint,uint) blockDimension) 
     {
         string fileName = KernelHelpers.GetMethodIdentity(method) + "ptx";
         byte[] bytes = File.ReadAllBytes($"{_aotKernelFolder}{Path.DirectorySeparatorChar}{fileName}");
         return _cudaDeviceContext.LoadKernelPTX(bytes, kernelName);
     }
 
-    private CudaKernel GetJITCompiledKernel(MethodInfo method, string kernelName, (uint, uint, uint) gridSize,
-        (uint, uint, uint) blockSize)
+    private CudaKernel GetJITCompiledKernel(MethodInfo method, string kernelName, (uint, uint, uint) gridDimension,
+        (uint, uint, uint) blockDimension)
     {
         var nnvmConfiguration = CompilationConfiguration.NvvmConfiguration;
         var attributes = method.GetCustomAttributes(typeof(KernelAttribute)).ToList();
@@ -91,9 +91,9 @@ internal class MethodLauncher
         return _cudaDeviceContext.LoadKernelPTX(ptxKernel.KernelBuffer, kernelName);   
     }
 
-    private void SetGridDimensions(CudaKernel kernel, (uint, uint, uint) gridSize, (uint, uint, uint) blockSize)
+    private void SetGridDimensions(CudaKernel kernel, (uint, uint, uint) gridDimension, (uint, uint, uint) blockDimension)
     {
-        kernel.GridDimensions = new dim3(gridSize.Item1, gridSize.Item2, gridSize.Item3);
-        kernel.BlockDimensions = new dim3(blockSize.Item1, blockSize.Item2, blockSize.Item3);
+        kernel.GridDimensions = new dim3(gridDimension.Item1, gridDimension.Item2, gridDimension.Item3);
+        kernel.BlockDimensions = new dim3(blockDimension.Item1, blockDimension.Item2, blockDimension.Item3);
     }
 }
