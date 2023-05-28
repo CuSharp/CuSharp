@@ -11,7 +11,7 @@ public class RecursionTests
     [Fact]
     private void TestFibonacciRecursion()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         int n = 5;
         var devResults = dev.Allocate<int>(n);
         dev.Launch<int[], int>(RecursiveKernels.FibonacciLauncher, (1,1,1), (1,1,1), devResults, n);
