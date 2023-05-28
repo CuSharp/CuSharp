@@ -1533,10 +1533,7 @@ public class MethodBodyCompiler
     private LLVMValueRef BuildNestedGEP(LLVMValueRef array, LLVMValueRef offsetX, LLVMValueRef offsetY)
     {
         var vec = BuildGEP(array, offsetX);
-        //if (array.TypeOf().GetElementType().TypeKind != LLVMTypeKind.LLVMArrayTypeKind)
-        {
-            vec = LLVM.BuildLoad(_builder, vec, GetVirtualRegisterName());
-        }
+        vec = LLVM.BuildLoad(_builder, vec, GetVirtualRegisterName());
         return BuildGEP(vec, offsetY);
     }
     

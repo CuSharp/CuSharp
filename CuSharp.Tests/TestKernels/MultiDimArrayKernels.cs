@@ -1,4 +1,6 @@
-﻿using CuSharp.Kernel;
+﻿using System.Globalization;
+using CuSharp.CudaCompiler.Frontend;
+using CuSharp.Kernel;
 
 namespace CuSharp.Tests.TestKernels;
 
@@ -52,14 +54,22 @@ public class MultiDimArrayKernels
         a[0, 0] = 1337;
     }
 
+    [Kernel(ArrayMemoryLocation.SHARED)]
     public static void VeryNestedArrayAccess(int[,] a, int[,] c)
     {
         int[,] b = new int[5, 5];
-        if (a[0,0] == 42)
+        KernelTools.SyncThreads();
+        if (a[1,1] == 42)
         {
-            b[0,0] = a[0,0];
+            for (int i = 0; i < a[1, 1]; i++)
+            {
+                if (a[1, 1] == 42)
+                {
+                    b[1,1] = a[1,1];
+                }
+            }
         }
-        c[0, 0] = b[0, 0];
+        c[1, 1] = b[1, 1];
     }
     
     public static void VeryNestedArrayAccess2(int[] a, int[] c)

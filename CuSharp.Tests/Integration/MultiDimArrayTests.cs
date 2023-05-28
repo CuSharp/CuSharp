@@ -117,13 +117,13 @@ public class MultiDimArrayTests
         Cu.EnableOptimizer = false;
         var dev = Cu.GetDefaultDevice();
         var a = new int[5, 5];
-        a[0, 0] = 42;
+        a[1, 1] = 42;
         var c = new int[5, 5];
         var devC = dev.Allocate<int>(5,5);
         var devA = dev.Copy(a);
         dev.Launch(MultiDimArrayKernels.VeryNestedArrayAccess, (1,1,1), (1,1,1), devA, devC);
         c = dev.Copy(devC);
-        Assert.Equal(42, c[0,0]);
+        Assert.Equal(42, c[1,1]);
     }
      [Fact]
      public void TestVeryNestedArrays2()
