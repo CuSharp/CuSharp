@@ -14,7 +14,7 @@ public class NestedFunctionTests
     public void TestCallIntMethod()
     {
         // Arrange
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
 
         var devA = dev.CreateScalar(123);
         var devB = dev.CreateScalar(321);
@@ -27,7 +27,7 @@ public class NestedFunctionTests
     public void TestCallIntMethodNested()
     {
         // Arrange
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
 
         var devA = dev.CreateScalar(123);
         var devB = dev.CreateScalar(321);
@@ -39,7 +39,7 @@ public class NestedFunctionTests
     [Fact]
     public void TestArrayAdditionNested()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         var a = new int[] {1};
         var b = new int[] {2};
 
@@ -56,7 +56,7 @@ public class NestedFunctionTests
     [Fact]
     public void TestNestedArrayAdditionNested()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         var a = new int[] {1};
         var b = new int[] {2};
 
@@ -73,7 +73,7 @@ public class NestedFunctionTests
     [Fact]
     public void TestLocalFunction()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
 
         static void Kernel(uint[] a)
         {

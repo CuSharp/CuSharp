@@ -1,10 +1,7 @@
-﻿using System.Reflection;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using CuSharp.CudaCompiler;
-using CuSharp.CudaCompiler.Kernels;
 using ManagedCuda;
 using ManagedCuda.BasicTypes;
-using ManagedCuda.VectorTypes;
 
 namespace CuSharp;
 public partial class CuDevice : IDisposable

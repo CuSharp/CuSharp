@@ -8,8 +8,7 @@ namespace CuSharp.CudaCompiler.Frontend;
 public enum ArrayMemoryLocation
 {
     GLOBAL = 1,
-    SHARED = 3,
-    LOCAL = 5
+    SHARED = 3
 }
 
 public class CompilationConfiguration

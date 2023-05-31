@@ -39,13 +39,86 @@ public void Launch()
   var arrayB = new int [] {4 ,5 ,6};
   var deviceArrayA = device.Copy(arrayA);
   var deviceArrayB = device.Copy(arrayB);
-  var deviceResultArray = device.Allocate(3);
+  var deviceResultArray = device.Allocate<int>(3);
   var gridDimensions = (1,1,1);
   var blockDimensions = (3,1,1);
   device.Launch(IntAdditionKernel, gridDimensions, blockDimensions, deviceArrayA, deviceArrayB, deviceResultArray);
   var arrayResult = device.Copy(deviceResultArray);
 }
 ```
+
+## Matrix Multiplication Kernel
+```C#
+[Kernel]
+public static void MatrixMultiplication<T>(T[] a, T[] b, T[] c, int matrixWidth) where T : INumber<T>, new()
+{
+    var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
+    var col = KernelTools.BlockDimension.X * KernelTools.BlockIndex.X + KernelTools.ThreadIndex.X;
+    T result = new T(); 
+    if (row < matrixWidth && col < matrixWidth)
+    {
+        for (int i = 0; i < matrixWidth; i++)
+        {
+            //KernelTools.SyncThreads();
+            result += a[matrixWidth * row + i] * b[i * matrixWidth + col];
+        }
+
+        c[row * matrixWidth + col] = result;
+    }
+}
+```
+
+## Matrix Multiplication Kernel using Shared Memory
+```C#
+[Kernel(ArrayMemoryLocation.SHARED)]
+public static void TiledIntMatrixMultiplication<T>(T[] a, T[] b, T[] c, int matrixWidth, int tileWidth, int nofTiles) where T : INumber<T>, new()
+{
+    var tx = KernelTools.ThreadIndex.X;
+    var ty = KernelTools.ThreadIndex.Y;
+    var col = KernelTools.BlockIndex.X * tileWidth + tx;
+    var row = KernelTools.BlockIndex.Y * tileWidth + ty;
+
+    var aSub = new T[1024];
+    var bSub = new T[1024];
+
+    T sum = new T();
+    for (int tile = 0; tile < nofTiles; tile++)
+    {
+        if (row < matrixWidth && tile * tileWidth + tx < matrixWidth)
+        {
+            aSub[ty * tileWidth + tx] = a[row * matrixWidth + tile * tileWidth + tx];
+        }
+
+        if (col < matrixWidth && tile * tileWidth + ty < matrixWidth)
+        {
+            bSub[ty * tileWidth + tx] = b[(tile * tileWidth + ty) * matrixWidth + col];
+        }
+
+        KernelTools.SyncThreads();
+
+        if (row < matrixWidth && col < matrixWidth)
+        {
+            for (int ksub = 0; ksub < tileWidth; ksub++)
+            {
+                if (tile * tileWidth + ksub < matrixWidth)
+                {
+                    sum += aSub[ty * tileWidth + ksub] * bSub[ksub * tileWidth + tx];
+                }
+            }
+        }
+        KernelTools.SyncThreads();
+    }
+    if (row < matrixWidth && col < matrixWidth)
+    {
+        c[row * matrixWidth + col] = sum;
+    }
+}
+```
+
+## Complete Examples
+More complete examples can be found in the following project directories:
+- CuSharp.MandelbrotExample: A WPF-Project visualizing Mandelbrot-sets using CuSharp
+- CuSharp.PerformanceEvaluation: A console-application measuring the performance of matrix-multiplications
 
 # Dependencies
 - [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)

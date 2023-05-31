@@ -12,7 +12,7 @@ public class MultiDimArrayTests
     [Fact]
     public void TestMultiDimKernels()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         var a = new int[,] {{5}};
         var devA = dev.Copy(a);
         dev.Launch<int[,], int>(MultiDimArrayKernels.MultiDimKernel, (1,1,1),(1,1,1), devA, 42);
@@ -23,7 +23,7 @@ public class MultiDimArrayTests
     [Fact]
     public void TestMultiDimArrayAdditionKernel()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         var a = new int[,] {{1,2,3},{4,5,6}, {7,8,9}};
         var b = new int[,] {{9, 8, 7}, {6, 5, 4}, {3, 2, 1}};
         var devA = dev.Copy(a);
@@ -37,7 +37,7 @@ public class MultiDimArrayTests
     [Fact]
     public void TestMultiDimLocalArrayAdditionKernel()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         var a = new int[,] {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
         var b = new int[,] {{9, 8, 7}, {6, 5, 4}, {3, 2, 1}};
         var devA = dev.Copy(a);
@@ -49,7 +49,7 @@ public class MultiDimArrayTests
     [Fact]
     public void TestMultiDimMatrixMultiplication()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         int matrixWidth = 5;
         int[,] a = new int [matrixWidth , matrixWidth];
         int[,] b = new int [matrixWidth , matrixWidth];
@@ -93,7 +93,7 @@ public class MultiDimArrayTests
     [Fact]
     public void TestAssignLocalToParam()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         var a = dev.Allocate<int>(1, 1);
         dev.Launch(MultiDimArrayKernels.MultiDimArrayAssignToParam, (1,1,1), (1,1,1), a);
         //Sucess if no exception
@@ -102,7 +102,7 @@ public class MultiDimArrayTests
     [Fact]
     public void TestAssignParamToLocal()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         var a = new int[1, 1];
         a[0, 0] = 42;
         var devA = dev.Copy(a);

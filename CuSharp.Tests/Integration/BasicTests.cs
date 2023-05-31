@@ -21,7 +21,7 @@ public class BasicTests
     [Fact]
     public void TestSimpleArrayAdd()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         int length = 1024;
         int[] a = new int[length];
         int[] b = new int[length];
@@ -48,7 +48,7 @@ public class BasicTests
     [Fact]
     public void TestArrayScalarAdd()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         int length = 1024;
         int[] a = new int[length];
         int b = 5;
@@ -70,7 +70,7 @@ public class BasicTests
     [Fact]
     public void TestMatrixMultiplication()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         int matrixWidth = 100;
         uint gridDim = (uint) (matrixWidth % 32 == 0 ? matrixWidth / 32 : matrixWidth / 32 + 1);
         uint blockDim = (uint) (matrixWidth > 32 ? 32 : matrixWidth);
@@ -118,7 +118,7 @@ public class BasicTests
     public void TestNewArr()
     {
         Cu.EnableOptimizer = true;
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         var b = new int[] {1, 2, 3, 4, 5};
         var devB = dev.Copy(b);
         dev.Launch(MethodsToCompile.Newarr, (1, 1, 1), (1, 1, 1), devB);
@@ -129,7 +129,7 @@ public class BasicTests
     [Fact]
     public void TestScalar()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         var a = dev.Allocate<int>(1);
         int b = 5;
         dev.Launch<int[], int>(MethodsToCompile.TestScalars,(1,1,1), (1,1,1), a, b);
@@ -140,8 +140,8 @@ public class BasicTests
     [Fact]
     public void TestSharedMemory()
     {
-        global::CuSharp.Cu.EnableOptimizer = false;
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        Cu.EnableOptimizer = false;
+        var dev = Cu.GetDefaultDevice();
         var a = new int[] {42};
         var devA = dev.Copy(a);
         dev.Launch<int[],int>(MethodsToCompile.SharedMemoryTestKernel,(1,1,1), (1,1,1), devA, 1337);
@@ -152,7 +152,7 @@ public class BasicTests
     [Fact]
     public void TestMembar()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice();
+        var dev = Cu.GetDefaultDevice();
         dev.Launch(MethodsToCompile.ThreadFence, (1,1,1), (1,1,1), dev.Allocate<int>(1));
     }
 

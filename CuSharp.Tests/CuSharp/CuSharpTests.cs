@@ -13,21 +13,21 @@ public class CuSharpTests
     [Fact]
     public void TestInvalidDeviceIdThrows()
     {
-        Assert.Throws<ArgumentException>( () => global::CuSharp.Cu.GetDeviceById(int.MaxValue) );
+        Assert.Throws<ArgumentException>( () => Cu.GetDeviceById(int.MaxValue) );
     }
 
     [Fact]
     public void TestDefaultDeviceIsZero()
     {
-        Assert.Equal(global::CuSharp.Cu.GetDeviceById(0).ToString(), global::CuSharp.Cu.GetDefaultDevice().ToString());
+        Assert.Equal(Cu.GetDeviceById(0).ToString(), Cu.GetDefaultDevice().ToString());
     }
 
     [Fact]
     public void TestTimerIsZero()
     {
-        var dev = global::CuSharp.Cu.GetDefaultDevice(); //done just to initialize
-        var first = global::CuSharp.Cu.CreateEvent();
-        var second = global::CuSharp.Cu.CreateEvent();
+        var dev = Cu.GetDefaultDevice(); //done just to initialize
+        var first = Cu.CreateEvent();
+        var second = Cu.CreateEvent();
         first.Record();
         second.Record();
         var time = first.GetDeltaTo(second);
@@ -37,8 +37,8 @@ public class CuSharpTests
     [Fact]
     public void TestGetDeviceList()
     {
-        var defaultDevice = global::CuSharp.Cu.GetDefaultDevice().ToString();
-        var deviceEnumerator = global::CuSharp.Cu.GetDeviceList();
+        var defaultDevice = Cu.GetDefaultDevice().ToString();
+        var deviceEnumerator = Cu.GetDeviceList();
         IList<(int, string)> devices = new List<(int, string)>();
 
         while (deviceEnumerator.MoveNext())
