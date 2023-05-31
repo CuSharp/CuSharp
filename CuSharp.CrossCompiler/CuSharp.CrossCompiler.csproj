@@ -6,6 +6,10 @@
         <Nullable>enable</Nullable>
         <RootNamespace>CuSharp.CudaCompiler</RootNamespace>
         <LangVersion>11</LangVersion>
+        <PackageId>CuSharp.CrossCompiler</PackageId>
+        <Version>0.9.5</Version>
+        <Authors>Adrian Locher, Jason Benz</Authors>
+        <Company>CuSharp</Company>
     </PropertyGroup>
 
     <ItemGroup>

@@ -5,6 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>LibNVVMBinder</RootNamespace>
+        <PackageId>CuSharp.NVVMBinder</PackageId>
+        <Version>0.9.5</Version>
+        <Authors>Adrian Locher, Jason Benz</Authors>
+        <Company>CuSharp</Company>
     </PropertyGroup>
 
 </Project>

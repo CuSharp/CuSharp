@@ -5,11 +5,43 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mandelbrot"
         mc:Ignorable="d"
-        Title="MainWindow" Height="1000" Width="1000">
-    <Grid Name="mainGrid">
+        Title="MainWindow">
+    <Grid Name="mainGrid" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="100*"/>
         </Grid.RowDefinitions>
-        <Image Grid.Row="0" Stretch="Fill" Name="MandelbrotImg" Source = "{Binding ImageData}" MouseDown="MandelbrotImg_OnMouseDown"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="70*"/>
+            <ColumnDefinition Width="30*"/>
+        </Grid.ColumnDefinitions>
+        
+        <Image Grid.Column="0"
+               Name="Mandelbrot"
+               VerticalAlignment="Center"
+               Height="{Binding Width}" 
+               Width="{Binding Width}" 
+               Source="{Binding ImageData}">
+            <Image.InputBindings>
+                <MouseBinding 
+                    Gesture="LeftClick"
+                    Command="{Binding ZoomInCommand}"
+                    CommandParameter="{Binding ElementName=Mandelbrot}"/>
+            </Image.InputBindings>
+        </Image>
+        <Image Grid.Column="0" Source="resources/logo_crop_powered.png" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="400" Margin="10 10"/>
+        <StackPanel Grid.Column="1" Margin="10 0 0 0">
+            
+            <Image Source="/resources/OST_Logo_gross.jpg" HorizontalAlignment="Stretch"/>
+            
+            <Button Content="Reset" Command="{Binding ResetZoomCommand}" Margin="0 10" FontSize="30"/>
+            
+            <Button  Content="Randomize Color" Command="{Binding RandomizeColorCommand}" Margin="0 10" FontSize="30"/>
+            
+            <TextBlock Text="Zoom-Level:" Margin="0 10" FontSize="20"/>
+            <TextBlock Text="{Binding CurrentZoom}" Margin="0 10" FontSize="20"/>
+            
+            <TextBlock Text="Time to calculate in ms:" Margin="0 10" FontSize="20"/>
+            <TextBlock Text="{Binding Measurement}" Margin="0 10" FontSize="20"/>
+        </StackPanel>
     </Grid>
 </Window>
