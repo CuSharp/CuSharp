@@ -157,4 +157,27 @@ public class BasicTests
     }
 
 
+    [Fact]
+    public void TestPassNewarrAsArgument()
+    {
+        Cu.EnableOptimizer = false;
+        var dev = Cu.GetDefaultDevice();
+        var a = new int[] {0};
+        var devA = dev.Copy(a);
+        dev.Launch(MethodsToCompile.NewArrayPassAsArgument,(1,1,1), (1,1,1), devA );
+        a = dev.Copy(devA);
+        Assert.Equal(42, a[0]);
+    }
+    
+    [Fact]
+    public void TestPass2DNewarrAsArgument()
+    {
+        Cu.EnableOptimizer = false;
+        var dev = Cu.GetDefaultDevice();
+        var a = new int[,] {{0}};
+        var devA = dev.Copy(a);
+        dev.Launch(MethodsToCompile.New2DArrayPassAsArgument,(1,1,1), (1,1,1), devA );
+        a = dev.Copy(devA);
+        Assert.Equal(42, a[0,0]);
+    }
 }

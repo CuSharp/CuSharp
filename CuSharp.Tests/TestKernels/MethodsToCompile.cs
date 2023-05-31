@@ -579,4 +579,27 @@ public class MethodsToCompile
         b[0, 0] = a[0, 1];
         a[0, 0] = b[0, 0];
     }
+
+    public static void NewArrayPassAsArgument(int[] a)
+    {
+        int[] b = new int[1];
+        InitializeArray(b);
+        a[0] = b[0];
+    }
+
+    public static void InitializeArray(int[] b)
+    {
+        b[0] = 42;
+    }
+    public static void New2DArrayPassAsArgument(int[,] a)
+    {
+        int[,] b = new int[1,1];
+        Initialize2DArray(b);
+        a[0,0] = b[0,0];
+    }
+
+    public static void Initialize2DArray(int[,] b)
+    {
+        b[0,0] = 42;
+    }
 }

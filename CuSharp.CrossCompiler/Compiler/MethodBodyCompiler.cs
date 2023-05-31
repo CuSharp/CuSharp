@@ -1272,7 +1272,7 @@ public class MethodBodyCompiler
 
     private void CompileCallvirt(int operand)
     {
-        if (_functionsDto.ExternalFunctions.All(e => e.Item1 != _nameOfMethodToCall))
+        if (_functionsDto.ExternalFunctions.All(e => e.Item1 != _nameOfMethodToCall)) //Is only used for NVVM intrinsics
         {
             throw new Exception("Cannot call external virtual functions");
         }
@@ -1312,7 +1312,7 @@ public class MethodBodyCompiler
         } 
         else if (!isIntrinsicFunction)
         {
-            BuildNvvmIntrinsicFunctionCall((MethodInfo) method);
+            BuildStaticFunctionCall((MethodInfo) method);
         }
         else if (isIntrinsicFunction && _nameOfMethodToCall == "CuSharp.Kernel.KernelTools.get_WarpSize")
         {
@@ -1545,14 +1545,14 @@ public class MethodBodyCompiler
         return (indexX, indexY, arr);
     }
     
-    private void BuildNvvmIntrinsicFunctionCall(MethodInfo methodInfo)
+    private void BuildStaticFunctionCall(MethodInfo methodInfo)
     {
         if (_functionGenerator == null)
         {
             throw new ArgumentNullException("FunctionGenerator is required to compile calls, but it is null.");
         }
 
-        var kernelToCall = new MSILKernel(methodInfo!.Name, methodInfo, false);
+        var kernelToCall = new MSILKernel(methodInfo.Name, methodInfo, false);
         var function = _functionGenerator.GetOrDeclareFunction(kernelToCall);
 
         var parameters = methodInfo.GetParameters().ToArray();
@@ -1564,6 +1564,21 @@ public class MethodBodyCompiler
         for (var i = parameters.Length - 1; i >= 0; i--)
         {
             var param = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
+            if (param.TypeOf().TypeKind == LLVMTypeKind.LLVMPointerTypeKind && param.TypeOf().GetElementType().TypeKind == LLVMTypeKind.LLVMArrayTypeKind)
+            {
+                if (param.TypeOf().GetElementType().GetElementType().TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
+                {
+                    param = LLVM.BuildPointerCast(_builder, param,
+                        LLVM.PointerType(
+                            LLVM.PointerType(param.TypeOf().GetElementType().GetElementType().GetElementType(), 0), 0),
+                        GetVirtualRegisterName());
+                }
+                else
+                {
+                    param = LLVM.BuildPointerCast(_builder, param,
+                                     LLVM.PointerType(param.TypeOf().GetElementType().GetElementType(), 0), GetVirtualRegisterName());   
+                }
+            }
             args[i] = param;
         }
 
