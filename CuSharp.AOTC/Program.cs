@@ -20,7 +20,6 @@ public class AOTC
         string dllPath = args[0];
         string outputPath = args[1];
 
-        dllPath = ".\\CuSharp.Tests.dll";
         if (!Directory.Exists(outputPath))
         {
             Directory.CreateDirectory(outputPath);
