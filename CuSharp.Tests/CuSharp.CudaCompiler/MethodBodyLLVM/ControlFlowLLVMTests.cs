@@ -3,7 +3,7 @@ using CuSharp.Tests.TestHelper;
 using System.Reflection;
 using Xunit;
 using static CuSharp.Tests.TestHelper.MethodInfoLoader;
-using static CuSharp.Tests.TestHelper.MethodsToCompile;
+using static CuSharp.Tests.TestKernels.ControlFlowKernels;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyLLVM;
 
