@@ -15,9 +15,3 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build --configuration Release --no-restore
-      - name: Publish AOTC windows
-        run: dotnet publish ./CuSharp.AOTC/CuSharp.AOTC.csproj --os win -c Release --no-restore -o ./aotc-win
-      - uses: actions/upload-artifact@v3
-        with:
-          name: CuSharp.AOTC-windows
-          path: ./aotc-windows/
