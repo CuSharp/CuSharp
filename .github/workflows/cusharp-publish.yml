@@ -13,15 +13,15 @@ jobs:
           dotnet-version: 7.0.x
       - name: Restore dependencies
         run: dotnet restore
-      - name: Publish AOTC windows
-        run: dotnet publish ./CuSharp.AOTC/CuSharp.AOTC.csproj --os win -c Release --no-restore -o ./aotc-win
-      - uses: actions/upload-artifact@v3
-        with:
-          name: CuSharp.AOTC-windows
-          path: ./aotc-win/
-      - name: Publish AOTC linux
-        run: dotnet publish ./CuSharp.AOTC/CuSharp.AOTC.csproj --os linux -c Release --no-restore -o ./aotc-linux
-      - uses: actions/upload-artifact@v3
-        with:
-          name: CuSharp.AOTC-linux
-          path: ./aotc-linux/
+#      - name: Publish AOTC windows
+#        run: dotnet publish ./CuSharp.AOTC/CuSharp.AOTC.csproj --os win -c Release --no-restore -o ./aotc-win
+#      - uses: actions/upload-artifact@v3
+#        with:
+#          name: CuSharp.AOTC-windows
+#          path: ./aotc-win/
+#      - name: Publish AOTC linux
+#        run: dotnet publish ./CuSharp.AOTC/CuSharp.AOTC.csproj --os linux -c Release --no-restore -o ./aotc-linux
+#      - uses: actions/upload-artifact@v3
+#        with:
+#          name: CuSharp.AOTC-linux
+#          path: ./aotc-linux/
