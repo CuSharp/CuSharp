@@ -27,12 +27,10 @@ public class Image : INotifyPropertyChanged
     public Image(Dispatcher dispatcher)
     {
         _dispatcher = dispatcher;
-        var result = _generator.Generate(CurrentZoom);
-        ImageData = BitmapToImageSource(result.bmp);
-        Measurement = result.time;
         ZoomInCommand = new RelayCommand(OnZoomIn, CanZoomIn, _dispatcher);
         ResetZoomCommand = new RelayCommand(OnResetZoom, CanResetZoom, _dispatcher);
         RandomizeColorCommand = new RelayCommand(OnRandomizeColor, CanRandomizeColor, _dispatcher);
+        generateMandelbrot();
     }
 
     public double Measurement
@@ -76,9 +74,7 @@ public class Image : INotifyPropertyChanged
     {
         CurrentZoom = 1.0;
         _generator = new MandelbrotGenerator(Width);
-        var result= _generator.Generate(CurrentZoom);
-        ImageData = BitmapToImageSource(result.bmp);
-        Measurement = result.time;
+        generateMandelbrot();
     }
     
     public ICommand RandomizeColorCommand { get; }
@@ -97,9 +93,7 @@ public class Image : INotifyPropertyChanged
         _generator.GPhase = r.NextDouble();
         _generator.BFreq = r.NextDouble();
         _generator.BPhase = r.NextDouble();
-        var result = _generator.Generate(_currentZoom);
-        ImageData = BitmapToImageSource(result.bmp);
-        Measurement = result.time;
+        generateMandelbrot();
     }
     
     public ICommand ZoomInCommand { get; }
@@ -112,6 +106,12 @@ public class Image : INotifyPropertyChanged
         CurrentZoom *= ZoomFactor;
         var point = Mouse.GetPosition((IInputElement) param);
         _generator.UpdatePosition(point, ZoomFactor);
+        generateMandelbrot();
+        
+    }
+
+    private void generateMandelbrot()
+    {
         _isGenerating = true;
         (ZoomInCommand as RelayCommand)!.RaiseCanExecuteChanged();
         (ResetZoomCommand as RelayCommand)!.RaiseCanExecuteChanged();
@@ -121,9 +121,8 @@ public class Image : INotifyPropertyChanged
             var result = _generator.Generate(CurrentZoom);
             _dispatcher.Invoke(() =>
             {
-
-            ImageData = BitmapToImageSource(result.bmp);
-            Measurement = result.time;
+                ImageData = BitmapToImageSource(result.bmp);
+                Measurement = result.time;
             });
         }).ContinueWith(_ =>
         {
@@ -132,9 +131,7 @@ public class Image : INotifyPropertyChanged
              (ResetZoomCommand as RelayCommand)!.RaiseCanExecuteChanged();
              (RandomizeColorCommand as RelayCommand)!.RaiseCanExecuteChanged();           
         });
-        
     }
-    
     BitmapImage BitmapToImageSource(Bitmap bitmap)
     {
         using (MemoryStream memory = new MemoryStream())

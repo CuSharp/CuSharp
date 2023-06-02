@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Mandelbrot"
         mc:Ignorable="d"
-        Title="MainWindow">
+        Title="CuSharp Mandelbrot Demo" FontFamily="Space Grotesk Light"
+        WindowState="Maximized">
     <Grid Name="mainGrid" Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="100*"/>

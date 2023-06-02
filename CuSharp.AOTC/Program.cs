@@ -13,8 +13,8 @@ public class AOTC
     {
         if ( args.Length != 2)
         {
-            throw new ArgumentException(
-                "Invalid amount of arguments: Arguments should be:\n<path to containing DLL> <output folder>");
+           Console.WriteLine("Invalid amount of arguments: Arguments should be:\n<path to containing DLL> <output folder>");
+           return;
         }
 
         string dllPath = args[0];
