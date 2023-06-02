@@ -1,0 +1,21 @@
+name: CuSharp-Build
+
+on: [push]
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 7.0.x
+      - name: Restore dependencies
+        run: dotnet restore
+      - name: Publish AOTC windows
+        run: dotnet publish ./CuSharp.AOTC/CuSharp.AOTC.csproj --os win -c Release --no-restore -o ./aotc-win
+      - uses: actions/upload-artifact@v3
+        with:
+          name: CuSharp.AOTC-windows
+          path: ./aotc-windows/
