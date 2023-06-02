@@ -1,4 +1,4 @@
-name: CuSharp-Build
+name: CuSharp-Publish
 
 on: [push]
   
