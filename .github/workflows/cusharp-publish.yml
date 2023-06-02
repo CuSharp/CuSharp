@@ -3,7 +3,7 @@ name: CuSharp-Publish
 on: [push]
   
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,4 +18,10 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: CuSharp.AOTC-windows
-          path: ./aotc-windows/
+          path: ./aotc-win/
+      - name: Publish AOTC linux
+        run: dotnet publish ./CuSharp.AOTC/CuSharp.AOTC.csproj --os linux -c Release --no-restore -o ./aotc-linux
+      - uses: actions/upload-artifact@v3
+        with:
+          name: CuSharp.AOTC-linux
+          path: ./aotc-linux/
