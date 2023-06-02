@@ -11,7 +11,7 @@ public class AOTC
 { 
     static void Main(string[] args)
     {
-        if ( args.Length != 2)
+        if (args.Length != 2)
         {
            Console.WriteLine("Invalid amount of arguments: Arguments should be:\n<path to containing DLL> <output folder>");
            return;
@@ -20,11 +20,24 @@ public class AOTC
         string dllPath = args[0];
         string outputPath = args[1];
 
+        dllPath = ".\\CuSharp.Tests.dll";
         if (!Directory.Exists(outputPath))
         {
             Directory.CreateDirectory(outputPath);
         }
+
+        if (dllPath.StartsWith('.'))
+        {
+            dllPath = dllPath.Trim('.').Trim(Path.DirectorySeparatorChar);
+            dllPath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + dllPath;
+        }
         
+        if (!File.Exists(dllPath))
+        {
+                Console.WriteLine("DLL Not found");
+                return;
+        }
+
         CompileAll(dllPath, outputPath);
     }
 
