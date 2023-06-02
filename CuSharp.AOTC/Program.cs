@@ -11,7 +11,6 @@ public class AOTC
 { 
     static void Main(string[] args)
     {
-        args = new[] {"test.dll", "out"};
         if (args.Length != 2)
         {
            Console.WriteLine("Invalid amount of arguments: Arguments should be:\n<path to containing DLL> <output folder>");
