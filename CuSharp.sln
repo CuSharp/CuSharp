@@ -13,8 +13,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CuSharp.NVVMBinder", "CuSha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.PerformanceEvaluation", "CuSharp.PerformanceEvaluation\CuSharp.PerformanceEvaluation.csproj", "{FC3A0A11-B203-414D-8F1B-1746E6D6FB78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.SourceGenerator", "CuSharp.SourceGenerator\CuSharp.SourceGenerator.csproj", "{84078A3D-4DBC-4E44-9783-71648583B902}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.AOTC", "CuSharp.AOTC\CuSharp.AOTC.csproj", "{75D44696-E921-4D83-B2CF-98966F848690}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CuSharp.MandelbrotExample", "CuSharp.MandelbrotExample\CuSharp.MandelbrotExample.csproj", "{FE71782A-9AF6-49FB-A85A-C085DF117703}"
@@ -45,10 +43,6 @@ Global
 		{FC3A0A11-B203-414D-8F1B-1746E6D6FB78}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC3A0A11-B203-414D-8F1B-1746E6D6FB78}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC3A0A11-B203-414D-8F1B-1746E6D6FB78}.Release|Any CPU.Build.0 = Release|Any CPU
-		{84078A3D-4DBC-4E44-9783-71648583B902}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{84078A3D-4DBC-4E44-9783-71648583B902}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{84078A3D-4DBC-4E44-9783-71648583B902}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{84078A3D-4DBC-4E44-9783-71648583B902}.Release|Any CPU.Build.0 = Release|Any CPU
 		{75D44696-E921-4D83-B2CF-98966F848690}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75D44696-E921-4D83-B2CF-98966F848690}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75D44696-E921-4D83-B2CF-98966F848690}.Release|Any CPU.ActiveCfg = Release|Any CPU
