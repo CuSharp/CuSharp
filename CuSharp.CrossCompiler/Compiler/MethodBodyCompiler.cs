@@ -897,17 +897,15 @@ public class MethodBodyCompiler
     private void CompileBrFalse(int operand)
     {
         var predicate = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-        LLVMValueRef predicateNegated;
-        
+
         if (!predicate.TypeOf().Equals(LLVMTypeRef.Int1Type())) //converting to bool (i1)
         {
-            predicateNegated = LLVM.BuildICmp(_builder, LLVMIntPredicate.LLVMIntNE, predicate,
-                LLVM.ConstInt(predicate.TypeOf(), 1, false), GetVirtualRegisterName());
+            predicate = LLVM.BuildICmp(_builder, LLVMIntPredicate.LLVMIntNE, predicate,
+                LLVM.ConstInt(predicate.TypeOf(), 0, false), GetVirtualRegisterName());
         }
-        else
-        {
-            predicateNegated = LLVM.BuildNot(_builder, predicate, GetVirtualRegisterName());
-        }
+        
+        var predicateNegated = LLVM.BuildNot(_builder, predicate, GetVirtualRegisterName());
+        
         BuildConditionalBranch(_stream.Position + operand, _stream.Position, predicateNegated);
     }
 
