@@ -21,15 +21,33 @@ public class CompilationDispatcher
     }
     public PTXKernel Compile(string kernelName, MethodInfo methodInfo, CompilationConfiguration? nvvmConfiguration = null)
     {
-        if (!_disableCaching && _kernelCache.TryGetValue(KernelHelpers.GetMethodIdentity(methodInfo), out var ptxKernel)) return ptxKernel;
+        PTXKernel ptxKernel = null!;
+        if (!_disableCaching && _kernelCache.TryGetValue(KernelHelpers.GetMethodIdentity(methodInfo), out ptxKernel!)) return ptxKernel;
  
         var kernel = new MSILKernel(kernelName, methodInfo, true);
         nvvmConfiguration ??= CompilationConfiguration.NvvmConfiguration;
         nvvmConfiguration.KernelName = kernelName;
         
         var msilToLlvmCrosscompiler = new KernelCrossCompiler(nvvmConfiguration);
-        var llvmKernel = msilToLlvmCrosscompiler.Compile(kernel, _enableOptimizer);
-        ptxKernel = CompileLlvmToPtx(llvmKernel);
+        LLVMKernel? llvmKernel = null;
+        try
+        {
+            llvmKernel = msilToLlvmCrosscompiler.Compile(kernel, _enableOptimizer);
+        }
+        catch (Exception e)
+        {
+            e.HandleUnrecoverable("Something went wrong while compiling MSIL to NVVM IR. This may occur when using unsupported features in the kernel.");
+        }
+
+        try
+        {
+            ptxKernel = CompileLlvmToPtx(llvmKernel!);
+        }
+        catch (Exception e)
+        {
+            e.HandleUnrecoverable("Something went wrong while compiling NVVM IR to PTX ISA. This is most likely a bug in the compiler. Please report this on http://github.com/CuSharp/CuSharp.");
+        }
+        
         _kernelCache.Add(KernelHelpers.GetMethodIdentity(methodInfo), ptxKernel);
         return ptxKernel;
     }

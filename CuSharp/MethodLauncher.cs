@@ -33,7 +33,14 @@ internal class MethodLauncher
                              .GetProperty("DevicePointer", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(p) ?? 
                             p.GetType().GetProperty("Value", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(p))
             .ToArray();
-        cudaKernel.Run(castParams);
+        try
+        {
+            cudaKernel.Run(castParams);
+        }
+        catch (Exception e)
+        {
+            e.HandleUnrecoverable("Something went wrong during execution of a GPU kernel. Please check your kernel and/or report a bug on https://github.com/CuSharp/CuSharp");
+        }
     }
     
     private CudaKernel CompileAndGetKernel(MethodInfo methodInfo, (uint,uint,uint) gridDimension, (uint,uint,uint) blockDimension)
