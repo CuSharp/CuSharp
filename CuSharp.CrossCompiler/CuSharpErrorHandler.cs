@@ -8,6 +8,12 @@ public static class CuSharpErrorHandler
     {
         Console.WriteLine(message);
         Console.WriteLine(e.Message);
-        throw new Exception("CuSharp process failed");
+        throw new CuSharpException("CuSharp process failed");
     }
+}
+
+public class CuSharpException : Exception
+{
+    public CuSharpException(string message) : base(message)
+    { }
 }
