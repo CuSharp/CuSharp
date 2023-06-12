@@ -95,16 +95,16 @@ public class CallTests
     {
         // Arrange
         var dev = Cu.GetDefaultDevice();
-        int[] a = new[] { 123, 456, 789 };
-        int[] b = new[] { 987, 654, 321 };
+        int[] a = { 123, 456, 789 };
+        int[] b = { 987, 654, 321 };
         int[] result = new int[3];
-        int[] expectedResult = new[] { a[0] + b[0], a[1] + b[1], a[2] + b[2] };
+        int[] expectedResult = { a[0] + b[0], a[1] + b[1], a[2] + b[2] };
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
         var devResult = dev.Copy(result);
 
         // Act
-        dev.Launch<int[], int[], int[]>(CallKernels.CallIntReturnArrayWithKernelTools, (1, 1, 1), (1, 1, 1), devA, devB, devResult);
+        dev.Launch<int[], int[], int[]>(CallKernels.CallIntReturnArrayWithKernelTools, ((uint)result.Length, 1, 1), (1, 1, 1), devA, devB, devResult);
         result = dev.Copy(devResult);
         devA.Dispose();
         devB.Dispose();
