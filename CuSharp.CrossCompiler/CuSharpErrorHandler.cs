@@ -1,14 +1,11 @@
-﻿using System.Diagnostics;
-
-namespace CuSharp.CudaCompiler;
+﻿namespace CuSharp.CudaCompiler;
 
 public static class CuSharpErrorHandler
 {
     public static void HandleUnrecoverable(this Exception e, string message)
     {
         Console.WriteLine(message);
-        Console.WriteLine(e.Message);
-        throw new CuSharpException("CuSharp process failed");
+        throw new CuSharpException("CuSharp process failed:\n" + e.Message);
     }
 }
 
