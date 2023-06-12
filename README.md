@@ -33,7 +33,7 @@ static void IntAdditionKernel (int[] a , int[] b , int[] result)
 
 public void Launch()
 {
-  var device = CuSharp.GetDefaultDevice();
+  var device = Cu.GetDefaultDevice();
 
   var arrayA = new int [] {1 ,2 ,3};
   var arrayB = new int [] {4 ,5 ,6};
@@ -119,6 +119,32 @@ public static void TiledIntMatrixMultiplication<T>(T[] a, T[] b, T[] c, int matr
 More complete examples can be found in the following project directories:
 - CuSharp.MandelbrotExample: A WPF-Project visualizing Mandelbrot-sets using CuSharp
 - CuSharp.PerformanceEvaluation: A console-application measuring the performance of matrix-multiplications
+
+# API
+## Static Class: Cu
+### Properties
+- `bool EnableOptimizer`: Enables or disables the built-in optimizer. Default: True (in Debug mode), False (in Release mode).
+- `string AotKernelFolder`: Specifies the folder where the framework should look for kernels that were ahead-of-time compiled.
+
+### Static Methods
+- `IEnumerator<(int, string)> GetDeviceList()`: Returns a list of pairs of device-id and device-name.
+- `CuDevice GetDefaultDevice()`: Returns a handle for the device with ID: 0.
+- `CuDevice GetDeviceById(int deviceId)`: Returns a for the device with ID: `deviceId`.
+- `CuEvent CreateEvent()`: Returns a handle to a Cuda-Event used to measure performance.
+
+## Class: CuDevice
+### Methods
+- `string ToString()`:
+- `void Synchronize()`:
+- `Tensor<T[]> Allocate<T>(int size)`:
+- `Tensor<T[,]> Allocate<T>(int sizeX, int sizeY)`: 
+- `Tensor<T[]> Copy<T>(T[] hostTensor)`:
+- `Tensor<T[,]> Copy<T>(T[,] hostTensor)`:
+- `Tensor<T> CreateScalar<T>(T hostScalar)`:
+- `T[] Copy<T>(Tensor<T[]> deviceTensor)`:
+- `T[,] Copy<T>(Tensor<T[,]> deviceTensor)`:
+- `void Launch<T1, ..., TN>(Action<T1, ..., TN> kernel, (uint,uint,uint) gridDimensions, (uint,uint,uint) blockDimensions, Tensor<T1> param1, ... , Tensor<TN> paramN)`
+- `void Dispose()`:
 
 # Dependencies
 - [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
