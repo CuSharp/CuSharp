@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Numerics;
 using CuSharp.CudaCompiler.Frontend;
 using CuSharp.Kernel;
 
@@ -81,5 +82,33 @@ public class MultiDimArrayKernels
         }
 
         c[0] = b[0];
+    }
+
+    public static void ArrayConvert1Dto2D<T>(T[] input, T[,] output, int length) where T : INumber<T>
+    {
+        var start = KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X;
+        var stride = KernelTools.GridDimension.X * KernelTools.BlockDimension.X;
+
+        for (var index = start; index < length; index += stride)
+        {
+            int index0 = (int)index % length;
+            int index1 = (int)index / length;
+            output[index0, index1] = input[index];
+        }
+    }
+
+    public static void ArrayConvert2Dto1D<T>(T[,] input, int length1, int length2, T[] output) where T : INumber<T>
+    {
+        var start = KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X;
+        var stride = KernelTools.GridDimension.X * KernelTools.BlockDimension.X;
+        var index = 0;
+        for (var i = start; i < length1; i++)
+        {
+            for (int j = 0; j < length2; j++)
+            {
+                output[index] = input[i, j];
+                index++;
+            }
+        }
     }
 }

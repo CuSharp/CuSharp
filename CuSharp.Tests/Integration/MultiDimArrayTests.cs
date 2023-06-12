@@ -8,7 +8,6 @@ namespace CuSharp.Tests.Integration;
 [Trait(TestCategories.TestCategory, TestCategories.Integration)]
 public class MultiDimArrayTests
 {
-
     [Fact]
     public void TestMultiDimKernels()
     {
@@ -137,5 +136,53 @@ public class MultiDimArrayTests
          var c = dev.Copy(devC);
          Assert.Equal(42, c[0]);
 
-     }   
+     }
+
+    [Fact]
+    public void ArrayConvert1Dto2D_Integration()
+    {
+        // Arrange
+        var dev = Cu.GetDefaultDevice();
+        int[] input = { 1, 2, 3, 4, 5 };
+        int[,] output = new int[input.Length, 1];
+        int[,] expectedOutput = { { 1 }, { 2 }, { 3 }, { 4 }, { 5 } };
+
+        var devInput = dev.Copy(input);
+        var devOutput = dev.Copy(output);
+
+        // Act
+        dev.Launch<int[], int[,], int>(MultiDimArrayKernels.ArrayConvert1Dto2D, (1, 1, 1), (1, 1, 1), devInput, devOutput, input.Length);
+        output = dev.Copy(devOutput);
+
+        devInput.Dispose();
+        devOutput.Dispose();
+
+        // Assert
+        Assert.Equal(expectedOutput, output);
+    }
+
+    [Fact]
+    public void ArrayConvert2Dto1D_Integration()
+    {
+        // Arrange
+        var dev = Cu.GetDefaultDevice();
+        int[,] input = { { 1, 2 }, { 3, 4 }, { 5, 6 }, { 7, 8 } };
+        int length0 = input.GetLength(0);
+        int length1 = input.GetLength(1);
+        int[] output = new int[length0 * length1];
+        int[] expectedOutput = { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+        var devInput = dev.Copy(input);
+        var devOutput = dev.Copy(output);
+
+        // Act
+        dev.Launch<int[,], int, int, int[]>(MultiDimArrayKernels.ArrayConvert2Dto1D, (1, 1, 1), (1, 1, 1), devInput, length0, length1, devOutput);
+        output = dev.Copy(devOutput);
+
+        devInput.Dispose();
+        devOutput.Dispose();
+
+        // Assert
+        Assert.Equal(expectedOutput, output);
+    }
 }
