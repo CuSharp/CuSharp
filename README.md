@@ -133,18 +133,26 @@ More complete examples can be found in the following project directories:
 - `CuEvent CreateEvent()`: Returns a handle to a Cuda-Event used to measure performance.
 
 ## Class: CuDevice
+- Implements IDisposable
 ### Methods
-- `string ToString()`:
-- `void Synchronize()`:
-- `Tensor<T[]> Allocate<T>(int size)`:
-- `Tensor<T[,]> Allocate<T>(int sizeX, int sizeY)`: 
-- `Tensor<T[]> Copy<T>(T[] hostTensor)`:
-- `Tensor<T[,]> Copy<T>(T[,] hostTensor)`:
-- `Tensor<T> CreateScalar<T>(T hostScalar)`:
-- `T[] Copy<T>(Tensor<T[]> deviceTensor)`:
-- `T[,] Copy<T>(Tensor<T[,]> deviceTensor)`:
-- `void Launch<T1, ..., TN>(Action<T1, ..., TN> kernel, (uint,uint,uint) gridDimensions, (uint,uint,uint) blockDimensions, Tensor<T1> param1, ... , Tensor<TN> paramN)`
-- `void Dispose()`:
+- `string ToString()`: Returns the devices name.
+- `void Synchronize()`: Blocks until all tasks on the device are finished.
+- `Tensor<T[]> Allocate<T>(int size)`: Allocates an array of `size` elements on the device and returns its handle.
+- `Tensor<T[,]> Allocate<T>(int sizeX, int sizeY)`:  allocates a 2D-array of size `sizeX` * `sizeY` on the device and returns its handle.
+- `Tensor<T[]> Copy<T>(T[] hostTensor)`: Copies `hostTensor` to the device and returns a handle to the copied array.
+- `Tensor<T[,]> Copy<T>(T[,] hostTensor)`: Copies `hostTensor` to the device and returns a handle to the copied array.
+- `Tensor<T> CreateScalar<T>(T hostScalar)`: Copies `hostScalar` to the device and returns a handle to the copied value.
+- `T[] Copy<T>(Tensor<T[]> deviceTensor)`: Copies `deviceTensor` from the device and returns the array.
+- `T[,] Copy<T>(Tensor<T[,]> deviceTensor)`: Copies `deviceTensor` from the device and returns the 2D-array.
+- `void Launch<T1, ..., TN>(Action<T1, ..., TN> kernel, (uint,uint,uint) gridDimensions, (uint,uint,uint) blockDimensions, Tensor<T1> param1, ... , Tensor<TN> paramN)`: JIT-compiles (if needed) and launches `kernel` on the device with the specified dimensions and `Tensor<T>`-parameters.
+- `void Dispose()`: Disposes all allocated ressources of the device-handle.
+
+## Interface: CuEvent
+- Implements IDisposable
+### Methods
+- `void Record()`: Records the point in time this method-was called relative to the GPU-Runtime.
+- `float GetDeltaTo(CuEvent event)`: Returns the time delta between `this` CuEvent and `event`.
+- `void Dispose()`: Disposes all allocated ressources of the event-handle.
 
 # Dependencies
 - [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
