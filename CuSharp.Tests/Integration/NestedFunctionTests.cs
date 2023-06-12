@@ -21,7 +21,7 @@ public class NestedFunctionTests
         var devC = dev.CreateScalar(0);
 
         // Act
-        dev.Launch(MethodsToCompile.CallIntMethod, (1, 1, 1), (1, 1, 1), devA, devB, devC);
+        dev.Launch(CallKernels.CallIntMethod, (1, 1, 1), (1, 1, 1), devA, devB, devC);
     }
     [Fact]
     public void TestCallIntMethodNested()
@@ -34,7 +34,7 @@ public class NestedFunctionTests
         var devC = dev.CreateScalar(0);
 
         // Act
-        dev.Launch(MethodsToCompile.CallIntMethodNested, (1, 1, 1), (1, 1, 1), devA, devB, devC);
+        dev.Launch(CallKernels.CallIntMethodNested, (1, 1, 1), (1, 1, 1), devA, devB, devC);
     }
     [Fact]
     public void TestArrayAdditionNested()
@@ -47,7 +47,7 @@ public class NestedFunctionTests
         var devB = dev.Copy(b);
         var devC = dev.Allocate<int>(1);
         
-        dev.Launch(MethodsToCompile.ArrayAdditionNested, (1,1,1), (1,1,1), devA, devB, devC);
+        dev.Launch(CallKernels.ArrayAdditionNested, (1,1,1), (1,1,1), devA, devB, devC);
 
         var c = dev.Copy(devC);
         Assert.Equal(3, c[0]);
@@ -64,7 +64,7 @@ public class NestedFunctionTests
         var devB = dev.Copy(b);
         var devC = dev.Allocate<int>(1);
         
-        dev.Launch(MethodsToCompile.NestedArrayCall, (1,1,1), (1,1,1), devA, devB, devC);
+        dev.Launch(CallKernels.NestedArrayCall, (1,1,1), (1,1,1), devA, devB, devC);
 
         var c = dev.Copy(devC);
         Assert.Equal(3, c[0]);

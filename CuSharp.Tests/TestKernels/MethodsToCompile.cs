@@ -189,66 +189,6 @@ public class MethodsToCompile
         a[i] %= b[i];
     }
 
-    public static void CallIntMethod(int a, int b, int c)
-    {
-        c = AddTwoIntegers(a, b);
-    }
-
-    private static int AddTwoIntegers(int a, int b)
-    {
-        return a + b;
-    }
-
-    public static void CallIntMethodNested(int a, int b, int c)
-    {
-        c = AddTwoIntegersNested(a, b);
-    }
-
-    private static int AddTwoIntegersNested(int a, int b)
-    {
-        int c;
-
-        if (AreEqual(a, b))
-        {
-            c = a + b;
-        }
-        else
-        {
-            c = int.MaxValue;
-        }
-
-        return c;
-    }
-
-    private static bool AreEqual(int a, int b)
-    {
-        return a == b;
-    }
-
-    public static void CallIntArrayMethodWithKernelTools(int[] a, int[] b, int[] c)
-    {
-        int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
-        c[i] = AddTwoIntArrayValues(a, b, i);
-    }
-
-    private static int AddTwoIntArrayValues(int[] a, int[] b, int i)
-    {
-        i = a.Length - 1;
-        return a[i] + b[i];
-    }
-
-    public static void CallIntReturnArrayWithKernelTools(int[] a, int[] b, int[] c)
-    {
-        int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);
-        c = AddTwoIntArray(a, b, c, i);
-    }
-
-    private static int[] AddTwoIntArray(int[] a, int[] b, int[] c, int i)
-    {
-        c[i] = a[i] + b[i];
-        return c;
-    }
-
     public static void IntMatrixMultiplication(int[] a, int[] b, int[] c, int matrixWidth)
     {
         var row = KernelTools.BlockDimension.Y * KernelTools.BlockIndex.Y + KernelTools.ThreadIndex.Y;
@@ -438,21 +378,6 @@ public class MethodsToCompile
     public static void TestScalars(int[] a, int b)
     {
         a[0] = b;
-    }
-
-    public static void ArrayAdditionNested(int[] a, int[] b, int[] c)
-    {
-        c[0] = AddForNested(a[0], b[0]);
-    }
-
-    public static int AddForNested(int a, int b)
-    {
-        return a + b;
-    }
-
-    public static void NestedArrayCall(int[] a, int[] b, int[] c)
-    {
-        ArrayAdditionNested(a,b,c);
     }
 
     public static void ThreadFence(int[] a)
