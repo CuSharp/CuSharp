@@ -1088,12 +1088,14 @@ public class MethodBodyCompiler
         var arr = LLVM.AddGlobalInAddressSpace(Module, type, GetGlobalVariableName(), (uint) ArrayMemoryLocation);
         arr.SetLinkage(LLVMLinkage.LLVMInternalLinkage);
         arr.SetInitializer(LLVM.GetUndef(type));
-
+        
         var multiType =
             LLVM.ArrayType(
                 LLVM.PointerType(ctor.DeclaringType.GetElementType().ToLLVMType(), (uint) ArrayMemoryLocation),
                 (uint) lenX);
         var multiArr = LLVM.AddGlobalInAddressSpace(Module, multiType, GetGlobalVariableName(), (uint) ArrayMemoryLocation);
+        multiArr.SetLinkage(LLVMLinkage.LLVMInternalLinkage);
+        multiArr.SetInitializer(LLVM.GetUndef(multiType));
 
         for (int i = 0; i < (uint) lenX; i++)
         {
