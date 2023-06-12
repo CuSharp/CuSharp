@@ -4,6 +4,7 @@ using CuSharp.CudaCompiler.Frontend;
 using CuSharp.CudaCompiler.Kernels;
 using CuSharp.Kernel;
 using ManagedCuda;
+using ManagedCuda.BasicTypes;
 using ManagedCuda.VectorTypes;
 
 namespace CuSharp;
@@ -26,8 +27,6 @@ internal class MethodLauncher
         params object[] parameters)
     {
         var cudaKernel = CompileAndGetKernel(method, gridDimension, blockDimension);
-        var lengths = new int [parameters.Length];
-        CudaDeviceVariable<int> devLengths = lengths;
         var castParams = parameters
             .Select(p => p.GetType()
                              .GetProperty("DevicePointer", BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)?.GetValue(p) ?? 
