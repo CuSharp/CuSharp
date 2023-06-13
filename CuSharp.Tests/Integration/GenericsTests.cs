@@ -1,8 +1,4 @@
-﻿using System;
-using System.Reflection;
-using CuSharp.CudaCompiler;
-using CuSharp.Tests.TestHelper;
-using CuSharp.Tests.TestKernels;
+﻿using CuSharp.Tests.TestHelper;
 using Xunit;
 
 namespace CuSharp.Tests.Integration;
@@ -22,8 +18,10 @@ public class GenericsTests
         var devB = dev.Copy(b);
         dev.Launch(MethodsToCompile.IAmGeneric, (1, 1, 1), (1, 1, 1), devA, devB);
         a = dev.Copy(devA);
+        devA.Dispose();
+        devB.Dispose();
+        dev.Dispose();
         Assert.Equal(42 + 1337, a[0]);
-
     }
 
     [Fact]
@@ -34,6 +32,8 @@ public class GenericsTests
         var devA = dev.Copy(a);
         dev.Launch(MethodsToCompile.GenericNewArray, (1,1,1), (1,1,1), devA);
         a = dev.Copy(devA);
+        devA.Dispose();
+        dev.Dispose();
         Assert.Equal(1, a[0]);
     }
     
@@ -45,6 +45,8 @@ public class GenericsTests
         var a = dev.Copy(hostA);
         dev.Launch(MethodsToCompile.GenericMultiDimNewArray, (1,1,1), (1,1,1), a);
         hostA = dev.Copy(a);
+        a.Dispose();
+        dev.Dispose();
         Assert.Equal(1,hostA[0,0]);
     }
 }

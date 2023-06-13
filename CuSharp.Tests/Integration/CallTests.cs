@@ -25,6 +25,7 @@ public class CallTests
         dev.Launch<int, int, int[]>(CallKernels.CallVoidMethod, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -45,6 +46,7 @@ public class CallTests
         dev.Launch<int, int, int[]>(CallKernels.CallIntMethod, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -65,6 +67,7 @@ public class CallTests
         dev.Launch<int, int, int[]>(CallKernels.CallIntMethodNested, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -80,11 +83,12 @@ public class CallTests
         int[] result = new int[1];
         const int expectedResult = int.MaxValue;
         var devResult = dev.Copy(result);
-
+        
         // Act
         dev.Launch<int, int, int[]>(CallKernels.CallIntMethodNested, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -109,6 +113,7 @@ public class CallTests
         devA.Dispose();
         devB.Dispose();
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result);

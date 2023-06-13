@@ -51,9 +51,15 @@ public class LaunchTests
             devC2, devWidth);
         c2 = dev.Copy(devC2);
 
+        devA.Dispose();
+        devB.Dispose();
+        devC1.Dispose();
+        devC2.Dispose();
+        
         // Assert
         _output.WriteLine($"Used gpu device: '{dev}'");
         Assert.Equal(c1, c2);
+        dev.Dispose();
     }
 
     [Fact]
@@ -81,10 +87,16 @@ public class LaunchTests
         dev.Launch(MethodsToCompile.ArrayIntMultiplicationWithKernelTools, (1, 1, 1), (3, 1, 1), devA, devB, devC2);
         c2 = dev.Copy(devC2);
 
+        devA.Dispose();
+        devB.Dispose();
+        devC1.Dispose();
+        devC2.Dispose();
+        
         // Assert
         _output.WriteLine($"Used gpu device: '{dev}'");
         Assert.Equal(expectedC1, c1);
         Assert.Equal(expectedC2, c2);
+        dev.Dispose();
     }
     
     [Fact]
@@ -101,6 +113,12 @@ public class LaunchTests
 
         dev.Launch(MethodsToCompile.AOTCArrayIntAddition, (1, 1, 1), (1, 1, 1), devA, devB, devC);
         var c = dev.Copy(devC);
+
+        devA.Dispose();
+        devB.Dispose();
+        devC.Dispose();
+        dev.Dispose();
+
         Assert.Equal(new int[] {3}, c);
     }
 }

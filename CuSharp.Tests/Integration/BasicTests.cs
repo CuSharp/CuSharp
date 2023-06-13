@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using CuSharp.Kernel;
+﻿using System.Linq;
 using CuSharp.Tests.TestHelper;
 using Xunit;
 using Xunit.Abstractions;
@@ -41,8 +39,13 @@ public class BasicTests
             devC);
         c = dev.Copy(devC);
 
+        devA.Dispose();
+        devB.Dispose();
+        devC.Dispose();
+        
         _output.WriteLine($"Used gpu device: '{dev}'");
         Assert.True(c.SequenceEqual(expectedC));
+        dev.Dispose();
     }
 
     [Fact]
@@ -63,8 +66,11 @@ public class BasicTests
         var devB = dev.CreateScalar(b);
         dev.Launch(MethodsToCompile.ArrayIntScalarAdd, (1, 1, 1), ((uint) length, 1, 1), devA, devB);
         a = dev.Copy(devA);
-        _output.WriteLine($"Used gpu device: '{dev.ToString()}'");
+        devA.Dispose();
+        
+        _output.WriteLine($"Used gpu device: '{dev}'");
         Assert.True(a.SequenceEqual(expected));
+        dev.Dispose();
     }
 
     [Fact]
@@ -110,8 +116,13 @@ public class BasicTests
             devC, devWidth);
         c = dev.Copy(devC);
 
+        devA.Dispose();
+        devB.Dispose();
+        devC.Dispose();
+        
         _output.WriteLine($"Used gpu device: '{dev}'");
         Assert.Equal(expectedC, c);
+        dev.Dispose();
     }
 
     [Fact]
@@ -123,6 +134,9 @@ public class BasicTests
         var devB = dev.Copy(b);
         dev.Launch(MethodsToCompile.Newarr, (1, 1, 1), (1, 1, 1), devB);
         b = dev.Copy(devB);
+        devB.Dispose();
+        dev.Dispose();
+
         Assert.Equal(5, b[0]);
     }
     
@@ -134,6 +148,8 @@ public class BasicTests
         int b = 5;
         dev.Launch<int[], int>(MethodsToCompile.TestScalars,(1,1,1), (1,1,1), a, b);
         var hostA = dev.Copy(a);
+        a.Dispose();
+        dev.Dispose();
         Assert.Equal(5, hostA[0]);
     }
 
@@ -146,6 +162,8 @@ public class BasicTests
         var devA = dev.Copy(a);
         dev.Launch<int[],int>(MethodsToCompile.SharedMemoryTestKernel,(1,1,1), (1,1,1), devA, 1337);
         a = dev.Copy(devA);
+        devA.Dispose();
+        dev.Dispose();
         Assert.Equal(56154, a[0]);
     }
 
@@ -154,6 +172,7 @@ public class BasicTests
     {
         var dev = Cu.GetDefaultDevice();
         dev.Launch(MethodsToCompile.ThreadFence, (1,1,1), (1,1,1), dev.Allocate<int>(1));
+        dev.Dispose();
     }
 
 
@@ -166,6 +185,8 @@ public class BasicTests
         var devA = dev.Copy(a);
         dev.Launch(MethodsToCompile.NewArrayPassAsArgument,(1,1,1), (1,1,1), devA );
         a = dev.Copy(devA);
+        devA.Dispose();
+        dev.Dispose();
         Assert.Equal(42, a[0]);
     }
     
@@ -178,6 +199,8 @@ public class BasicTests
         var devA = dev.Copy(a);
         dev.Launch(MethodsToCompile.New2DArrayPassAsArgument,(1,1,1), (1,1,1), devA );
         a = dev.Copy(devA);
+        devA.Dispose();
+        dev.Dispose();
         Assert.Equal(42, a[0,0]);
     }
 }

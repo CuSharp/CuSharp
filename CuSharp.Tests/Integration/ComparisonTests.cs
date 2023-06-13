@@ -23,6 +23,7 @@ public class ComparisonTests
         dev.Launch<int, int, bool[]>(ComparisonKernels.EqualsInt, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -43,6 +44,7 @@ public class ComparisonTests
         dev.Launch<uint, uint, bool[]>(ComparisonKernels.EqualsUint, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -63,6 +65,7 @@ public class ComparisonTests
         dev.Launch<float, float, bool[]>(ComparisonKernels.EqualsFloat, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -83,6 +86,7 @@ public class ComparisonTests
         dev.Launch<int, int, bool[]>(ComparisonKernels.NotEqualsInt, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -103,6 +107,7 @@ public class ComparisonTests
         dev.Launch<uint, uint, bool[]>(ComparisonKernels.NotEqualsUint, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -123,6 +128,7 @@ public class ComparisonTests
         dev.Launch<float, float, bool[]>(ComparisonKernels.NotEqualsFloat, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -143,6 +149,7 @@ public class ComparisonTests
         dev.Launch<int, int, bool[]>(ComparisonKernels.GreaterThanInt, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -163,6 +170,7 @@ public class ComparisonTests
         dev.Launch<uint, uint, bool[]>(ComparisonKernels.GreaterThanUint, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -183,6 +191,7 @@ public class ComparisonTests
         dev.Launch<float, float, bool[]>(ComparisonKernels.GreaterThanFloat, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -203,6 +212,7 @@ public class ComparisonTests
         dev.Launch<int, int, bool[]>(ComparisonKernels.LessThanInt, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -223,6 +233,7 @@ public class ComparisonTests
         dev.Launch<uint, uint, bool[]>(ComparisonKernels.LessThanUint, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -243,6 +254,7 @@ public class ComparisonTests
         dev.Launch<float, float, bool[]>(ComparisonKernels.LessThanFloat, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);

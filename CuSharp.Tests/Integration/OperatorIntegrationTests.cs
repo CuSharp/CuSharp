@@ -44,6 +44,8 @@ public class OperatorIntegrationTests
         // Act
         dev.Launch<uint, uint, uint[]>(OperatorTestKernels.UintDivision, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
+        devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -70,6 +72,8 @@ public class OperatorIntegrationTests
         // Act
         dev.Launch<uint, uint, uint[]>(OperatorTestKernels.UintModulo, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
+        devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -87,8 +91,14 @@ public class OperatorIntegrationTests
         var dev = Cu.GetDefaultDevice();
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
+        
         dev.Launch(kernel, (1,1,1), (1,1,1), devA, devB);
         a = dev.Copy(devA);
+        
+        devA.Dispose();
+        devB.Dispose();
+        dev.Dispose();
+
         return a;
     }
     
@@ -102,6 +112,8 @@ public class OperatorIntegrationTests
         var devB = dev.CreateScalar(b);
         dev.Launch(OperatorTestKernels.NotTest, (1, 1, 1), (1, 1, 1), devA, devB);
         a = dev.Copy(devA);
+        devA.Dispose();
+        dev.Dispose();
         Assert.True(a[0]);
         Assert.True(!a[1]);
     }

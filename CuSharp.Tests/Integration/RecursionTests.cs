@@ -9,17 +9,17 @@ namespace CuSharp.Tests.Integration;
 public class RecursionTests
 {
     [Fact]
-    private void TestFibonacciRecursion()
+    public void TestFibonacciRecursion()
     {
         var dev = Cu.GetDefaultDevice();
         int n = 5;
         var devResults = dev.Allocate<int>(n);
         dev.Launch<int[], int>(RecursiveKernels.FibonacciLauncher, (1,1,1), (1,1,1), devResults, n);
         var result = dev.Copy(devResults);
-
+        devResults.Dispose();
+        dev.Dispose();
         var expected = new int[n];
         RecursiveKernels.Fibonacci(expected, n);
-        
         Assert.Equal(expected, result);
     }
 }

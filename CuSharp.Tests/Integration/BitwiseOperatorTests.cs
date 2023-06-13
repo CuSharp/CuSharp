@@ -23,6 +23,7 @@ public class BitwiseOperatorTests
         dev.Launch<int, int, int[]>(BitwiseOperatorKernels.BitwiseAndInt, (1,1,1), (1,1,1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -43,6 +44,7 @@ public class BitwiseOperatorTests
         dev.Launch<uint, uint, uint[]>(BitwiseOperatorKernels.BitwiseAndUint, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -63,6 +65,7 @@ public class BitwiseOperatorTests
         dev.Launch<bool, bool, bool[]>(BitwiseOperatorKernels.BitwiseAndBool, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -83,6 +86,7 @@ public class BitwiseOperatorTests
         dev.Launch<int, int, int[]>(BitwiseOperatorKernels.BitwiseOrInt, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -103,6 +107,7 @@ public class BitwiseOperatorTests
         dev.Launch<uint, uint, uint[]>(BitwiseOperatorKernels.BitwiseOrUint, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -123,6 +128,7 @@ public class BitwiseOperatorTests
         dev.Launch<bool, bool, bool[]>(BitwiseOperatorKernels.BitwiseOrBool, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -142,6 +148,7 @@ public class BitwiseOperatorTests
         dev.Launch<int, int[]>(BitwiseOperatorKernels.NotInt, (1, 1, 1), (1, 1, 1), a, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -161,6 +168,7 @@ public class BitwiseOperatorTests
         dev.Launch<uint, uint[]>(BitwiseOperatorKernels.NotUint, (1, 1, 1), (1, 1, 1), a, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -180,6 +188,7 @@ public class BitwiseOperatorTests
         dev.Launch<int, int, int[]>(BitwiseOperatorKernels.ShiftLeftSigned, (1, 1, 1), (1, 1, 1), a, shiftAmount, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -200,6 +209,7 @@ public class BitwiseOperatorTests
         dev.Launch<uint, int, uint[]>(BitwiseOperatorKernels.ShiftLeftUnsigned, (1, 1, 1), (1, 1, 1), a, shiftAmount, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -220,6 +230,7 @@ public class BitwiseOperatorTests
         dev.Launch<uint, int, uint[]>(BitwiseOperatorKernels.ShiftRightUnsigned, (1, 1, 1), (1, 1, 1), a, shiftAmount, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -240,6 +251,7 @@ public class BitwiseOperatorTests
         dev.Launch<int, int, int[]>(BitwiseOperatorKernels.ShiftRightSigned, (1, 1, 1), (1, 1, 1), a, shiftAmount, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -260,6 +272,7 @@ public class BitwiseOperatorTests
         dev.Launch<int, int, int[]>(BitwiseOperatorKernels.Xor, (1,1,1), (1,1,1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);

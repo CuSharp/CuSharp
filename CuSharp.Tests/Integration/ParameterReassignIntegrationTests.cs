@@ -82,7 +82,15 @@ public class ParameterReassignIntegrationTests
         var dev = Cu.GetDefaultDevice();
         var devA = dev.Copy(arrayA);
         var devB = dev.Copy(arrayB);
+
         dev.Launch<int[],int[],int>(methodToRun, (1,1,1),(1,1,1), devA, devB, scalar);
-        return (dev.Copy(devA), dev.Copy(devB));
+        var a = dev.Copy(devA);
+        var b = dev.Copy(devB);
+
+        devA.Dispose();
+        devB.Dispose();
+        dev.Dispose();
+
+        return (a, b);
     }
 }

@@ -17,6 +17,8 @@ public class MultiDimArrayTests
         var devA = dev.Copy(a);
         dev.Launch<int[,], int>(MultiDimArrayKernels.MultiDimKernel, (1,1,1),(1,1,1), devA, 42);
         a = dev.Copy(devA);
+        devA.Dispose();
+        dev.Dispose();
         Assert.Equal(42, a[0,0]);
     }
     
@@ -30,6 +32,9 @@ public class MultiDimArrayTests
         var devB = dev.Copy(b);
         dev.Launch(MultiDimArrayKernels.MultiDimArrayAddition, (1,1,1),(3,3,1), devA, devB);
         a = dev.Copy(devA);
+        devA.Dispose();
+        devB.Dispose();
+        dev.Dispose();
         var expected = new [,] {{10, 10, 10}, {10, 10, 10}, {10, 10, 10}};
         Assert.Equal(expected, a);
     }
@@ -44,8 +49,12 @@ public class MultiDimArrayTests
         var devB = dev.Copy(b);
         dev.Launch(MultiDimArrayKernels.MultiDimLocalArrayTest, (1, 1, 1), (3, 3, 1), devA, devB);
         b = dev.Copy(devB);
+        devA.Dispose();
+        devB.Dispose();
+        dev.Dispose();
         Assert.Equal(a, b);
     }
+
     [Fact]
     public void TestMultiDimMatrixMultiplication()
     {
@@ -87,6 +96,11 @@ public class MultiDimArrayTests
         dev.Launch(MultiDimArrayKernels.MultiDimMatrixMultiplication, (1, 1, 1), ((uint) matrixWidth, (uint) matrixWidth, 1), devA, devB, devC);
         c = dev.Copy(devC);
 
+        devA.Dispose();
+        devB.Dispose();
+        devC.Dispose();
+        dev.Dispose();
+
         Assert.Equal(expected, c);
     }
 
@@ -96,6 +110,7 @@ public class MultiDimArrayTests
         var dev = Cu.GetDefaultDevice();
         var a = dev.Allocate<int>(1, 1);
         dev.Launch(MultiDimArrayKernels.MultiDimArrayAssignToParam, (1,1,1), (1,1,1), a);
+        a.Dispose();
         //Sucess if no exception
     }
 
@@ -108,6 +123,8 @@ public class MultiDimArrayTests
         var devA = dev.Copy(a);
         dev.Launch(MultiDimArrayKernels.MultiDimArrayAssignToLocal, (1,1,1), (1,1,1), devA);
         a = dev.Copy(devA);
+        devA.Dispose();
+        dev.Dispose();
         Assert.Equal(1337, a[0,0]);
     }
 
@@ -119,25 +136,31 @@ public class MultiDimArrayTests
         var a = new int[5, 5];
         a[1, 1] = 42;
         var c = new int[5, 5];
-        var devC = dev.Allocate<int>(5,5);
+        var devC = dev.Allocate<int>(5, 5);
         var devA = dev.Copy(a);
-        dev.Launch(MultiDimArrayKernels.VeryNestedArrayAccess, (1,1,1), (1,1,1), devA, devC);
+        dev.Launch(MultiDimArrayKernels.VeryNestedArrayAccess, (1, 1, 1), (1, 1, 1), devA, devC);
         c = dev.Copy(devC);
-        Assert.Equal(42, c[1,1]);
+        devC.Dispose();
+        devA.Dispose();
+        dev.Dispose();
+        Assert.Equal(42, c[1, 1]);
     }
-     [Fact]
-     public void TestVeryNestedArrays2()
-     {
-         var dev = Cu.GetDefaultDevice();
-         var a = new int[5];
-         a[0] = 42; 
-         var devA = dev.Copy(a);
-         var devC = dev.Allocate<int>(5);
-         dev.Launch(MultiDimArrayKernels.VeryNestedArrayAccess2, (1,1,1), (1,1,1), devA,devC);
-         var c = dev.Copy(devC);
-         Assert.Equal(42, c[0]);
 
-     }
+    [Fact]
+    public void TestVeryNestedArrays2()
+    {
+        var dev = Cu.GetDefaultDevice();
+        var a = new int[5];
+        a[0] = 42;
+        var devA = dev.Copy(a);
+        var devC = dev.Allocate<int>(5);
+        dev.Launch(MultiDimArrayKernels.VeryNestedArrayAccess2, (1, 1, 1), (1, 1, 1), devA, devC);
+        var c = dev.Copy(devC);
+        devA.Dispose();
+        devC.Dispose();
+        dev.Dispose();
+        Assert.Equal(42, c[0]);
+    }
 
     [Fact]
     public void ArrayConvert1Dto2D_Integration()
@@ -157,6 +180,7 @@ public class MultiDimArrayTests
 
         devInput.Dispose();
         devOutput.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedOutput, output);
@@ -182,6 +206,7 @@ public class MultiDimArrayTests
 
         devInput.Dispose();
         devOutput.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedOutput, output);
@@ -206,7 +231,6 @@ public class MultiDimArrayTests
         var devBlockRows = dev.CreateScalar(blockRows);
         var devRows = dev.CreateScalar(rows);
         var devCols = dev.CreateScalar(cols);
-        var devTileSize = dev.CreateScalar(tileSize);
 
         var gridDimX = (uint)((cols + tileSize - 1) / tileSize);
         var gridDimY = (uint)((rows + tileSize - 1) / tileSize);
@@ -218,10 +242,7 @@ public class MultiDimArrayTests
 
         devInput.Dispose();
         devOutput.Dispose();
-        devBlockRows.Dispose();
-        devRows.Dispose();
-        devCols.Dispose();
-        devTileSize.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedOutput, output);
@@ -267,9 +288,7 @@ public class MultiDimArrayTests
         devP.Dispose();
         devA.Dispose();
         devB.Dispose();
-        devARows.Dispose();
-        devBCols.Dispose();
-        devACols.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedOutput, p);
@@ -304,9 +323,8 @@ public class MultiDimArrayTests
 
         devA.Dispose();
         devB.Dispose();
-        devPaRows.Dispose();
-        devACols.Dispose();
         devP.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedOutput, p);

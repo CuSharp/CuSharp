@@ -1,5 +1,4 @@
 ﻿using CuSharp.Tests.TestHelper;
-using System.Linq;
 using CuSharp.Tests.TestKernels;
 using Xunit;
 
@@ -25,6 +24,7 @@ public class KernelToolsTests
         dev.Launch(KernelToolsKernels.GetBlockDimensions, (1, 1, 1), (blockDimX, blockDimY, blockDimZ), devBlockDims);
         blockDims = dev.Copy(devBlockDims);
         devBlockDims.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedBlockDims, blockDims);
@@ -46,6 +46,7 @@ public class KernelToolsTests
         dev.Launch(KernelToolsKernels.GetGridDimensions, (gridDimX, gridDimY, gridDimZ), (1, 1, 1), devBlockDims);
         blockDims = dev.Copy(devBlockDims);
         devBlockDims.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedBlockDims, blockDims);
@@ -64,6 +65,7 @@ public class KernelToolsTests
         dev.Launch(KernelToolsKernels.GetWarpSize, (1, 1, 1), (1, 1, 1), devWarpSize);
         warpSize= dev.Copy(devWarpSize);
         devWarpSize.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedWarpSize, warpSize);

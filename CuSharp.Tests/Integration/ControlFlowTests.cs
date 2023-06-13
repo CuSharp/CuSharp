@@ -23,6 +23,7 @@ public class ControlFlowTests
         dev.Launch<int, int, int[]>(ControlFlowKernels.Switch, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -44,6 +45,7 @@ public class ControlFlowTests
         dev.Launch<int, int, int[]>(ControlFlowKernels.For, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result);
@@ -64,6 +66,7 @@ public class ControlFlowTests
         dev.Launch<int, int, int[]>(ControlFlowKernels.While, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -84,6 +87,7 @@ public class ControlFlowTests
         dev.Launch<int, int, int[]>(ControlFlowKernels.DoWhile, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -105,6 +109,7 @@ public class ControlFlowTests
         dev.Launch<int, int, int, int[]>(ControlFlowKernels.WhileWithBreak, (1, 1, 1), (1, 1, 1), a, b, c, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -126,6 +131,7 @@ public class ControlFlowTests
         dev.Launch<int, int, int, int[]>(ControlFlowKernels.WhileWithContinue, (1, 1, 1), (1, 1, 1), a, b, c, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
@@ -146,6 +152,7 @@ public class ControlFlowTests
         dev.Launch<int, int, int[]>(ControlFlowKernels.Goto, (1, 1, 1), (1, 1, 1), a, b, devResult);
         result = dev.Copy(devResult);
         devResult.Dispose();
+        dev.Dispose();
 
         // Assert
         Assert.Equal(expectedResult, result[0]);
