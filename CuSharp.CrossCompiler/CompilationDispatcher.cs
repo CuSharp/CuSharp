@@ -24,7 +24,7 @@ public class CompilationDispatcher
         PTXKernel ptxKernel = null!;
         if (!_disableCaching && _kernelCache.TryGetValue(KernelHelpers.GetMethodIdentity(methodInfo), out ptxKernel!)) return ptxKernel;
  
-        var kernel = new MSILKernel(kernelName, methodInfo, true);
+        var kernel = new MSILKernel(kernelName, methodInfo);
         nvvmConfiguration ??= CompilationConfiguration.NvvmConfiguration;
         nvvmConfiguration.KernelName = kernelName;
         

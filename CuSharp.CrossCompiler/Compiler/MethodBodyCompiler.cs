@@ -1471,7 +1471,7 @@ public class MethodBodyCompiler
             throw new ArgumentNullException("FunctionGenerator is required to compile calls, but it is null.");
         }
 
-        var kernelToCall = new MSILKernel(methodInfo.Name, methodInfo, false);
+        var kernelToCall = new MSILKernel(methodInfo.Name, methodInfo);
         var function = _functionGenerator.GetOrDeclareFunction(kernelToCall);
 
         var parameters = methodInfo.GetParameters().ToArray();
