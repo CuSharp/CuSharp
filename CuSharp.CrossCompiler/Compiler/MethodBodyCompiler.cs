@@ -71,19 +71,12 @@ public class MethodBodyCompiler
             case ILOpCode.Constrained:
                 _reader.ReadInt32();
                 break;
-            //case ILOpCode.Readonly: throw new NotSupportedException();
-            //case ILOpCode.Tail: throw new NotSupportedException();
-            //case ILOpCode.Unaligned: throw new NotSupportedException();
-            //case ILOpCode.Volatile: throw new NotSupportedException();
             case ILOpCode.Add:
                 CompileAdd();
                 break;
-            //case ILOpCode.Add_ovf: throw new NotSupportedException();
-            //case ILOpCode.Add_ovf_un: throw new NotSupportedException();
             case ILOpCode.And:
                 CompileAnd();
                 break;
-            //case ILOpCode.Arglist: throw new NotSupportedException();
             case ILOpCode.Beq:
                 operand = _reader.ReadInt32();
                 CompileBeq((int)operand);
@@ -172,7 +165,6 @@ public class MethodBodyCompiler
                 operand = _reader.ReadSByte();
                 CompileBr((sbyte)operand);
                 break;
-            //case ILOpCode.Break: throw new NotSupportedException();
             case ILOpCode.Brfalse:
                 operand = _reader.ReadInt32();
                 CompileBrFalse((int)operand);
@@ -197,7 +189,6 @@ public class MethodBodyCompiler
                 operand = _reader.ReadInt32();
                 CompileCallvirt((int) operand);
                 break;
-            //case ILOpCode.Calli: throw new NotSupportedException();
             case ILOpCode.Ceq:
                 CompileCeq();
                 break;
@@ -209,7 +200,6 @@ public class MethodBodyCompiler
             case ILOpCode.Clt_un:
                 CompileClt();
                 break;
-            //case ILOpCode.Ckfinite: throw new NotSupportedException();
             case ILOpCode.Conv_i1:
                 CompileConvI1();
                 break;
@@ -249,29 +239,9 @@ public class MethodBodyCompiler
             case ILOpCode.Conv_r_un: 
                 CompileConvRUn();
                 break;
-            //case ILOpCode.Conv_ovf_i1: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i2: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i4: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i8: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u1: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u2: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u4: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u8: throw new NotSupportedException();
             case ILOpCode.Conv_ovf_i: 
                 CompileConvI();
                 break;
-            //case ILOpCode.Conv_ovf_u: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i1_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i2_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i4_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i8_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u1_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u2_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u4_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u8_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_i_un: throw new NotSupportedException();
-            //case ILOpCode.Conv_ovf_u_un: throw new NotSupportedException();
-            //case ILOpCode.Cpblk: throw new NotSupportedException();
             case ILOpCode.Div:
                 CompileDiv();
                 break;
@@ -281,10 +251,6 @@ public class MethodBodyCompiler
             case ILOpCode.Dup:
                 CompileDup();
                 break;
-            //case ILOpCode.Endfilter: throw new NotSupportedException();
-            //case ILOpCode.Endfinally: throw new NotSupportedException();
-            //case ILOpCode.Initblk: throw new NotSupportedException();
-            //case ILOpCode.Jmp: throw new NotSupportedException();
             case ILOpCode.Ldarg:
                 operand = _reader.ReadUInt16();
                 CompileLdarg((ushort)operand);
@@ -305,8 +271,6 @@ public class MethodBodyCompiler
             case ILOpCode.Ldarg_3:
                 CompileLdarg(3);
                 break;
-            //case ILOpCode.Ldarga: throw new NotSupportedException();
-            //case ILOpCode.Ldarga_s: throw new NotSupportedException();
             case ILOpCode.Ldc_i4:
                 operand = _reader.ReadInt32();
                 CompileLdcInt((int)operand);
@@ -357,9 +321,6 @@ public class MethodBodyCompiler
                 operand = _reader.ReadSByte();
                 CompileLdcInt((sbyte)operand);
                 break;
-            //case ILOpCode.Ldnull: throw new NotSupportedException();
-            //case ILOpCode.Ldstr: throw new NotSupportedException();
-            //case ILOpCode.Ldftn: throw new NotSupportedException();
             case ILOpCode.Ldind_i1:
             case ILOpCode.Ldind_i2:
             case ILOpCode.Ldind_i4:
@@ -371,8 +332,6 @@ public class MethodBodyCompiler
             case ILOpCode.Ldind_r8:
                 CompileLdind();
                 break;
-            //case ILOpCode.Ldind_i: throw new NotSupportedException();
-            //case ILOpCode.Ldind_ref: throw new NotSupportedException();
             case ILOpCode.Ldloc:
                 operand = _reader.ReadUInt16();
                 CompileLdloc((ushort)operand);
@@ -393,16 +352,9 @@ public class MethodBodyCompiler
             case ILOpCode.Ldloc_3:
                 CompileLdloc(3);
                 break;
-            //case ILOpCode.Ldloca: throw new NotSupportedException();
-            //case ILOpCode.Ldloca_s: throw new NotSupportedException();
-            //case ILOpCode.Leave: throw new NotSupportedException();
-            //case ILOpCode.Leave_s: throw new NotSupportedException();
-            //case ILOpCode.Localloc: throw new NotSupportedException();
             case ILOpCode.Mul:
                 CompileMul();
                 break;
-            //case ILOpCode.Mul_ovf: throw new NotSupportedException();
-            //case ILOpCode.Mul_ovf_un: throw new NotSupportedException();
             case ILOpCode.Neg:
                 CompileNeg();
                 break;
@@ -453,8 +405,6 @@ public class MethodBodyCompiler
             case ILOpCode.Stind_r8:
                 CompileStdind();
                 break;
-            //case ILOpCode.Stind_i: throw new NotSupportedException();
-            //case ILOpCode.Stind_ref: throw new NotSupportedException();
             case ILOpCode.Stloc:
                 operand = _reader.ReadUInt16();
                 CompileStloc((ushort)operand);
@@ -478,17 +428,9 @@ public class MethodBodyCompiler
             case ILOpCode.Sub:
                 CompileSub();
                 break;
-            //case ILOpCode.Sub_ovf: throw new NotSupportedException();
-            //case ILOpCode.Sub_ovf_un: throw new NotSupportedException();
-            //case ILOpCode.Switch: throw new NotSupportedException();
             case ILOpCode.Xor:
                 CompileXor();
                 break;
-            //case ILOpCode.Box: throw new NotSupportedException();
-            //case ILOpCode.Castclass: throw new NotSupportedException();
-            //case ILOpCode.Cpobj: throw new NotSupportedException();
-            //case ILOpCode.Initobj: throw new NotSupportedException();
-            //case ILOpCode.Isinst: throw new NotSupportedException();
             case ILOpCode.Ldelem:
                 _reader.ReadInt32();
                 CompileLdelem();
@@ -504,8 +446,6 @@ public class MethodBodyCompiler
             case ILOpCode.Ldelem_r8:
                 CompileLdelem();
                 break;
-            //case ILOpCode.Ldelem_i: throw new NotSupportedException();
-            //case ILOpCode.Ldelem_ref: throw new NotSupportedException();
             case ILOpCode.Ldelema:
                 operand = _reader.ReadInt32(); // No further usage of operand required
                 CompileLdelema();
@@ -514,28 +454,10 @@ public class MethodBodyCompiler
                 operand = _reader.ReadInt32();
                 CompileLdfld((int)operand);
                 break;
-            //case ILOpCode.Ldflda: throw new NotSupportedException();
-            //case ILOpCode.Stfld: throw new NotSupportedException();
-            /*case ILOpCode.Ldlen:
-                CompileLdlen();
-                break;*/
-            //case ILOpCode.Ldobj: throw new NotSupportedException();
-            //case ILOpCode.Ldsfld: throw new NotSupportedException();
-            //case ILOpCode.Ldsflda: throw new NotSupportedException();
-            //case ILOpCode.Stsfld: throw new NotSupportedException();
-            /*case ILOpCode.Ldtoken: 
-                _msilTokenStack.Push(_reader.ReadInt32());
-                break;*/
-            //case ILOpCode.Ldvirtftn: throw new NotSupportedException();
-            //case ILOpCode.Mkrefany: throw new NotSupportedException();
             case ILOpCode.Newarr:
                 var metaDataToken = _reader.ReadInt32(); 
                 CompileNewarr(metaDataToken);
                 break;
-            //case ILOpCode.Refanytype: throw new NotSupportedException();
-            //case ILOpCode.Refanyval: throw new NotSupportedException();
-            //case ILOpCode.Rethrow: throw new NotSupportedException();
-            //case ILOpCode.Sizeof: throw new NotSupportedException();
             case ILOpCode.Stelem: 
                 _reader.ReadInt32();
                 CompileStelem();
@@ -548,13 +470,8 @@ public class MethodBodyCompiler
             case ILOpCode.Stelem_r8:
                 CompileStelem();
                 break;
-            //case ILOpCode.Stelem_i: throw new NotSupportedException();
-            //case ILOpCode.Stelem_ref: throw new NotSupportedException();
-            //case ILOpCode.Stobj: throw new NotSupportedException();
-            //case ILOpCode.Throw: throw new NotSupportedException();
-            //case ILOpCode.Unbox: throw new NotSupportedException();
-            //case ILOpCode.Unbox_any: throw new NotSupportedException();
-            default: throw new NotSupportedException($"OpCode '{opCode}' is not supported");
+            default:
+                throw new NotSupportedException($"OpCode '{opCode}' is not supported");
         }
 
         return (opCode, operand);
