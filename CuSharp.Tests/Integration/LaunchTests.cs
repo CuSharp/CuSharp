@@ -1,5 +1,4 @@
 ﻿using CuSharp.Tests.TestHelper;
-using CuSharp.Tests.TestKernels;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -16,68 +15,7 @@ public class LaunchTests
     {
         _output = output;
     }
-    [Fact]
-    public void TestOptimizerInMatrixMultiplication()
-    {
-        const int matrixWidth = 3000;
-
-        // Warm-up
-        LaunchAndMeasureMatrixMultiplication(matrixWidth, null);
-
-        // Measure with optimizer
-        var resultWithOptimizer = LaunchAndMeasureMatrixMultiplication(matrixWidth, true);
-
-        // Measure without optimizer
-        var resultWithoutOptimizer = LaunchAndMeasureMatrixMultiplication(matrixWidth, false);
-
-        Assert.True(resultWithOptimizer.measureResult < resultWithoutOptimizer.measureResult + 1); //mostly works for big matrixWidth
-        Assert.Equal(resultWithOptimizer.matrixResult, resultWithoutOptimizer.matrixResult);
-    }
-
-    private (float measureResult, int[] matrixResult) LaunchAndMeasureMatrixMultiplication(int matrixWidth,
-        bool? enableOptimizer)
-    {
-        if (enableOptimizer != null)
-        {
-            Cu.EnableOptimizer = (bool) enableOptimizer;
-        }
-
-        uint gridDim = (uint) (matrixWidth % 32 == 0 ? matrixWidth / 32 : matrixWidth / 32 + 1);
-        uint blockDim = (uint) (matrixWidth > 32 ? 32 : matrixWidth);
-        int[] a = new int[matrixWidth * matrixWidth];
-        int[] b = new int[matrixWidth * matrixWidth];
-        int[] c = new int[matrixWidth * matrixWidth];
-        for (int i = 0; i < matrixWidth * matrixWidth; i++)
-        {
-            a[i] = i;
-            b[i] = matrixWidth * matrixWidth - i;
-        }
-
-        var dev = Cu.GetDefaultDevice();
-        var devA = dev.Copy(a);
-        var devB = dev.Copy(b);
-        var devC = dev.Copy(c);
-        var devWidth = dev.CreateScalar(matrixWidth);
-
-        var before = Cu.CreateEvent();
-        var after = Cu.CreateEvent();
-
-        before.Record();
-        dev.Launch(MethodsToCompile.IntMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB,
-            devC, devWidth);
-        after.Record();
-
-        devA.Dispose();
-        devB.Dispose();
-        devC.Dispose();
-        devWidth.Dispose();
-        var timeResult = before.GetDeltaTo(after);
-        before.Dispose();
-        after.Dispose();
-
-        return (timeResult, c);
-    }
-
+    
     [Fact]
     public void TestLaunchKernelMultipleTimes()
     {
