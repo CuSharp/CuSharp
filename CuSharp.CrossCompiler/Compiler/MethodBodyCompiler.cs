@@ -1116,21 +1116,6 @@ public class MethodBodyCompiler
         _cfg.CurrentBlock.VirtualRegisterStack.Push(value);
     }
 
-/*    private void CompileLdlen() 
-    {
-        var array = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-        array = LLVM.BuildLoad(_builder, array, GetVirtualRegisterName());
-        if (true)
-        {
-            var length = LLVM.GetArrayLength(array.TypeOf());
-            var lengthReference = LLVM.ConstInt(LLVMTypeRef.Int32Type(), length, false);
-            _cfg.CurrentBlock.VirtualRegisterStack.Push(lengthReference);
-        } else
-        {
-            throw new NotSupportedException("<array>.Length is only supported for locally allocated arrays");
-        }
-    }*/
-
     #endregion
 
     #region Stores
