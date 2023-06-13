@@ -1090,9 +1090,7 @@ public class MethodBodyCompiler
         arr.SetInitializer(LLVM.GetUndef(type));
         
         var multiType =
-            LLVM.ArrayType(
-                LLVM.PointerType(ctor.DeclaringType.GetElementType().ToLLVMType(), (uint) ArrayMemoryLocation),
-                (uint) lenX);
+            LLVM.ArrayType(LLVM.PointerType(ctor.DeclaringType.GetElementType().ToLLVMType(), 0),  (uint) lenX);
         var multiArr = LLVM.AddGlobalInAddressSpace(Module, multiType, GetGlobalVariableName(), (uint) ArrayMemoryLocation);
         multiArr.SetLinkage(LLVMLinkage.LLVMInternalLinkage);
         multiArr.SetInitializer(LLVM.GetUndef(multiType));
@@ -1102,7 +1100,7 @@ public class MethodBodyCompiler
             var multiArrIndex = BuildGEP(multiArr, LLVM.ConstInt(LLVMTypeRef.Int32Type(), (ulong) i, false));
             var arrIndex = BuildGEP(arr, LLVM.ConstInt(LLVMTypeRef.Int32Type(), (ulong) i * lenY, false));
             arrIndex = LLVM.BuildPointerCast(_builder, arrIndex,
-                LLVM.PointerType(ctor.DeclaringType.GetElementType().ToLLVMType(), (uint) ArrayMemoryLocation), GetVirtualRegisterName());
+                LLVM.PointerType(ctor.DeclaringType.GetElementType().ToLLVMType(), 0), GetVirtualRegisterName());
             LLVM.BuildStore(_builder, arrIndex, multiArrIndex);
         }
         

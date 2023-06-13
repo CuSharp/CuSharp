@@ -66,7 +66,7 @@ public class CompilationDispatcher
             }
         #endif 
         
-        var compilationResult = nvvmHandle.Compile(new string[]{"-fma=1"});
+        var compilationResult = nvvmHandle.Compile(new string[]{});
         if (compilationResult != NVVMProgram.NVVMResult.NVVM_SUCCESS)
         {
             nvvmHandle.GetProgramLog(out string log);
