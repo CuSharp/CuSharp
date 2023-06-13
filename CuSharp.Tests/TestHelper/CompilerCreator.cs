@@ -1,6 +1,7 @@
-﻿using CuSharp.CudaCompiler.Frontend;
-using LLVMSharp;
+﻿using LLVMSharp;
 using System.Reflection;
+using CuSharp.CudaCompiler.Compiler;
+using CuSharp.CudaCompiler.Kernels;
 
 namespace CuSharp.Tests.TestHelper
 {

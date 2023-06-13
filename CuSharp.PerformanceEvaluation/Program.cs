@@ -1,10 +1,8 @@
-﻿using System.Text.Json.Serialization;
-using CuSharp;
+﻿using CuSharp;
 using CuSharp.PerformanceEvaluation;
 
 public class Program
 {
-
     static void Main()
     {
 
@@ -13,8 +11,8 @@ public class Program
 
     static void Test(int min, int max, int step, bool verify)
     {
-        CuSharp.Cu.EnableOptimizer = true;
-        var dev = CuSharp.Cu.GetDefaultDevice();
+        Cu.EnableOptimizer = true;
+        var dev = Cu.GetDefaultDevice();
 
         for (int i = min; i <= max; i += step)
         {
@@ -49,9 +47,8 @@ public class Program
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
         var devC = dev.Copy(c);
-        //var devWidth = dev.Copy(matrixWidth);
-        var before = CuSharp.Cu.CreateEvent();
-        var after = CuSharp.Cu.CreateEvent();
+        var before = Cu.CreateEvent();
+        var after = Cu.CreateEvent();
         
         before.Record();
         dev.Launch<double[], double[], double[], int>(Kernels.MatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);
@@ -97,9 +94,8 @@ public class Program
         var devA = dev.Copy(a);
         var devB = dev.Copy(b);
         var devC = dev.Copy(c);
-        //var devWidth = dev.Copy(matrixWidth);
-        var before = CuSharp.Cu.CreateEvent();
-        var after = CuSharp.Cu.CreateEvent();
+        var before = Cu.CreateEvent();
+        var after = Cu.CreateEvent();
         
         before.Record();
         dev.Launch<double[,], double[,], double[,], int>(Kernels.MultiDimMatrixMultiplication, (gridDim, gridDim, 1), (blockDim, blockDim, 1), devA, devB, devC,matrixWidth);

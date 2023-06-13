@@ -1,7 +1,8 @@
 ﻿using CuSharp.Tests.TestHelper;
 using System;
 using System.Reflection;
-using CuSharp.CudaCompiler.Frontend;
+using CuSharp.CudaCompiler.Kernels;
+using CuSharp.Tests.TestKernels;
 using Xunit;
 using static CuSharp.Tests.TestHelper.MethodInfoLoader;
 

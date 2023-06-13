@@ -1,9 +1,9 @@
-﻿using CuSharp.CudaCompiler.Frontend;
+﻿using CuSharp.CudaCompiler.LLVMConfiguration;
 
 namespace CuSharp.Kernel;
 
-[System.AttributeUsage(System.AttributeTargets.Method)]
-public class KernelAttribute : System.Attribute
+[AttributeUsage(AttributeTargets.Method)]
+public class KernelAttribute : Attribute
 {
     /// <summary>
     /// Memory Location of Arrays Allocated with 'new ...' inside of a Kernel

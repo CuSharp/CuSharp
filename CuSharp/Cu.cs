@@ -45,7 +45,7 @@ public static class Cu
         return new CuDevice(compiler: new CompilationDispatcher(null, EnableOptimizer, true), aotKernelFolder:AotKernelFolder);
     }
 
-    public static CuEvent CreateEvent()
+    public static ICuEvent CreateEvent()
     {
         return new CudaEventWrapper();
     }

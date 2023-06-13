@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-namespace CuSharp.CudaCompiler.Frontend
+namespace CuSharp.CudaCompiler.Kernels
 {
-    public class MSILKernel : Kernel<byte[]>
+    public class MSILKernel : IKernel<byte[]>
     {
         public MSILKernel(string name, MethodInfo methodInfo)
         {

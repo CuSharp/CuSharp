@@ -1,6 +1,5 @@
-﻿using System.Globalization;
-using System.Numerics;
-using CuSharp.CudaCompiler.Frontend;
+﻿using System.Numerics;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using CuSharp.Kernel;
 
 namespace CuSharp.Tests.TestKernels;

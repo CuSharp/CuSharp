@@ -1,5 +1,5 @@
 ﻿using System;
-using CuSharp.CudaCompiler.Frontend;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using CuSharp.Tests.TestHelper;
 using LLVMSharp;
 using Xunit;

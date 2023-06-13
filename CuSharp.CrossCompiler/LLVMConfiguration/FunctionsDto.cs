@@ -1,6 +1,6 @@
 ﻿using LLVMSharp;
 
-namespace CuSharp.CudaCompiler.Frontend
+namespace CuSharp.CudaCompiler.LLVMConfiguration
 {
     public class FunctionsDto
     {

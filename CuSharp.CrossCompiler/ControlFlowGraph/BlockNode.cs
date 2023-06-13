@@ -1,7 +1,8 @@
-﻿using System.Reflection;
+﻿using CuSharp.CudaCompiler.Kernels;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using LLVMSharp;
 
-namespace CuSharp.CudaCompiler.Frontend;
+namespace CuSharp.CudaCompiler.ControlFlowGraph;
 
 public class BlockNode
 {
@@ -60,5 +61,4 @@ public class BlockNode
             restoredValues.Add(i, phi);
         }
     }
-
 }

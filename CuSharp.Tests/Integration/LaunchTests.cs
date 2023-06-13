@@ -1,4 +1,5 @@
 ﻿using CuSharp.Tests.TestHelper;
+using CuSharp.Tests.TestKernels;
 using Xunit;
 using Xunit.Abstractions;
 

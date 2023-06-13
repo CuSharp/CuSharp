@@ -1,8 +1,8 @@
 ﻿using System.Numerics;
-using CuSharp.CudaCompiler.Frontend;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using CuSharp.Kernel;
 
-namespace CuSharp.Tests.TestHelper;
+namespace CuSharp.Tests.TestKernels;
 
 public class MethodsToCompile
 {
@@ -137,6 +137,7 @@ public class MethodsToCompile
     {
         //Empty because aotc
     }
+
     public static void ArrayFloatAdditionWithKernelTools(float[] a, float[] b, float[] c)
     {
         int i = (int)(KernelTools.BlockIndex.X * KernelTools.BlockDimension.X + KernelTools.ThreadIndex.X);

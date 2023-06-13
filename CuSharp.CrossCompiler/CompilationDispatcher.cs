@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 using System.Text;
-using CuSharp.CudaCompiler.Backend;
-using CuSharp.CudaCompiler.Frontend;
+using CuSharp.CudaCompiler.Compiler;
 using CuSharp.CudaCompiler.Kernels;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using LibNVVMBinder;
 
 namespace CuSharp.CudaCompiler;

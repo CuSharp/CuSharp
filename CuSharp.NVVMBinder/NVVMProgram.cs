@@ -1,11 +1,10 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 
 namespace LibNVVMBinder
 {
     public class NVVMProgram : IDisposable
     {
-        private IntPtr program;
+        private IntPtr _program;
         
         public enum NVVMResult //Explicit numbering because of driver mapping (must be correct)
         {
@@ -28,41 +27,41 @@ namespace LibNVVMBinder
 
         public NVVMResult Compile(string[] options)
         {
-            return NVVMNativeBindings.nvvmCompileProgram(program, new UIntPtr( (uint) options.Length), options);
+            return NVVMNativeBindings.nvvmCompileProgram(_program, new UIntPtr( (uint) options.Length), options);
         }
 
         public NVVMResult Verify(string[] options)
         {
-            return NVVMNativeBindings.nvvmVerifyProgram(program, options.Length, options);
+            return NVVMNativeBindings.nvvmVerifyProgram(_program, options.Length, options);
         }
 
         public NVVMResult AddModule(string buffer, string name)
         {
-            return NVVMNativeBindings.nvvmAddModuleToProgram(program, buffer, new UIntPtr((uint) buffer.Length), name);
+            return NVVMNativeBindings.nvvmAddModuleToProgram(_program, buffer, new UIntPtr((uint) buffer.Length), name);
         }
 
         public NVVMResult LazyAddModule(string buffer, string name)
         {
-            return NVVMNativeBindings.nvvmLazyAddModuleToProgram(program, buffer, new UIntPtr((uint) buffer.Length), name);
+            return NVVMNativeBindings.nvvmLazyAddModuleToProgram(_program, buffer, new UIntPtr((uint) buffer.Length), name);
         }
 
         private NVVMResult CreateProgram()
         {
-            return NVVMNativeBindings.nvvmCreateProgram(out program);
+            return NVVMNativeBindings.nvvmCreateProgram(out _program);
         }
 
         private NVVMResult DestroyProgram()
         {
-            return NVVMNativeBindings.nvvmDestroyProgram(program);
+            return NVVMNativeBindings.nvvmDestroyProgram(_program);
         }
 
         public NVVMResult GetCompiledResult(out string buffer)
         {
             IntPtr resultSize;
-            NVVMNativeBindings.nvvmGetCompiledResultSize(program, out resultSize);
+            NVVMNativeBindings.nvvmGetCompiledResultSize(_program, out resultSize);
             NVVMResult result;
             StringBuilder outBuilder = new(resultSize.ToInt32());
-            result = NVVMNativeBindings.nvvmGetCompiledResult(program, outBuilder);
+            result = NVVMNativeBindings.nvvmGetCompiledResult(_program, outBuilder);
             buffer = outBuilder.ToString();
             return result;
         }
@@ -71,9 +70,9 @@ namespace LibNVVMBinder
         {
             NVVMResult result;
             IntPtr logSize;
-            NVVMNativeBindings.nvvmGetProgramLogSize(program, out logSize);
+            NVVMNativeBindings.nvvmGetProgramLogSize(_program, out logSize);
             StringBuilder outBuilder = new(logSize.ToInt32());
-            result = NVVMNativeBindings.nvvmGetProgramLog(program, outBuilder);
+            result = NVVMNativeBindings.nvvmGetProgramLog(_program, outBuilder);
             log = outBuilder.ToString();
             return result;
         }

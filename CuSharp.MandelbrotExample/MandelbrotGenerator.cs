@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using CuSharp.CudaCompiler.Frontend;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using CuSharp.Kernel;
 using Point = System.Windows.Point;
 

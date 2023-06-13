@@ -1,10 +1,11 @@
-﻿using System.Net;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Reflection.Metadata;
-
+using CuSharp.CudaCompiler.ControlFlowGraph;
+using CuSharp.CudaCompiler.Kernels;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using LLVMSharp;
 
-namespace CuSharp.CudaCompiler.Frontend;
+namespace CuSharp.CudaCompiler.Compiler;
 
 public class MethodBodyCompiler
 {
@@ -1078,7 +1079,7 @@ public class MethodBodyCompiler
     {
         var index = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
         var array = _cfg.CurrentBlock.VirtualRegisterStack.Pop();
-        var elementPtr = BuildGEP(array, index);//LLVM.BuildGEP(_builder, array, new[] { index }, GetVirtualRegisterName());
+        var elementPtr = BuildGEP(array, index);
         _cfg.CurrentBlock.VirtualRegisterStack.Push(elementPtr);
     }
 

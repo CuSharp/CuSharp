@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Reflection;
-using System.Runtime.InteropServices.JavaScript;
+﻿using CuSharp.CudaCompiler.Kernels;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using LLVMSharp;
 
-namespace CuSharp.CudaCompiler.Frontend;
+namespace CuSharp.CudaCompiler.ControlFlowGraph;
 
 public class ControlFlowGraphBuilder
 {
@@ -15,27 +14,27 @@ public class ControlFlowGraphBuilder
     private readonly Func<string> _registerNamer;
     private int BlockCounter => _blockList.Count;
     private string NextBlockName => $"block{BlockCounter}";
-    public ControlFlowGraphBuilder(LLVMValueRef function, MSILKernel inputKernel, LLVMBuilderRef builder, Func<string> registerNamer)
+
+    public ControlFlowGraphBuilder(LLVMValueRef function, MSILKernel inputKernel, LLVMBuilderRef builder,
+        Func<string> registerNamer)
     {
 
-        _entryBlockNode = new BlockNode() {BlockRef = LLVM.AppendBasicBlock(function, "entry")};
+        _entryBlockNode = new BlockNode() { BlockRef = LLVM.AppendBasicBlock(function, "entry") };
         _builder = builder;
         _registerNamer = registerNamer;
         _inputKernel = inputKernel;
         CurrentBlock = _entryBlockNode;
-        
+
         LLVM.PositionBuilderAtEnd(builder, _entryBlockNode.BlockRef);
-        
+
         for (int i = 0; i < _inputKernel.ParameterInfos.Length; i++)
         {
-            _entryBlockNode.Parameters.Add(i, LLVM.GetParam(function, (uint) i));
+            _entryBlockNode.Parameters.Add(i, LLVM.GetParam(function, (uint)i));
         }
 
-        _blockList.Add(0, new BlockNode(){BlockRef = LLVM.AppendBasicBlock(function, NextBlockName)});
+        _blockList.Add(0, new BlockNode() { BlockRef = LLVM.AppendBasicBlock(function, NextBlockName) });
     }
 
-
-    
     public BlockNode GetBlock(long index, LLVMValueRef function)
     {
 
@@ -43,15 +42,15 @@ public class ControlFlowGraphBuilder
         {
             index = 0;
         }
-        
+
         if (_blockList.ContainsKey(index))
         {
             return _blockList[index];
         }
 
         var block = LLVM.AppendBasicBlock(function, NextBlockName);
-        _blockList.Add(index, new BlockNode() { BlockRef = block });   
-        
+        _blockList.Add(index, new BlockNode() { BlockRef = block });
+
         return _blockList[index];
     }
 
@@ -62,11 +61,12 @@ public class ControlFlowGraphBuilder
             SwitchBlock(currentPosition);
         }
     }
-    
+
     public void PatchBlockGraph()
     {
         PatchBlockGraph(_entryBlockNode);
     }
+
     private void PatchBlockGraph(BlockNode startNode)
     {
         if (startNode.Visited) return;
@@ -75,21 +75,24 @@ public class ControlFlowGraphBuilder
         RestoreStack(startNode);
         RestoreLocals(startNode);
         RestoreParams(startNode);
-        
+
         foreach (var successor in startNode.Successors)
         {
             PatchBlockGraph(successor);
         }
     }
+
     private void SwitchBlock(long position)
     {
         var lastInstruction = LLVM.GetLastInstruction(CurrentBlock.BlockRef);
-        if (lastInstruction.Pointer == 0x0 || (lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMBr && lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMRet))
+        if (lastInstruction.Pointer == 0x0 || (lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMBr &&
+                                               lastInstruction.GetInstructionOpcode() != LLVMOpcode.LLVMRet))
         {
             LLVM.BuildBr(_builder, _blockList[position].BlockRef); //Terminator instruction is needed
             _blockList[position].Predecessors.Add(CurrentBlock);
             CurrentBlock.Successors.Add(_blockList[position]);
         }
+
         LLVM.PositionBuilderAtEnd(_builder, _blockList[position].BlockRef);
         CurrentBlock = _blockList[position];
         CurrentBlock.BuildPhis(_inputKernel, _builder, _registerNamer);
@@ -97,7 +100,7 @@ public class ControlFlowGraphBuilder
 
     private void RestoreStack(BlockNode node)
     {
-        
+
         foreach (var pred in node.Predecessors)
         {
             var stackImage = new Stack<LLVMValueRef>(new Stack<LLVMValueRef>(pred.VirtualRegisterStack));
@@ -105,7 +108,7 @@ public class ControlFlowGraphBuilder
             {
                 var value = stackImage.Pop();
                 value = BuildCastIfIncompatible(value, phi.TypeOf());
-                phi.AddIncoming(new[]{value},new []{pred.BlockRef},1);
+                phi.AddIncoming(new[] { value }, new[] { pred.BlockRef }, 1);
             }
         }
     }
@@ -116,7 +119,7 @@ public class ControlFlowGraphBuilder
         {
             foreach (var pred in node.Predecessors)
             {
-                
+
                 if (pred.LocalVariables.ContainsKey(phi.Key))
                 {
                     var value = pred.LocalVariables[phi.Key];
@@ -125,7 +128,7 @@ public class ControlFlowGraphBuilder
                 }
                 else // Add arbitrary value (required because of NVVM)
                 {
-                    phi.Value.AddIncoming(new[]{GetArbitraryValue(phi.Value)}, new[]{pred.BlockRef},1);
+                    phi.Value.AddIncoming(new[] { GetArbitraryValue(phi.Value) }, new[] { pred.BlockRef }, 1);
                 }
             }
         }
@@ -150,13 +153,15 @@ public class ControlFlowGraphBuilder
             }
         }
     }
-    
+
     private LLVMValueRef BuildCastIfIncompatible(LLVMValueRef value, LLVMTypeRef typeToCompare)
     {
-        if (!value.TypeOf().Equals(typeToCompare) && (value.TypeOf().Equals(LLVMTypeRef.FloatType()) || value.TypeOf().Equals(LLVMTypeRef.DoubleType())))
+        if (!value.TypeOf().Equals(typeToCompare) && (value.TypeOf().Equals(LLVMTypeRef.FloatType()) ||
+                                                      value.TypeOf().Equals(LLVMTypeRef.DoubleType())))
         {
             value = LLVM.BuildFPCast(_builder, value, typeToCompare, _registerNamer());
-        } else if (!value.TypeOf().Equals(typeToCompare) && typeToCompare.TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
+        }
+        else if (!value.TypeOf().Equals(typeToCompare) && typeToCompare.TypeKind == LLVMTypeKind.LLVMPointerTypeKind)
         {
             value = LLVM.BuildPointerCast(_builder, value, typeToCompare, _registerNamer());
         }
@@ -172,7 +177,7 @@ public class ControlFlowGraphBuilder
     {
         if (value.TypeOf().ToNativeType() == typeof(float) ||
             value.TypeOf().ToNativeType() == typeof(double))
-            return LLVM.ConstReal(value.TypeOf(), 1.0); 
+            return LLVM.ConstReal(value.TypeOf(), 1.0);
 
         if (value.TypeOf().ToNativeType().IsArray)
             return LLVM.ConstPointerNull(value.TypeOf());

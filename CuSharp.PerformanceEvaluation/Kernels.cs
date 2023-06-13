@@ -1,5 +1,5 @@
 ﻿using System.Numerics;
-using CuSharp.CudaCompiler.Frontend;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using CuSharp.Kernel;
 
 namespace CuSharp.PerformanceEvaluation;

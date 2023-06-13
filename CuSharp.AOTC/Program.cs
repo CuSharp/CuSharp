@@ -2,19 +2,19 @@
 
 using System.Reflection;
 using CuSharp.CudaCompiler;
-using CuSharp.CudaCompiler.Backend;
-using CuSharp.CudaCompiler.Frontend;
 using CuSharp.CudaCompiler.Kernels;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using CuSharp.Kernel;
 
 public class AOTC
-{ 
+{
     static void Main(string[] args)
     {
         if (args.Length != 2)
         {
-           Console.WriteLine("Invalid amount of arguments: Arguments should be:\n<path to containing DLL> <output folder>");
-           return;
+            Console.WriteLine(
+                "Invalid amount of arguments: Arguments should be:\n<path to containing DLL> <output folder>");
+            return;
         }
 
         string dllPath = args[0];
@@ -30,11 +30,11 @@ public class AOTC
             dllPath = dllPath.Trim('.').Trim(Path.DirectorySeparatorChar);
             dllPath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + dllPath;
         }
-        
+
         if (!File.Exists(dllPath))
         {
-                Console.WriteLine("DLL Not found");
-                return;
+            Console.WriteLine("DLL Not found");
+            return;
         }
 
         CompileAll(dllPath, outputPath);
@@ -42,7 +42,7 @@ public class AOTC
 
     private static void CompileAll(string assemblyPath, string outPath)
     {
-        
+
         var assembly = Assembly.LoadFile(assemblyPath);
         KernelDiscovery discovery = new();
         CompilationDispatcher compiler = new();
@@ -63,9 +63,10 @@ public class AOTC
             Console.WriteLine("Done");
         }
     }
-        
+
     static void WriteFile(string outPath, MethodInfo method, byte[] kernelBuffer)
     {
-        File.WriteAllBytes($"{outPath}{Path.DirectorySeparatorChar}{KernelHelpers.GetMethodIdentity(method)}ptx", kernelBuffer);
+        File.WriteAllBytes($"{outPath}{Path.DirectorySeparatorChar}{KernelHelpers.GetMethodIdentity(method)}ptx",
+            kernelBuffer);
     }
 }

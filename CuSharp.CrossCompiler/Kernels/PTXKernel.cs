@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-
-namespace CuSharp.CudaCompiler.Backend;
-public class PTXKernel : Kernel<byte[]>
+﻿namespace CuSharp.CudaCompiler.Kernels;
+public class PTXKernel : IKernel<byte[]>
 {
     public PTXKernel(string name, byte[] kernelBuffer)
     {

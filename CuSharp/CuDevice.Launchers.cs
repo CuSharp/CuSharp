@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using CuSharp.Tensor;
 
 namespace CuSharp;
 public partial class CuDevice

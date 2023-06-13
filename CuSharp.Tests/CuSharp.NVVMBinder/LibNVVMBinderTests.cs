@@ -1,6 +1,5 @@
 using CuSharp.Tests.TestHelper;
 using LibNVVMBinder;
-using ManagedCuda.BasicTypes;
 using System.Linq;
 using Xunit;
 

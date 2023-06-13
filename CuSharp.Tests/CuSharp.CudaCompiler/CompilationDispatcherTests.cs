@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using CuSharp.CudaCompiler;
-using CuSharp.CudaCompiler.Backend;
 using CuSharp.CudaCompiler.Kernels;
 using CuSharp.Tests.TestHelper;
+using CuSharp.Tests.TestKernels;
 using Xunit;
 using static CuSharp.Tests.TestHelper.MethodInfoLoader;
 

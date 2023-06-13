@@ -4,7 +4,7 @@ namespace CuSharp.Kernel;
 
 public class KernelDiscovery
 {
-    private readonly Dictionary<string, MethodInfo> MarkedMethods = new ();
+    private readonly Dictionary<string, MethodInfo> _markedMethods = new();
 
     public void ScanAll()
     {
@@ -16,7 +16,7 @@ public class KernelDiscovery
         foreach (var m in markedMethods)
         {
             var key = $"{m.DeclaringType.Namespace}.{m.DeclaringType.Name}.{m.Name}";
-            MarkedMethods[key] = m;
+            _markedMethods[key] = m;
         }
     }
 
@@ -29,23 +29,23 @@ public class KernelDiscovery
         foreach (var m in markedMethods)
         {
             var key = $"{m.DeclaringType.Namespace}.{m.DeclaringType.Name}.{m.Name}";
-            MarkedMethods[key] = m;
+            _markedMethods[key] = m;
         }
-    
+
     }
 
     public bool IsMarked(string name)
     {
-        return MarkedMethods.ContainsKey(name);
+        return _markedMethods.ContainsKey(name);
     }
 
     public MethodInfo GetMethod(string name)
     {
-        return MarkedMethods[name];
+        return _markedMethods[name];
     }
 
     public IEnumerable<MethodInfo> GetAllMethods()
     {
-        return MarkedMethods.Values;
+        return _markedMethods.Values;
     }
 }

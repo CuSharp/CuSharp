@@ -1,8 +1,7 @@
-﻿using CuSharp.CudaCompiler.Frontend;
-using LLVMSharp;
+﻿using LLVMSharp;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 
 namespace CuSharp.Tests.TestHelper
 {
@@ -13,14 +12,6 @@ namespace CuSharp.Tests.TestHelper
             var function = GetFunction(kernelName, parameterInfos);
             var externalFunctions = GetExternalFunctions(kernelName);
             return new FunctionsDto(function, externalFunctions);
-        }
-
-        public static LLVMBuilderRef GetBuilderWithEntryBlock(LLVMValueRef function)
-        {
-            var builder = LLVM.CreateBuilder();
-            var entryBlock = LLVM.AppendBasicBlock(function, "entry");
-            LLVM.PositionBuilderAtEnd(builder, entryBlock);
-            return builder;
         }
 
         private static LLVMValueRef GetFunction(string kernelName, ParameterInfo[] parameterInfos)
@@ -34,7 +25,6 @@ namespace CuSharp.Tests.TestHelper
                         : paramInfo.ParameterType.ToLLVMType();
                 paramsListBuilder.Add(type);
             }
-            //if(paramsListBuilder.Any()) paramsListBuilder.Add(LLVMTypeRef.PointerType(LLVMTypeRef.Int32Type(), 0)); //array length list
             var paramType = paramsListBuilder.ToArray();
             return LLVM.AddFunction(module, kernelName, LLVM.FunctionType(LLVM.VoidType(), paramType, false));
         }

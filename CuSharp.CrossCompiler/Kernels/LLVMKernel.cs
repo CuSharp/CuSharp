@@ -1,8 +1,6 @@
-﻿using CuSharp.CudaCompiler;
-
-namespace CuSharp.CudaCompiler.Frontend
+﻿namespace CuSharp.CudaCompiler.Kernels
 {
-    public class LLVMKernel : Kernel<string>
+    public class LLVMKernel : IKernel<string>
     {
         public LLVMKernel(string name, string kernelBuffer)
         {

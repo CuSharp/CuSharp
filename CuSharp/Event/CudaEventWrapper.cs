@@ -2,7 +2,7 @@
 
 namespace CuSharp.Event;
 
-public class CudaEventWrapper : CuEvent
+public class CudaEventWrapper : ICuEvent
 {
     private readonly CudaEvent _event = new();
 
@@ -16,7 +16,7 @@ public class CudaEventWrapper : CuEvent
         _event.Record();
     }
 
-    public float GetDeltaTo(CuEvent secondEvent)
+    public float GetDeltaTo(ICuEvent secondEvent)
     {
         var secondCudaEvent = secondEvent as CudaEventWrapper;
         secondCudaEvent._event.Synchronize();

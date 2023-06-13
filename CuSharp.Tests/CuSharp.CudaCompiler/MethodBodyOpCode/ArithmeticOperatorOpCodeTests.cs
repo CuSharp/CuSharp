@@ -6,7 +6,7 @@ using CuSharp.Tests.TestHelper;
 using Xunit;
 using static CuSharp.Tests.TestHelper.CompilerCreator;
 using static CuSharp.Tests.TestHelper.MethodInfoLoader;
-using static CuSharp.Tests.TestHelper.MethodsToCompile;
+using static CuSharp.Tests.TestKernels.MethodsToCompile;
 using static CuSharp.Tests.TestHelper.ReleaseAdaption;
 
 namespace CuSharp.Tests.CuSharp.CudaCompiler.MethodBodyOpCode;

@@ -1,6 +1,6 @@
 ﻿using LLVMSharp;
 
-namespace CuSharp.CudaCompiler.Frontend;
+namespace CuSharp.CudaCompiler.LLVMConfiguration;
 
 /// <summary>
 /// Array Memory Location, Mapped to NVVM IR Address Space: https://docs.nvidia.com/cuda/nvvm-ir-spec/#address-spaces

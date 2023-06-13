@@ -1,8 +1,9 @@
-﻿using System.Reflection;
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
+using CuSharp.CudaCompiler.Kernels;
+using CuSharp.CudaCompiler.LLVMConfiguration;
 using LLVMSharp;
 
-namespace CuSharp.CudaCompiler.Frontend;
+namespace CuSharp.CudaCompiler.Compiler;
 
 public class KernelCrossCompiler
 {
@@ -20,10 +21,8 @@ public class KernelCrossCompiler
     public LLVMKernel Compile(MSILKernel entryKernel, bool optimize = false)
     {
         GenerateDataLayoutAndTarget();
-
-
+        
         var functionGenerator = new FunctionGenerator(_module, _builder);
-        //var function = functionGenerator.GenerateFunctionAndPositionBuilderAtEntry(inputKernel);
         var intrinsicFunctions = GenerateDeviceIntrinsicFunctions();
         
         var entryFunction = functionGenerator.GetOrDeclareFunction(entryKernel);
@@ -43,24 +42,9 @@ public class KernelCrossCompiler
             if (optimize) RunOptimization(current.llvmFunction);
         }
 
-        //CompileOtherMethods(functionGenerator, functionsDto);
         GenerateAnnotations(entryFunction);
         return new LLVMKernel(entryKernel.Name, GetModuleAsString());
     }
-
-    /*private void CompileOtherMethods(FunctionGenerator functionGenerator, FunctionsDto functionsDto)
-    {
-        var i = 0;
-
-        while (i < functionGenerator.FunctionsToBuild.Count)
-        {
-            var (kernelToCall, function) = functionGenerator.FunctionsToBuild[i];
-            functionGenerator.AppendFunction(function);
-            functionsDto.Function = function;
-            new MethodBodyCompiler(kernelToCall, _builder, functionsDto, functionGenerator).CompileMethodBody();
-            i++;
-        }
-    }*/
 
     private void RunOptimization(LLVMValueRef function)
     {
