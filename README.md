@@ -154,6 +154,19 @@ More complete examples can be found in the following project directories:
 - `float GetDeltaTo(CuEvent event)`: Returns the time delta between `this` CuEvent and `event`.
 - `void Dispose()`: Disposes all allocated ressources of the event-handle.
 
+## Static Class: KernelTools
+- A class to be used inside the kernel to access GPU-capabilities.
+- The properties below are compiled to NVVM intrinsic functions. The properties all point to a corresponding functor that by default throws an exception. The corresponding functors can be overriden to repurpose the KernelTools Properties.
+### Properties (to be used only inside kernels)
+- `(uint X, uint Y, uint Z) GridDimension`: Returns the grid dimensions of the current kernel launch.
+- `(uint X, uint Y, uint Z) BlockDimension`: Returns the block dimension of the current kernel launch.
+- `(uint X, uint Y, uint Z) BlockIndex`: Returns the block index inside the grid.
+- `(uint X, uint Y, uint Z) ThreadIndex`: Returns the thread index relative to the threads block.
+- `uint WarpSize`: Returns the warpsize of the executing device.
+- `Action SyncThreads`: Waits until all threads inside the current block reach this point when called.
+- `Action GlobalThreadFence`: Halts until all writes to global and shared memory of the current thread are visible to other threads when called.
+- `Action SystemThreadFence`: Halts until all writes (system wide) of the current threaad are visible to other threads when called.  
+
 # Dependencies
 - [CUDA Toolkit](https://developer.nvidia.com/cuda-toolkit)
 - [LLVMSharp](https://github.com/dotnet/LLVMSharp)
