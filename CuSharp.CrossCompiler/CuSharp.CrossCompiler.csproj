@@ -7,9 +7,11 @@
         <RootNamespace>CuSharp.CudaCompiler</RootNamespace>
         <LangVersion>11</LangVersion>
         <PackageId>CuSharp.CrossCompiler</PackageId>
-        <Version>0.9.5</Version>
+        <Version>1.0.0</Version>
         <Authors>Adrian Locher, Jason Benz</Authors>
         <Company>CuSharp</Company>
+        <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/CuSharp/CuSharp</RepositoryUrl>
     </PropertyGroup>
 
     <ItemGroup>
