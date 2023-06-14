@@ -1,10 +1,10 @@
 
-![logo_crop](https://github.com/dotnet4GPU/CuSharp/assets/36261505/f9f16dc4-15a6-41bb-8b97-9629fd8e6910)  
+![logo_crop](./resources/logo_crop.png)  
   
 A GPU Compute Framework for .NET  
   
-[![CuSharp-Build](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-build.yml/badge.svg)](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-build.yml)
-[![CuSharp-Test](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-test.yml/badge.svg)](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-test.yml)
+[![CuSharp-Build](https://github.com/CuSharp/CuSharp/actions/workflows/cusharp-build.yml/badge.svg)](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-build.yml)
+[![CuSharp-Test](https://github.com/CuSharp/CuSharp/actions/workflows/cusharp-test.yml/badge.svg)](https://github.com/dotnet4GPU/CuSharp/actions/workflows/cusharp-test.yml)
 
 # The Thesis
 This project was created as a Bachelors-thesis at the University of Applied Sciences of Eastern Switzerland (OST). The main-document of the thesis, describing this project in detail can be found [here (UPDATEME)](TOBEANNOUNCED).
