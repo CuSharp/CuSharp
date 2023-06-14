@@ -22,7 +22,7 @@ public class KernelCrossCompiler
     {
         GenerateDataLayoutAndTarget();
         
-        var functionGenerator = new FunctionGenerator(_module, _builder);
+        var functionGenerator = new FunctionGenerator(_module);
         var intrinsicFunctions = GenerateDeviceIntrinsicFunctions();
         
         var entryFunction = functionGenerator.GetOrDeclareFunction(entryKernel);
