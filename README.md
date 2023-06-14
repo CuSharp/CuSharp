@@ -19,7 +19,9 @@ This project was created as a Bachelors-thesis at the University of Applied Scie
 - CuSharp.MandelbrotExample: An example WPF application, generating mandelbrot-sets, using CuSharp
 
 # Nuget-Packages:
-- To be announced
+- [Main CuSharp Package](https://www.nuget.org/packages/CuSharp)
+- [Crosscompiler](https://www.nuget.org/packages/CuSharp.CrossCompiler)
+- [NVVM Bindings](https://www.nuget.org/packages/CuSharp.CrossCompiler)
 
 # Examples
 ## Add two int arrays
