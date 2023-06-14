@@ -147,7 +147,7 @@ More complete examples can be found in the following project directories:
 - `void Launch<T1, ..., TN>(Action<T1, ..., TN> kernel, (uint,uint,uint) gridDimensions, (uint,uint,uint) blockDimensions, Tensor<T1> param1, ... , Tensor<TN> paramN)`: JIT-compiles (if needed) and launches `kernel` on the device with the specified dimensions and `Tensor<T>`-parameters.
 - `void Dispose()`: Disposes all allocated ressources of the device-handle.
 
-## Interface: CuEvent
+## Interface: ICuEvent
 - Implements IDisposable
 ### Methods
 - `void Record()`: Records the point in time this method-was called relative to the GPU-Runtime.
