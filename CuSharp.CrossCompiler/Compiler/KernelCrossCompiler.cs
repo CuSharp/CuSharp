@@ -37,7 +37,7 @@ public class KernelCrossCompiler
                     Module = _module,
                     ArrayMemoryLocation = _config.DefaultArrayMemoryLocation
                 }
-                .CompileMethodBody(); //TODO change module input
+                .CompileMethodBody();
 
             if (optimize) RunOptimization(current.llvmFunction);
         }

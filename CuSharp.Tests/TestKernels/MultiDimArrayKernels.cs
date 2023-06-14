@@ -167,7 +167,6 @@ public class MultiDimArrayKernels
                 var sB = new T[TileSize16, TileSize16];
 
                 T sum = new T();
-                //T sum = default(T); // TODO: Remove or implement
                 for (int tile = 0; tile < (aCols_bRows + TileSize16 - 1) / TileSize16; tile++)
                 {
                     int tileOffset = tile * TileSize16;
@@ -218,7 +217,6 @@ public class MultiDimArrayKernels
             var sB = new T[TileSize16, TileSize16];
 
             T sum = new T();
-            //T sum = default(T); // TODO: Remove or implement
             for (int tile = 0; tile < (aCols_bRows + TileSize16 - 1) / TileSize16; tile++)
             {
                 int tileOffset = tile * TileSize16;
