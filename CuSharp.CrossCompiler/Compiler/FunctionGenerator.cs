@@ -8,14 +8,12 @@ namespace CuSharp.CudaCompiler.Compiler
     public class FunctionGenerator
     {
         private readonly LLVMModuleRef _module;
-        private readonly LLVMBuilderRef _builder;
-
+        
         private List<(MSILKernel msilFunction, LLVMValueRef llvmFunction)> FunctionsToBuild { get; } = new(); 
         
-        public FunctionGenerator(LLVMModuleRef module, LLVMBuilderRef builder)
+        public FunctionGenerator(LLVMModuleRef module)
         {
             _module = module;
-            _builder = builder;
         }
 
         private readonly Dictionary<string, LLVMValueRef> _functionCache = new();
